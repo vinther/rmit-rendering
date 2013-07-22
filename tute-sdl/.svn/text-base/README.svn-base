@@ -1,0 +1,147 @@
+Tute: Introduction to SDL and OpenGL revision
+=============================================
+
+Download the `framework code <tute-sdl.tar.gz>`_.
+
+Note that depending on how much you remember from last semester, this
+tute could take several hours.  **Make sure you complete the tute
+before next week**, as the following tutes will build on the code
+you write in this one.
+
+1. Open a terminal and extract the code::
+
+        tar xzf tute-sdl.tar.gz
+        cd tute-sdl
+
+2. Compile and run the example::
+
+        make
+        ./example
+ 
+   The included files are:
+
+    Makefile
+        A simple Makefile for compiling the code.  If you add source files
+        or headers be sure to change the ``HEADERS`` and ``OBJECTS``
+        variables.
+    sdl-base.c, sdl-base.h
+        This implements the standard event loop in ``main``, and also
+        provides a frame-rate counter (see below).  It provides *hooks*
+        for handling events and drawing the frame.
+    example.c
+        An example of how to use ``sdl-base``, that just displays a
+        purple background.
+        
+   The ``main`` function in ``sdl-base.c`` implements the standard
+   event loop that was shown in the lecture::
+
+            int main(int argc, char **argv)
+            {
+                SDL_Init(SDL_INIT_VIDEO | ...);
+                screen = SDL_SetVideoMode(...);
+
+                init();
+                while (!quit) 
+                {
+                    /* Process all pending events */
+                    while (SDL_PollEvent(&ev))
+                    {
+                        switch (ev.type)
+                        {
+                            ...
+                            default:
+                                event(&ev);
+                        }
+                    }
+
+                    /* Refresh display and flip buffers */
+                    display(screen);
+                    SDL_GL_SwapBuffers();
+                    
+                    /* ... */
+                }
+                
+                return EXIT_SUCCESS;
+            }
+
+   Note how most events are passed to ``event``, which is an undefinded
+   function, and that every frame ``display`` is called to render
+   the frame to the ``SDL_Surface``.
+
+   ``example.c`` implements these four functions::
+
+        void init()
+        {
+        }
+
+        void reshape(int width, int height)
+        {
+        }
+
+        void display(SDL_Surface *screen)
+        {
+            glClearColor(1, 0, 1, 0);
+            glClear(GL_COLOR_BUFFER_BIT);
+            printf("% 5d FPS\r", fps);
+            fflush(stdout);
+        }
+
+        void update(int milliseconds)
+        {
+        }
+
+        void event(SDL_Event *event)
+        {
+        }
+
+3. Make a copy of example.c, called ``tute-sdl.c``, and make the required
+   changes to the ``Makefile`` so that it compiles instead of (or as well as)
+   ``example.c``.
+
+4. Modify ``tute-sdl.c`` so that it sets up a projection transform, and
+   draws a red, lit teapot in the center of the screen.  You should
+   only need to make use of the OpenGL calls you learnt last semester.
+
+5. Add code to the ``event`` function.  Start by recognising a keypress
+   event, and quit the program when the escape key is pressed.
+
+   You need to check the ``event->type`` member for equality with
+   ``SDL_KEYDOWN``, then check the value of ``event->key.keysym.sym``
+   (which will be a virtual keycode such as ``SDLK_ESCAPE``.  A full
+   list is in the ``SDLKey`` man page).
+
+6. Add code to the ``event`` function to control camera movement around the
+   teapot.  The best way to do this is to have several boolean flags that keep
+   track of which keys are pressed, and each frame move the camera in the
+   appropriate direction.  You should be able to get fluid movement
+   with the WSAD and arrow keys.
+
+Extension activities:
+
+7. Modify ``display`` so the framerate is displayed on-screen instead
+   of on the terminal.
+
+8. Write code in ``update`` so the camera moves at a constant speed,
+   regardless of the framerate.
+
+References
+----------
+
+1. SDL man pages, for example, type::
+
+        man SDL_Event
+
+   See also the SDL_KeyboardEvent and SDLKey man pages.
+
+2. SDL online tutorials at http://www.libsdl.org/tutorials.php
+
+3. OpenGL man pages, for example, type::
+
+        man glLightfv
+
+4. OpenGL Programming Guide ("redbook") online at 
+   http://www.rush3d.com/reference/opengl-redbook-1.1/
+
+5. GLUT reference online at:
+   http://www.opengl.org/documentation/specs/glut/spec3/spec3.html
+

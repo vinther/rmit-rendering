@@ -1,0 +1,18 @@
+# $Id: Makefile,v 1.1 2006/06/10 03:40:36 aholkner Exp $
+
+DEBUG = -g
+
+OPTIMISE = 
+
+CFLAGS = `sdl-config --cflags` $(DEBUG) $(OPTIMISE)
+LDFLAGS = `sdl-config --libs` -lGL
+
+HEADERS = sdl-base.h
+OBJECTS = example.o sdl-base.o
+EXE = example
+
+$(EXE): $(OBJECTS) $(HEADERS)
+	gcc $(LDFLAGS) -o $@ $(OBJECTS)
+
+clean:
+	rm -f $(EXE) $(OBJECTS)

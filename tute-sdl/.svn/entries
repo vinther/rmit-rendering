@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="4"
+   name=""
+   committed-date="2006-07-03T12:40:56.665613Z"
+   url="svn+ssh://yallara/home/a/aholkner/svn/subjects/rr/tutes/tute-sdl"
+   last-author="aholkner"
+   kind="dir"
+   uuid="83838141-ac17-0410-a740-96ce930892db"
+   revision="19"/>
+<entry
+   committed-rev="4"
+   name="sdl-base.h"
+   text-time="2006-07-27T02:00:11.000000Z"
+   committed-date="2006-07-03T12:40:56.665613Z"
+   checksum="2b0af2d6158ec96962130c42ca1ed068"
+   last-author="aholkner"
+   kind="file"
+   prop-time="2006-07-27T02:00:11.000000Z"/>
+<entry
+   committed-rev="4"
+   name="sdl-base.c"
+   text-time="2006-07-27T02:00:11.000000Z"
+   committed-date="2006-07-03T12:40:56.665613Z"
+   checksum="79158cb4427c9d5e6913be6086302b71"
+   last-author="aholkner"
+   kind="file"
+   prop-time="2006-07-27T02:00:11.000000Z"/>
+<entry
+   committed-rev="4"
+   name="example.c"
+   text-time="2006-07-27T02:00:11.000000Z"
+   committed-date="2006-07-03T12:40:56.665613Z"
+   checksum="6e446a1187193375554136cb78d2f5ca"
+   last-author="aholkner"
+   kind="file"
+   prop-time="2006-07-27T02:00:11.000000Z"/>
+<entry
+   committed-rev="4"
+   name="Makefile"
+   text-time="2006-07-27T02:00:11.000000Z"
+   committed-date="2006-07-03T12:40:56.665613Z"
+   checksum="9a78b20eaac6529f517a38c103f8b808"
+   last-author="aholkner"
+   kind="file"
+   prop-time="2006-07-27T02:00:11.000000Z"/>
+<entry
+   committed-rev="4"
+   name="README"
+   text-time="2006-07-27T02:00:11.000000Z"
+   committed-date="2006-07-03T12:40:56.665613Z"
+   checksum="0315f00b6fad5c66cc36575660f982c2"
+   last-author="aholkner"
+   kind="file"
+   prop-time="2006-07-27T02:00:11.000000Z"/>
+</wc-entries>
