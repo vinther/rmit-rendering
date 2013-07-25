@@ -1,0 +1,3 @@
+/media/Traveler/Projects/rmit-rendering/portal/libs/assimp--3.0.1270/code/CMakeFiles/assimp.dir
+/media/Traveler/Projects/rmit-rendering/portal/libs/assimp--3.0.1270/tools/assimp_cmd/CMakeFiles/assimp_cmd.dir
+/media/Traveler/Projects/rmit-rendering/portal/libs/assimp--3.0.1270/CMakeFiles/uninstall.dir

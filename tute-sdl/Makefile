@@ -4,7 +4,7 @@ DEBUG = -g
 
 OPTIMISE = 
 
-CFLAGS = `sdl-config --cflags` $(DEBUG) $(OPTIMISE)
+CFLAGS = `sdl-config --cflags` $(DEBUG) $(OPTIMISE) -Werror -Wall
 LDFLAGS = `sdl-config --libs` -lGL -lGLU -lglut
 
 HEADERS = sdl-base.h
@@ -12,7 +12,7 @@ OBJECTS = tute-sdl.o sdl-base.o
 EXE = example
 
 $(EXE): $(OBJECTS) $(HEADERS)
-	gcc $(LDFLAGS) -o $@ $(OBJECTS)
+	gcc -o $@ $(OBJECTS) $(LDFLAGS)
 
 clean:
 	rm -f $(EXE) $(OBJECTS)
