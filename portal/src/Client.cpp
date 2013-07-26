@@ -1,33 +1,23 @@
 /*
  * Client.cpp
  *
-<<<<<<< HEAD
- *  Created on: 25/07/2013
- *      Author: svp
-=======
  *  Created on: 26/07/2013
  *      Author: s3443408
->>>>>>> fd3f252442028f3bf70ad1cf9a099bb9de1dbbf5
  */
 
 #include "Client.hpp"
 
-<<<<<<< HEAD
-Client::Client(int argc, char** argv)
-{
-
-}
-
-
-
-=======
 #include <iostream>
 
+#include <SDL/SDL.h>
 #include <GL/glut.h>
+
+#include "Keyboard.hpp"
 
 Client::Client(int argc, char** argv)
 {
     // TODO Auto-generated constructor stub
+
 }
 
 Client::~Client()
@@ -37,9 +27,12 @@ Client::~Client()
 
 void Client::initialize()
 {
-    int argc;
-    char *argv = "";
-    glutInit(&argc, &argv);
+    //int argc = 0;
+    //char const * argv[] = {"prog.exe","-k"};
+
+    //glutInit(&argc, argv);
+
+    setKeyboard(std::make_shared<Keyboard>());
 
     glClearColor(0.0, 0.0, 0.0, 0.0);
     glShadeModel(GL_FLAT);
@@ -67,11 +60,14 @@ void Client::event(SDL_Event* event)
             quitEvent.type = SDL_QUIT;
 
             SDL_PushEvent(&quitEvent);
+
         }
-        else
-        {
-            std::cout << "Key was pressed!" << std::endl;
-        }
+
+        getKeyboard()->event(event->key);
+
+        break;
+    case SDL_KEYUP:
+        getKeyboard()->event(event->key);
 
         break;
     }
@@ -84,5 +80,4 @@ void Client::display(SDL_Surface* surface)
 void Client::cleanup()
 {
 }
->>>>>>> fd3f252442028f3bf70ad1cf9a099bb9de1dbbf5
 

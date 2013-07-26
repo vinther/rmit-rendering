@@ -16,29 +16,29 @@ class Camera
 public:
 	Camera();
 
-    const glm::quat& local_rotation() const
+
+    const glm::vec3& getPosition() const
     {
-        return local_rotation_;
+        return position;
     }
 
-    void local_rotation(const glm::quat& localRotation)
+    void setPosition(const glm::vec3& position)
     {
-        local_rotation_ = localRotation;
+        this->position = position;
     }
 
-    const glm::vec3& position() const
+    const glm::quat& getRotation() const
     {
-        return position_;
+        return rotation;
     }
 
-    void position(const glm::vec3& position)
+    void setRotation(const glm::quat& rotation)
     {
-        position_ = position;
+        this->rotation = rotation;
     }
-
 private:
-	glm::vec3 position_;
-	glm::quat local_rotation_;
+	glm::vec3 position;
+	glm::quat rotation;
 };
 
 #endif /* CAMERA_HPP_ */
