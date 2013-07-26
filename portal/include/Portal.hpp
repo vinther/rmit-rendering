@@ -10,5 +10,4 @@
 
 #include <SDL/SDL.h>
 
-
 #endif /* PORTAL_HPP_ */

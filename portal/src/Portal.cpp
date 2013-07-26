@@ -1,14 +1,14 @@
-/* $Id: sdl-base.c 19 2006-07-30 13:05:23Z aholkner $ */
-
-#include "portal.hpp"
+#include "Portal.hpp"
 
 #include <stdio.h>
 #include <stdlib.h>
 
-#define DEFAULT_WIDTH 800
-#define DEFAULT_HEIGHT 600
-#define DEFAULT_DEPTH 32
-#define DEFAULT_FLAGS (SDL_OPENGL | SDL_RESIZABLE)
+#include "Client.hpp"
+
+const int DEFAULT_WIDTH = 800;
+const int DEFAULT_HEIGHT = 600;
+const int DEFAULT_DEPTH = 32;
+const int DEFAULT_FLAGS = (SDL_OPENGL | SDL_RESIZABLE);
 
 static SDL_Surface *screen;
 static int videoFlags;
@@ -26,6 +26,8 @@ void quit()
 
 int main(int argc, char **argv)
 {
+	Client client(argc, argv);
+
     SDL_Event ev;
     Uint32 now, last_frame_time;
 

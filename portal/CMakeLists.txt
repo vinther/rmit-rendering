@@ -9,6 +9,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-add_executable (portal src/portal.cpp)
+add_executable (portal src/Portal.cpp src/Client.cpp)
 
 target_link_libraries(portal ${SDL_LIBRARY}) 
