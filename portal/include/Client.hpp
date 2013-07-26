@@ -1,8 +1,8 @@
 /*
  * Client.hpp
  *
- *  Created on: 25/07/2013
- *      Author: svp
+ *  Created on: 26/07/2013
+ *      Author: s3443408
  */
 
 #ifndef CLIENT_HPP_
@@ -10,18 +10,20 @@
 
 #include <SDL/SDL.h>
 
-class Client
-{
+class Client {
 public:
 	Client(int argc, char** argv);
+	virtual ~Client();
 
 	void initialize();
 	void reshape(Uint32 width, Uint32 height);
-	void display(SDL_Surface* surface);
 	void update(Uint32 ms);
-	void cleanup();
 	void event(SDL_Event* event);
-};
+	void display(SDL_Surface* surface);
 
+	void cleanup();
+
+private:
+};
 
 #endif /* CLIENT_HPP_ */

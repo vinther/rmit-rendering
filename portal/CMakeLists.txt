@@ -1,14 +1,21 @@
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
+
 find_package(OpenGL REQUIRED)
-find_package(SDL 1.2 REQUIRED)
+find_package(GLUT REQUIRED)
+find_package(GLM REQUIRED)
+find_package(SDL REQUIRED)
+find_package(Assimp REQUIRED)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 
+include_directories(${GLM_INCLUDE_DIRS})
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 add_executable (portal src/Portal.cpp src/Client.cpp)
 
-target_link_libraries(portal ${SDL_LIBRARY}) 
+target_link_libraries(portal 
+	${SDL_LIBRARY} ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} )
