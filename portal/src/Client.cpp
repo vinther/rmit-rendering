@@ -13,6 +13,7 @@
 #include <GL/glut.h>
 
 #include "Keyboard.hpp"
+#include "DefaultCommandSet.hpp"
 
 Client::Client(int argc, char** argv)
 {
@@ -33,6 +34,11 @@ void Client::initialize()
     //glutInit(&argc, argv);
 
     setKeyboard(std::make_shared<Keyboard>());
+    getKeyboard()->setClient(shared_from_this());
+    getKeyboard()->setCommandSet(std::make_shared<DefaultCommandSet>());
+
+    setScene(std::make_shared<Scene>());
+    getScene()->loadObject("assets/models/shuttle.obj");
 
     glClearColor(0.0, 0.0, 0.0, 0.0);
     glShadeModel(GL_FLAT);

@@ -9,7 +9,7 @@
 
 void Keyboard::event(const SDL_KeyboardEvent& event)
 {
-    switch (event.state)
+    switch (event.type)
     {
     case SDL_KEYDOWN:
         keydown(event.keysym.sym, event.keysym.mod);
@@ -24,18 +24,12 @@ void Keyboard::event(const SDL_KeyboardEvent& event)
 
 void Keyboard::keydown(SDLKey key, SDLMod mod)
 {
-    switch (key)
-    {
-    default:
-        break;
-    }
+    if (commandSet)
+        commandSet->keydown(key, mod);
 }
 
 void Keyboard::keyup(SDLKey key, SDLMod mod)
 {
-    switch  (key)
-    {
-    default:
-            break;
-    }
+    if (commandSet)
+        commandSet->keyup(key, mod);
 }

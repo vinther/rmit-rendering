@@ -16,7 +16,6 @@ class Camera
 public:
 	Camera();
 
-
     const glm::vec3& getPosition() const
     {
         return position;
@@ -38,6 +37,7 @@ public:
     }
 private:
 	glm::vec3 position;
+
 	glm::quat rotation;
 };
 

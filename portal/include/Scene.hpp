@@ -8,6 +8,8 @@
 #ifndef SCENE_HPP_
 #define SCENE_HPP_
 
+#include <memory>
+
 #include "Camera.hpp"
 
 class Scene
@@ -25,6 +27,8 @@ public:
     {
         this->camera = camera;
     }
+
+    void loadObject(const std::string& path);
 
 private:
     std::shared_ptr<Camera> camera;

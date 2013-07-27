@@ -14,6 +14,8 @@
 
 
 class Keyboard;
+class Scene;
+
 struct SDL_Surface;
 union SDL_Event;
 
@@ -40,8 +42,19 @@ public:
         this->keyboard = keyboard;
     }
 
+    const std::shared_ptr<Scene>& getScene() const
+    {
+        return scene;
+    }
+
+    void setScene(const std::shared_ptr<Scene>& scene)
+    {
+        this->scene = scene;
+    }
+
 private:
 	std::shared_ptr<Keyboard> keyboard;
+	std::shared_ptr<Scene> scene;
 };
 
 #endif /* CLIENT_HPP_ */
