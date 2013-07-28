@@ -35,6 +35,7 @@ int main(int argc, char **argv)
     videoFlags = DEFAULT_FLAGS;
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     screen = SDL_SetVideoMode(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_DEPTH, videoFlags);
 
     client->initialize();

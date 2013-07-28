@@ -5,7 +5,7 @@
  *      Author: svp
  */
 
-#include "Camera.hpp"
+#include "scene/Camera.hpp"
 
 Camera::Camera()
 {

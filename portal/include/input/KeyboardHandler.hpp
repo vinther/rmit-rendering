@@ -6,14 +6,14 @@
  */
 
 #ifndef KEYBOARD_HPP_
-#define KEYBOARD_HPP_
+#define KEYBOARDHANDLER_HPP_
 
 #include <SDL/SDL.h>
 
 #include "Client.hpp"
 #include "CommandSet.hpp"
 
-class Keyboard
+class KeyboardHandler
 {
 public:
     void event(const SDL_KeyboardEvent& event);
@@ -44,4 +44,4 @@ private:
 
 
 
-#endif /* KEYBOARD_HPP_ */
+#endif /* KEYBOARDHANDLER_HPP_ */

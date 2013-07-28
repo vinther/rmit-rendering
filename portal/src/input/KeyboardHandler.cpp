@@ -1,13 +1,13 @@
 /*
- * Keyboard.cpp
+ * KeyboardHandler.cpp
  *
  *  Created on: 26/07/2013
  *      Author: svp
  */
 
-#include "Keyboard.hpp"
+#include "input/KeyboardHandler.hpp"
 
-void Keyboard::event(const SDL_KeyboardEvent& event)
+void KeyboardHandler::event(const SDL_KeyboardEvent& event)
 {
     switch (event.type)
     {
@@ -22,13 +22,13 @@ void Keyboard::event(const SDL_KeyboardEvent& event)
     }
 }
 
-void Keyboard::keydown(SDLKey key, SDLMod mod)
+void KeyboardHandler::keydown(SDLKey key, SDLMod mod)
 {
     if (commandSet)
         commandSet->keydown(key, mod);
 }
 
-void Keyboard::keyup(SDLKey key, SDLMod mod)
+void KeyboardHandler::keyup(SDLKey key, SDLMod mod)
 {
     if (commandSet)
         commandSet->keyup(key, mod);

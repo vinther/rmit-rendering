@@ -12,8 +12,8 @@
 #include <SDL/SDL.h>
 #include <GL/glut.h>
 
-#include "Keyboard.hpp"
-#include "DefaultCommandSet.hpp"
+#include "input/KeyboardHandler.hpp"
+#include "input/DefaultCommandSet.hpp"
 
 Client::Client(int argc, char** argv)
 {
@@ -28,24 +28,59 @@ Client::~Client()
 
 void Client::initialize()
 {
-    //int argc = 0;
-    //char const * argv[] = {"prog.exe","-k"};
+    char fakeParam[] = "";
+    char *fakeargv[] = {fakeParam};
+    int argc = 0;
 
-    //glutInit(&argc, argv);
+    glutInit( &argc, fakeargv );
 
-    setKeyboard(std::make_shared<Keyboard>());
-    getKeyboard()->setClient(shared_from_this());
-    getKeyboard()->setCommandSet(std::make_shared<DefaultCommandSet>());
+    keyboardHandler = std::unique_ptr<KeyboardHandler>(new KeyboardHandler());
+    keyboardHandler->setClient(shared_from_this());
+    keyboardHandler->setCommandSet(std::make_shared<DefaultCommandSet>());
 
-    setScene(std::make_shared<Scene>());
-    getScene()->loadObject("assets/models/shuttle.obj");
+    scene = std::unique_ptr<Scene>(new Scene());
+//    auto sceneObject = scene->assetManager->get<Asset>("models/shuttle.obj");
+//
+//    if (!sceneObject.expired())
+//    {
+//        auto d = sceneObject.lock();
+//        std::cout << d->scene->mNumMeshes << std::endl;
+//    }
+//
+//    sceneObject = scene->assetManager->get<Asset>("models/shuttle.obj");
+//    if (!sceneObject.expired())
+//    {
+//        auto d = sceneObject.lock();
+//        std::cout << d->scene->mNumMeshes << std::endl;
+//    }
 
-    glClearColor(0.0, 0.0, 0.0, 0.0);
-    glShadeModel(GL_FLAT);
+    auto sceneObject = scene->assetManager->get<Asset>("models/shuttle.obj");
+
+    if (!sceneObject.expired())
+    {
+        auto d = sceneObject.lock();
+
+        indices.resize(d->scene->mNumMeshes);
+        for (unsigned int i = 0; i < d->scene->mNumMeshes; ++i)
+        {
+            for (unsigned int j = 0; j < d->scene->mMeshes[i]->mNumFaces; ++j)
+            {
+                std::copy(d->scene->mMeshes[i]->mFaces[j].mIndices, d->scene->mMeshes[i]->mFaces[j].mIndices + 3, std::back_inserter(indices[i]));
+            }
+        }
+
+    }
 }
 
 void Client::reshape(Uint32 width, Uint32 height)
 {
+    glViewport(0, 0, (GLsizei) width, (GLsizei) height);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(65.0, (GLfloat) width / (GLfloat) height, 1.0, 20.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glTranslatef(0.0, 0.0, -5.0);
 }
 
 void Client::update(Uint32 ms)
@@ -66,14 +101,13 @@ void Client::event(SDL_Event* event)
             quitEvent.type = SDL_QUIT;
 
             SDL_PushEvent(&quitEvent);
-
         }
 
-        getKeyboard()->event(event->key);
+        keyboardHandler->event(event->key);
 
         break;
     case SDL_KEYUP:
-        getKeyboard()->event(event->key);
+        keyboardHandler->event(event->key);
 
         break;
     }
@@ -81,6 +115,67 @@ void Client::event(SDL_Event* event)
 
 void Client::display(SDL_Surface* surface)
 {
+//    const char *c;
+//    const size_t buffer_size = 128;
+//    char string[buffer_size];
+
+    auto sceneObject = scene->assetManager->get<Asset>("models/shuttle.obj");
+
+
+
+    glClearColor(1, 0, 1, 0);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glPushMatrix();
+
+    //glutSolidTeapot(1.0f);
+
+    glTranslatef(0.0f, 0.0f, -7.0f);
+
+    if (!sceneObject.expired())
+    {
+        auto d = sceneObject.lock();
+
+
+        glEnableClientState(GL_VERTEX_ARRAY);
+
+        for (unsigned int i = 0; i < d->scene->mNumMeshes; ++i)
+        {
+            glVertexPointer(3, GL_FLOAT, 0, d->scene->mMeshes[i]->mVertices);
+            glDrawElements(GL_TRIANGLES, indices[i].size(), GL_UNSIGNED_INT, indices[i].data());
+        }
+
+        glDisableClientState(GL_VERTEX_ARRAY);
+
+    }
+
+
+    glPopMatrix();
+
+//    /* Drawing text */
+//    glMatrixMode(GL_PROJECTION);
+//    glPushMatrix();
+//
+//    glLoadIdentity();
+//    glOrtho(0, 512, 0, 512, 0, 1000);
+//
+//    glMatrixMode(GL_MODELVIEW);
+//
+//    snprintf(string, buffer_size, "%5d FPS, %d yaw\r", fps, yaw);
+//
+//    glRasterPos2f(text_x, text_y);
+//    for (c = string; *c != '\0'; c++) {
+//      glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *c);
+//    }
+//
+//    glMatrixMode(GL_PROJECTION);
+//    glPopMatrix();
+//    /* Back to normal drawing */
+
+    glMatrixMode(GL_MODELVIEW);
+
+    fflush(stdout);
+
 }
 
 void Client::cleanup()

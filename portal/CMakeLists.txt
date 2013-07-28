@@ -35,7 +35,9 @@ endif ()
 include_directories(${GLM_INCLUDE_DIRS})
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-add_executable (portal src/Portal.cpp src/Client.cpp src/Keyboard.cpp src/Scene.cpp src/Camera.cpp)
+file(GLOB_RECURSE PORTAL_SOURCES src/*.cpp)
+
+add_executable (portal ${PORTAL_SOURCES})
 
 target_link_libraries(portal 
 	${SDL_LIBRARY} ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${ASSIMP_LIBRARIES})

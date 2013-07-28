@@ -8,11 +8,11 @@
 #ifndef DEFAULTCOMMANDSET_HPP_
 #define DEFAULTCOMMANDSET_HPP_
 
-#include "CommandSet.hpp"
+#include "input/CommandSet.hpp"
 
 #include <glm/glm.hpp>
 
-#include "Scene.hpp"
+#include "scene/Scene.hpp"
 
 class DefaultCommandSet: public CommandSet
 {
@@ -22,7 +22,7 @@ public:
         switch (key)
         {
         case 'a':
-            client->getScene()->getCamera()->setPosition(glm::vec3(1.0f, 1.0f, 1.0f));
+            client->scene->camera->setPosition(glm::vec3(1.0f, 1.0f, 1.0f));
             break;
         default:
             break;

@@ -11,9 +11,10 @@
 #include <SDL/SDL_stdinc.h>
 #include <memory>
 #include <iostream>
+#include <vector>
 
 
-class Keyboard;
+class KeyboardHandler;
 class Scene;
 
 struct SDL_Surface;
@@ -32,29 +33,13 @@ public:
 
 	void cleanup();
 
-    const std::shared_ptr<Keyboard>& getKeyboard() const
-    {
-        return keyboard;
-    }
+public:
+	std::unique_ptr<KeyboardHandler> keyboardHandler;
+	std::unique_ptr<Scene> scene;
 
-    void setKeyboard(const std::shared_ptr<Keyboard>& keyboard)
-    {
-        this->keyboard = keyboard;
-    }
+	// Testing
 
-    const std::shared_ptr<Scene>& getScene() const
-    {
-        return scene;
-    }
-
-    void setScene(const std::shared_ptr<Scene>& scene)
-    {
-        this->scene = scene;
-    }
-
-private:
-	std::shared_ptr<Keyboard> keyboard;
-	std::shared_ptr<Scene> scene;
+	std::vector<std::vector<unsigned int>> indices;
 };
 
 #endif /* CLIENT_HPP_ */
