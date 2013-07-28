@@ -5,7 +5,7 @@
  *      Author: svp
  */
 
-#ifndef KEYBOARD_HPP_
+#ifndef KEYBOARDHANDLER_HPP_
 #define KEYBOARDHANDLER_HPP_
 
 #include <SDL/SDL.h>

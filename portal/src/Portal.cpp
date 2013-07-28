@@ -24,6 +24,8 @@ void quit()
     quit_flag = 1;
 }
 
+#include <GL/gl.h>
+
 int main(int argc, char **argv)
 {
     std::shared_ptr<Client> client = std::make_shared<Client>(argc, argv);
@@ -35,7 +37,6 @@ int main(int argc, char **argv)
     videoFlags = DEFAULT_FLAGS;
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     screen = SDL_SetVideoMode(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_DEPTH, videoFlags);
 
     client->initialize();
@@ -80,6 +81,8 @@ int main(int argc, char **argv)
             fps = (frame_count * 1000) / (now - frame_time);
             frame_count = 0;
             frame_time = now;
+
+            std::cout << "FPS: " << fps << std::endl;
         }
     }
 

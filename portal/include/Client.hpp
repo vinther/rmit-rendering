@@ -15,6 +15,7 @@
 
 
 class KeyboardHandler;
+class MouseHandler;
 class Scene;
 
 struct SDL_Surface;
@@ -35,6 +36,7 @@ public:
 
 public:
 	std::unique_ptr<KeyboardHandler> keyboardHandler;
+	std::unique_ptr<MouseHandler> mouseHandler;
 	std::unique_ptr<Scene> scene;
 
 	// Testing
