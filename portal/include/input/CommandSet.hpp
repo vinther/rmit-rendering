@@ -27,12 +27,6 @@ public:
     virtual void keydown(SDL_Keycode key, Uint16 mod) = 0;
     virtual void keyup(SDL_Keycode key, Uint16 mod) = 0;
 
-    void setClient(const std::shared_ptr<Client>& client)
-    {
-        this->client = client;
-    }
-
-protected:
     std::shared_ptr<Client> client;
 };
 

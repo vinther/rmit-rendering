@@ -11,6 +11,7 @@
 #include "input/CommandSet.hpp"
 
 #include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 #include "scene/Scene.hpp"
 
@@ -21,8 +22,17 @@ public:
     {
         switch (key)
         {
+        case 'w':
+            client->scene->camera->position += client->scene->camera->rotation * glm::vec3(0.0f, 0.0f, -1.0f);
+            break;
+        case 's':
+            client->scene->camera->position += client->scene->camera->rotation * glm::vec3(0.0f, 0.0f,  1.0f);
+            break;
+        case 'd':
+            client->scene->camera->position += client->scene->camera->rotation * glm::vec3(1.0f, 0.0f,  0.0f);
+            break;
         case 'a':
-            client->scene->camera->setPosition(glm::vec3(1.0f, 1.0f, 1.0f));
+            client->scene->camera->position += client->scene->camera->rotation * glm::vec3(-1.0f, 0.0f, 0.0f);
             break;
         default:
             break;

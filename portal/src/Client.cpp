@@ -9,9 +9,12 @@
 
 #include "input/KeyboardHandler.hpp"
 #include "input/MouseHandler.hpp"
+#include "input/DefaultCommandSet.hpp"
+
 #include "Interface.hpp"
 
-#include "input/DefaultCommandSet.hpp"
+#include <SDL2/SDL_ttf.h>
+
 
 Client::Client(int argc, char** argv)
 {
@@ -33,11 +36,11 @@ void Client::initialize()
     glutInit( &argc, fakeargv );
 
     auto sharedCommandSet = std::make_shared<DefaultCommandSet>();
-    sharedCommandSet->setClient(shared_from_this());
+    sharedCommandSet->client = shared_from_this();
 
     keyboardHandler = std::unique_ptr<KeyboardHandler>(new KeyboardHandler());
     keyboardHandler->setClient(shared_from_this());
-    keyboardHandler->setCommandSet(sharedCommandSet);
+    keyboardHandler->commandSet = sharedCommandSet;
 
     mouseHandler = std::unique_ptr<MouseHandler>(new MouseHandler());
     mouseHandler->client = shared_from_this();
@@ -67,7 +70,6 @@ void Client::initialize()
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST );
     glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST );
 
-
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_LINE_SMOOTH);
@@ -75,6 +77,8 @@ void Client::initialize()
     glEnable(GL_CULL_FACE);
 
     glCullFace(GL_BACK);
+
+    scene->camera->position = glm::vec3(0.0f, 0.0f, 20.0f);
 }
 
 void Client::reshape(Uint32 width, Uint32 height)
@@ -96,8 +100,7 @@ glm::quat r;
 
 void Client::update(Uint32 ms)
 {
-    r = glm::angleAxis(rot, glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f)));
-    r = glm::normalize(r);
+    //scene->camera->rotation = glm::angleAxis(rot, glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f)));
     rot += (0.01f) * ms;
 
     if (rot > 360)
@@ -151,10 +154,12 @@ void Client::display(SDL_Surface* surface, Uint16 fps)
     glClear(GL_DEPTH_BUFFER_BIT);
 
     glPushMatrix();
+    glm::mat4 MVM = glm::mat4_cast(-scene->camera->rotation) * glm::translate(glm::mat4(1.0f), -scene->camera->position);
 
-    glLoadIdentity();
-    glTranslatef(0.0f, 0.0f, -20.0f);
-    glMultMatrixf(glm::value_ptr(glm::mat4_cast(r)));
+    glLoadMatrixf(glm::value_ptr(MVM));
+
+    //glTranslatef(0.0f, 0.0f, -20.0f);
+    //glMultMatrixf(glm::value_ptr(glm::mat4_cast(r)));
 
     static glm::vec3 cols[10] = {
             glm::vec3(1.0f, 1.0f, 1.0f),

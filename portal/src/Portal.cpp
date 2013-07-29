@@ -19,6 +19,8 @@ int main(int argc, char **argv)
 {
     std::shared_ptr<Client> client = std::make_shared<Client>(argc, argv);
 
+    Uint16 windowWidth, windowHeight;
+
     SDL_Window *mainwindow; /* Our window handle */
     SDL_GLContext maincontext; /* Our opengl context handle */
     SDL_Event ev;
@@ -39,22 +41,38 @@ int main(int argc, char **argv)
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 
-    mainwindow = SDL_CreateWindow("RMIT Portal", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-            displayMode.w, displayMode.h, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN | SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_INPUT_GRABBED);
+    if (false)
+    {
+        windowWidth = displayMode.w;
+        windowHeight = displayMode.h;
+
+        mainwindow = SDL_CreateWindow("RMIT Portal", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                windowWidth, windowHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_INPUT_GRABBED | SDL_WINDOW_FULLSCREEN_DESKTOP);
+    } else
+    {
+        windowWidth = DEFAULT_WIDTH;
+        windowHeight = DEFAULT_HEIGHT;
+
+        mainwindow = SDL_CreateWindow("RMIT Portal", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                windowWidth, windowHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_INPUT_GRABBED);
+    }
 
     if (nullptr == mainwindow)
       throw std::runtime_error(SDL_GetError());
 
     maincontext = SDL_GL_CreateContext(mainwindow);
 
+    SDL_ShowCursor(0);
+    SDL_SetWindowGrab(mainwindow, SDL_TRUE);
+
+    SDL_Log("Platform: %s", SDL_GetPlatform());
+    SDL_Log("CPU cores: %d", SDL_GetCPUCount());
     SDL_Log("OpenGL version: %s",(char*) glGetString(GL_VERSION));
     SDL_Log("OpenGL renderer: %s", (char*) glGetString(GL_RENDERER));
     SDL_Log("Display resolution: %dx%d", displayMode.w, displayMode.h);
-    SDL_Log("Platform: %s", SDL_GetPlatform());
-    SDL_Log("CPU cores: %d", SDL_GetCPUCount());
 
     client->initialize();
-    client->reshape(displayMode.w, displayMode.h);
+    client->reshape(windowWidth, windowHeight);
 
     fps = 0;
     frame_count = 0;
@@ -79,11 +97,21 @@ int main(int argc, char **argv)
                     break;
                 }
                 break;
+            case SDL_MOUSEMOTION:
+                // Ugly hack to simulate mouse grabbing
+                ev.motion.xrel = -(windowWidth / 2 - ev.motion.x);
+                ev.motion.yrel = -(windowHeight / 2 - ev.motion.y);
+
+                client->event(&ev);
+                break;
             default:
                 client->event(&ev);
                 break;
             }
         }
+
+        SDL_WarpMouseInWindow(mainwindow, windowWidth / 2, windowHeight / 2);
+
         /* Calculate time passed */
         now = SDL_GetTicks();
         client->update(now - last_frame_time);
@@ -93,6 +121,7 @@ int main(int argc, char **argv)
         client->display(0, fps);
         SDL_GL_SwapWindow(mainwindow);
         SDL_Delay(10);
+
 
         /* Update FPS */
         frame_count++;

@@ -31,13 +31,6 @@ public:
         return commandSet;
     }
 
-    void setCommandSet(const std::shared_ptr<CommandSet>& commandSet)
-    {
-        commandSet->setClient(client);
-        this->commandSet = commandSet;
-    }
-
-private:
     std::shared_ptr<Client> client;
     std::shared_ptr<CommandSet> commandSet;
 };
