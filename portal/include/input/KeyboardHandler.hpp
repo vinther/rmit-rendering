@@ -8,7 +8,7 @@
 #ifndef KEYBOARDHANDLER_HPP_
 #define KEYBOARDHANDLER_HPP_
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include "Client.hpp"
 #include "CommandSet.hpp"
@@ -18,8 +18,8 @@ class KeyboardHandler
 public:
     void event(const SDL_KeyboardEvent& event);
 
-    void keydown(SDLKey key, SDLMod mod);
-    void keyup(SDLKey key, SDLMod mod);
+    void keydown(SDL_Keycode key, Uint16 mod);
+    void keyup(SDL_Keycode key, Uint16 mod);
 
     void setClient(const std::shared_ptr<Client>& client)
     {

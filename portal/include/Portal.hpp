@@ -8,6 +8,11 @@
 #ifndef PORTAL_HPP_
 #define PORTAL_HPP_
 
-#include <SDL/SDL.h>
+#include <stdexcept>
+
+#include <SDL2/SDL.h>
+#include <GL/gl.h>
+
+#include "Client.hpp"
 
 #endif /* PORTAL_HPP_ */

@@ -17,7 +17,7 @@
 class DefaultCommandSet: public CommandSet
 {
 public:
-    void keydown(SDLKey key, SDLMod mod)
+    void keydown(SDL_Keycode key, Uint16 mod)
     {
         switch (key)
         {
@@ -29,7 +29,7 @@ public:
         }
     }
 
-    void keyup(SDLKey key, SDLMod mod)
+    void keyup(SDL_Keycode key, Uint16 mod)
     {
 
     }

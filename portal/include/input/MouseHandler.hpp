@@ -8,7 +8,7 @@
 #ifndef MOUSEHANDLER_HPP_
 #define MOUSEHANDLER_HPP_
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include "Client.hpp"
 #include "CommandSet.hpp"

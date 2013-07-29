@@ -8,15 +8,17 @@
 #ifndef CLIENT_HPP_
 #define CLIENT_HPP_
 
-#include <SDL/SDL_stdinc.h>
 #include <memory>
 #include <iostream>
 #include <vector>
 
+#include <GL/glut.h>
+#include <SDL2/SDL.h>
 
 class KeyboardHandler;
 class MouseHandler;
 class Scene;
+class Interface;
 
 struct SDL_Surface;
 union SDL_Event;
@@ -30,14 +32,14 @@ public:
 	void reshape(Uint32 width, Uint32 height);
 	void update(Uint32 ms);
 	void event(SDL_Event* event);
-	void display(SDL_Surface* surface);
+	void display(SDL_Surface* surface, Uint16 fps);
 
 	void cleanup();
-
 public:
 	std::unique_ptr<KeyboardHandler> keyboardHandler;
 	std::unique_ptr<MouseHandler> mouseHandler;
 	std::unique_ptr<Scene> scene;
+	std::unique_ptr<Interface> interface;
 
 	// Testing
 

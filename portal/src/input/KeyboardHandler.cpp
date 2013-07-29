@@ -22,13 +22,13 @@ void KeyboardHandler::event(const SDL_KeyboardEvent& event)
     }
 }
 
-void KeyboardHandler::keydown(SDLKey key, SDLMod mod)
+void KeyboardHandler::keydown(SDL_Keycode key, Uint16 mod)
 {
     if (commandSet)
         commandSet->keydown(key, mod);
 }
 
-void KeyboardHandler::keyup(SDLKey key, SDLMod mod)
+void KeyboardHandler::keyup(SDL_Keycode key, Uint16 mod)
 {
     if (commandSet)
         commandSet->keyup(key, mod);

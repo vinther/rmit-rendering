@@ -7,13 +7,10 @@
 
 #include "Client.hpp"
 
-#include <iostream>
-
-#include <SDL/SDL.h>
-#include <GL/glut.h>
-
 #include "input/KeyboardHandler.hpp"
 #include "input/MouseHandler.hpp"
+#include "Interface.hpp"
+
 #include "input/DefaultCommandSet.hpp"
 
 Client::Client(int argc, char** argv)
@@ -47,20 +44,7 @@ void Client::initialize()
     mouseHandler->commandSet = sharedCommandSet;
 
     scene = std::unique_ptr<Scene>(new Scene());
-//    auto sceneObject = scene->assetManager->get<Asset>("models/shuttle.obj");
-//
-//    if (!sceneObject.expired())
-//    {
-//        auto d = sceneObject.lock();
-//        std::cout << d->scene->mNumMeshes << std::endl;
-//    }
-//
-//    sceneObject = scene->assetManager->get<Asset>("models/shuttle.obj");
-//    if (!sceneObject.expired())
-//    {
-//        auto d = sceneObject.lock();
-//        std::cout << d->scene->mNumMeshes << std::endl;
-//    }
+    interface = std::unique_ptr<Interface>(new Interface());
 
     auto sceneObject = scene->assetManager->get<Asset>("models/shuttle.obj");
 
@@ -79,10 +63,17 @@ void Client::initialize()
 
     }
 
-    glEnable(GL_DEPTH_TEST);    // Enable the depth buffer
-    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); // Ask for nicest perspective correction
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST );
+    glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST );
 
-    glEnable(GL_CULL_FACE);     // Cull back facing polygons
+
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_MULTISAMPLE);
+    glEnable(GL_LINE_SMOOTH);
+    glEnable(GL_POLYGON_SMOOTH);
+    glEnable(GL_CULL_FACE);
+
     glCullFace(GL_BACK);
 }
 
@@ -100,13 +91,12 @@ void Client::reshape(Uint32 width, Uint32 height)
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/ext.hpp>
 
-
 float rot = 0.0f;
 glm::quat r;
 
 void Client::update(Uint32 ms)
 {
-    r = glm::angleAxis(rot, glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f)));
+    r = glm::angleAxis(rot, glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f)));
     r = glm::normalize(r);
     rot += (0.01f) * ms;
 
@@ -131,7 +121,6 @@ void Client::event(SDL_Event* event)
         }
 
         keyboardHandler->event(event->key);
-
         break;
     case SDL_KEYUP:
         keyboardHandler->event(event->key);
@@ -151,14 +140,13 @@ void Client::event(SDL_Event* event)
 }
 
 
-void Client::display(SDL_Surface* surface)
+void Client::display(SDL_Surface* surface, Uint16 fps)
 {
     auto sceneObject = scene->assetManager->get<Asset>("models/shuttle.obj");
 
-
     glMatrixMode(GL_MODELVIEW);
 
-    glClearColor(1, 0, 1, 0);
+    glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT);
     glClear(GL_DEPTH_BUFFER_BIT);
 
@@ -200,25 +188,10 @@ void Client::display(SDL_Surface* surface)
 
     glPopMatrix();
 
-//    /* Drawing text */
-//    glMatrixMode(GL_PROJECTION);
-//    glPushMatrix();
-//
-//    glLoadIdentity();
-//    glOrtho(0, 512, 0, 512, 0, 1000);
-//
-//    glMatrixMode(GL_MODELVIEW);
-//
-//    snprintf(string, buffer_size, "%5d FPS, %d yaw\r", fps, yaw);
-//
-//    glRasterPos2f(text_x, text_y);
-//    for (c = string; *c != '\0'; c++) {
-//      glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *c);
-//    }
-//
-//    glMatrixMode(GL_PROJECTION);
-//    glPopMatrix();
-//    /* Back to normal drawing */
+    Interface::Data data;
+    data.fps = fps;
+
+    interface->display(data);
 }
 
 void Client::cleanup()

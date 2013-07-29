@@ -27,7 +27,8 @@ std::weak_ptr<Asset> AssetManager::get<Asset>(const std::string& name)
             return std::weak_ptr<Asset>(cachedAssets[name]);
         } else
         {
-            return std::weak_ptr<Asset>(cachedAssets[name]);
+            std::cout << "Model could not be found!" << std::endl;
+            return std::weak_ptr<Asset>();
         }
     } else
     {
