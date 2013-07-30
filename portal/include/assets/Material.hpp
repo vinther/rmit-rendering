@@ -11,14 +11,18 @@
 #include <string>
 
 #include <glm/glm.hpp>
+#include <SDL2/SDL.h>
 
 #include "assets/Asset.hpp"
 
 class Material: public Asset
 {
 public:
-    Material();
+    Material(const std::string& name);
     virtual ~Material();
+
+    bool loadFromDisk(const std::string& name, AssetManager& assetManager);
+    size_t reportSize() const;
 
     glm::vec3 Ka;
     glm::vec3 Kd;
@@ -28,14 +32,14 @@ public:
 
     Uint8 illum;
 
-    std::string map_Ka;
-    std::string map_Kd;
-    std::string map_Ks;
-    std::string map_Ns;
-    std::string map_d;
-    std::string map_bump;
-
-    std::weak_ptr<Asset> shader;
+//    std::string map_Ka;
+//    std::string map_Kd;
+//    std::string map_Ks;
+//    std::string map_Ns;
+//    std::string map_d;
+//    std::string map_bump;
+//
+//    std::weak_ptr<Asset> shader;
 };
 
 #endif /* MATERIAL_HPP_ */

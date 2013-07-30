@@ -10,6 +10,8 @@
 
 #include <SDL2/SDL_log.h>
 
+#include "assets/AssetManager.hpp"
+
 Asset::Asset(const std::string& name, Type type)
     : name(name)
     , type(type)
@@ -20,9 +22,4 @@ Asset::Asset(const std::string& name, Type type)
 
 Asset::~Asset()
 {
-}
-
-void Asset::reload()
-{
-    SDL_Log("Reloading \"%s\"", name.c_str());
 }

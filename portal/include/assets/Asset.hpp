@@ -13,6 +13,8 @@
 
 #include <assimp/scene.h>
 
+class AssetManager;
+
 class Asset
 {
 public:
@@ -22,18 +24,23 @@ public:
         TYPE_MODEL,
         TYPE_SHADER,
         TYPE_SOUND,
+        TYPE_MATERIAL,
 
         TYPE_CUSTOM=255,
     };
 
-    Asset(const std::string& name, Type type);
+
     virtual ~Asset();
 
-    virtual void reload();
+    virtual bool loadFromDisk(const std::string& name, AssetManager& assetManager) = 0;
+    virtual size_t reportSize() const = 0;
 
     std::string name;
     size_t hash;
     Type type;
+
+protected:
+    Asset(const std::string& name, Type type);
 };
 
 

@@ -12,6 +12,7 @@
 
 #include <GL/gl.h>
 #include <SDL2/SDL.h>
+#include <assimp/Importer.hpp>
 
 class aiScene;
 class AssetManager;
@@ -37,10 +38,11 @@ public:
         Uint16 state = State::PRISTINE;
     } renderInformation;
 
+    bool loadFromDisk(const std::string& name, AssetManager& assetManager);
+    size_t reportSize() const;
+
     Assimp::Importer importer;
     const aiScene* scene;
-
-    void initialize(const aiScene* scene, AssetManager& assetManager);
 };
 
 #endif /* MODEL_HPP_ */

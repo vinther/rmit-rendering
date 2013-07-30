@@ -50,7 +50,10 @@ void Renderer::render(const Scene& scene, RenderResults& results)
 
     glLoadMatrixf(glm::value_ptr(MVM));
 
-    const auto sceneObject = scene.assetManager->get<Model>("models/capsule.obj");
+    const auto sceneObject = scene.assetManager->get<Model>("models/sibenik.obj");
+    scene.assetManager->get<Model>("models/shuttle.obj");
+    scene.assetManager->get<Model>("models/sibenik.obj");
+    scene.assetManager->get<Model>("models/CornellBox-Sphere.obj");
     if (!sceneObject.expired())
     {
         auto& d = *(sceneObject.lock());

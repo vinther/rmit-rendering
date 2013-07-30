@@ -9,56 +9,35 @@
 
 #include <iostream>
 
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
 #include <SDL2/SDL_log.h>
 
 #include "assets/Asset.hpp"
 #include "assets/Model.hpp"
+#include "assets/Material.hpp"
+
+std::shared_ptr<Asset> AssetManager::fetchFromCache(const std::string& name)
+{
+    return cachedAssets[name];
+}
 
 template <class T>
-std::shared_ptr<T> AssetManager::fetchFromCache(const std::string& name)
+std::shared_ptr<T> AssetManager::fetchFromDisk(const std::string& name)
 {
-    return std::static_pointer_cast<T>(cachedAssets[name]);
-}
-
-template std::shared_ptr<Model> AssetManager::fetchFromCache<Model>(const std::string& name);
-
-
-
-template <>
-std::shared_ptr<Model> AssetManager::fetchFromDisk<Model>(const std::string& name)
-{
-    std::shared_ptr<Model> model;
     const auto cachedAsset = cachedAssets.find(name);
+    const bool cached = std::end(cachedAssets) != cachedAsset;
 
-    if (std::end(cachedAssets) == cachedAsset)
-    {
-        model = std::make_shared<Model>(name);
-    } else
-    {
-        model = std::static_pointer_cast<Model>(cachedAsset->second);
-    }
+    auto asset = cached ? std::static_pointer_cast<T>(cachedAsset->second) : std::make_shared<T>(name);
 
-    const aiScene* scene = importer.ReadFile("assets/" + name,
-            aiProcess_CalcTangentSpace       |
-            aiProcess_Triangulate            |
-            aiProcess_JoinIdenticalVertices  |
-            aiProcess_SortByPType);
+    if (asset->loadFromDisk(name, *this))
+        cachedAssets[name] = asset;
+    else
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Asset file could not loaded from disk: \"%s\"", name.c_str());
 
-    if (scene)
-    {
-        model->initialize(scene, *this);
-
-        cachedAssets[name] = model;
-
-        return model;
-    } else
-    {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Model file could not be found: \"%s\"", name.c_str());
-        return std::shared_ptr<Model>();
-    }
+    return asset;
 }
+
+template std::shared_ptr<Model> AssetManager::fetchFromDisk<Model>(const std::string& name);
+template std::shared_ptr<Material> AssetManager::fetchFromDisk<Material>(const std::string& name);
 
 void AssetManager::reportCacheContents() const
 {
@@ -79,7 +58,7 @@ void AssetManager::reportCacheContents() const
     {
         const auto& asset = *(it->second);
 
-        SDL_Log("[%s] \"%s\"", getTypeName(asset.type).c_str(), asset.name.c_str());
+        SDL_Log("[%s] \"%s\" (%d bytes)", getTypeName(asset.type).c_str(), asset.name.c_str(), asset.reportSize());
     }
 }
 
@@ -118,8 +97,7 @@ void AssetManager::checkForFileChanges()
             std::cout << assetName << std::endl;
             if (event->mask & IN_MODIFY)
             {
-
-                cachedAssets[assetName]->reload();
+                cachedAssets[assetName]->loadFromDisk(assetName, *this);
             }
         }
 

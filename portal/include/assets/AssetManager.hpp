@@ -18,8 +18,6 @@
 #include <sys/inotify.h>
 #endif
 
-#include <assimp/Importer.hpp>
-
 class Asset;
 
 class AssetManager
@@ -33,8 +31,7 @@ public:
     void reportCacheContents() const;
 
 private:
-    template <class T>
-    std::shared_ptr<T> fetchFromCache(const std::string& name);
+    std::shared_ptr<Asset> fetchFromCache(const std::string& name);
 
     template <class T>
     std::shared_ptr<T> fetchFromDisk(const std::string& name);
@@ -58,7 +55,7 @@ inline std::weak_ptr<T> AssetManager::get(const std::string& name, bool reload)
 
     bool cached = !(std::end(cachedAssets) == cachedAsset || reload);
 
-    return std::weak_ptr<T>(cached ? fetchFromCache<T>(name) : fetchFromDisk<T>(name));
+    return std::weak_ptr<T>(cached ? std::static_pointer_cast<T>(fetchFromCache(name)) : fetchFromDisk<T>(name));
 }
 
 
