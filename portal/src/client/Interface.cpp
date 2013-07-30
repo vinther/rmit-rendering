@@ -7,13 +7,13 @@
  */
 
 
-#include "Interface.hpp"
+#include "client/Interface.hpp"
 
 #include <sstream>
 
 #include <GL/glut.h>
 
-#include "Client.hpp"
+#include "client/Client.hpp"
 
 Interface::Interface(std::shared_ptr<Client> client)
     : client(client)
@@ -23,6 +23,8 @@ Interface::Interface(std::shared_ptr<Client> client)
 void Interface::display()
 {
     /* Drawing text */
+    glColor3f(1.0f, 0.0f, 1.0f);
+
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
 

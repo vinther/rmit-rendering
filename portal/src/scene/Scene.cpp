@@ -9,10 +9,11 @@
 
 #include <iostream>
 
-#include "Client.hpp"
-#include "Utilities.hpp"
+#include "client/Client.hpp"
 #include "scene/Camera.hpp"
 #include "assets/AssetManager.hpp"
+
+#include "Utilities.hpp"
 
 Scene::Scene(std::shared_ptr<Client> client)
     : camera(std::make_unique<Camera>())
@@ -21,6 +22,7 @@ Scene::Scene(std::shared_ptr<Client> client)
 {
     // TODO Auto-generated constructor stub
 
+    assetManager->initialize();
 }
 
 Scene::~Scene()

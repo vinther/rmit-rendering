@@ -7,8 +7,10 @@
 
 #include "input/KeyboardHandler.hpp"
 
-#include "Client.hpp"
-#include "CameraController.hpp"
+#include "client/Client.hpp"
+#include "client/CameraController.hpp"
+#include "scene/Scene.hpp"
+#include "assets/AssetManager.hpp"
 
 KeyboardHandler::KeyboardHandler(std::shared_ptr<Client> client)
     : client(client)
@@ -34,6 +36,9 @@ void KeyboardHandler::keydown(SDL_Keycode key, Uint16 mod)
 {
     if (key == SDLK_ESCAPE)
         SDL_Log("ESC pressed, exit inevitable");
+
+    if ('q' == key)
+        client->scene->assetManager->reportCacheContents();
 
     client->cameraController->keyDown(key, mod);
 }

@@ -14,6 +14,7 @@
 #include <SDL2/SDL.h>
 
 class Scene;
+class Model;
 
 class Renderer
 {
@@ -35,9 +36,9 @@ public:
     void initialize();
     void render(const Scene& scene, RenderResults& results);
 
-    // Testing
-
-    std::vector<std::vector<unsigned int>> indices;
+private:
+    void bufferObject(Model& model);
+    void renderObject(const Model& model);
 };
 
 #endif /* RENDERER_HPP_ */

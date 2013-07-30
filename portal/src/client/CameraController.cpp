@@ -5,12 +5,12 @@
  *      Author: svp
  */
 
-#include "CameraController.hpp"
+#include "client/CameraController.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 
-#include "Client.hpp"
+#include "client/Client.hpp"
 #include "scene/Scene.hpp"
 #include "scene/Camera.hpp"
 
@@ -105,8 +105,8 @@ void CameraController::update(Uint32 ms)
         position += glm::vec3(-state.speedFactor, 0.0f,  0.0f) * rotation;
 
     if (state.moveUp)
-        position += glm::vec3(0.0f, state.speedFactor,  0.0f) * rotation;
+        position += glm::vec3(0.0f, state.speedFactor,  0.0f);// * rotation;
 
     if (state.moveDown)
-        position += glm::vec3(0.0f, -state.speedFactor,  0.0f) * rotation;
+        position += glm::vec3(0.0f, -state.speedFactor,  0.0f);// * rotation;
 }

@@ -5,6 +5,7 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
 find_package(GLM REQUIRED)
+find_package(GLEW REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 find_package(Assimp REQUIRED)
@@ -44,4 +45,4 @@ file(GLOB_RECURSE PORTAL_SOURCES src/*.cpp)
 add_executable (portal ${PORTAL_SOURCES})
 
 target_link_libraries(portal 
-	${SDL2_LIBRARY} ${SDL2TTF_LIBRARY} ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${ASSIMP_LIBRARIES})
+	${SDL2_LIBRARY} ${SDL2TTF_LIBRARY} ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARIES} ${ASSIMP_LIBRARIES})

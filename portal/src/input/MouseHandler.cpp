@@ -7,9 +7,9 @@
 
 #include "input/MouseHandler.hpp"
 
-#include "Client.hpp"
+#include "client/Client.hpp"
+#include "client/CameraController.hpp"
 #include "scene/Scene.hpp"
-#include "CameraController.hpp"
 
 MouseHandler::MouseHandler(std::shared_ptr<Client> client)
     : client(client)

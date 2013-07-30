@@ -5,7 +5,7 @@
  *      Author: s3443408
  */
 
-#include "Client.hpp"
+#include "client/Client.hpp"
 
 #include "input/KeyboardHandler.hpp"
 #include "input/MouseHandler.hpp"
@@ -13,18 +13,20 @@
 #include "scene/Scene.hpp"
 #include "scene/Camera.hpp"
 
-#include "Interface.hpp"
-#include "CameraController.hpp"
-#include "Utilities.hpp"
-#include "Interface.hpp"
-#include "Renderer.hpp"
+#include "renderer/Renderer.hpp"
+
+#include "client/Interface.hpp"
+#include "client/CameraController.hpp"
+#include "client/Interface.hpp"
 
 #include "assets/AssetManager.hpp"
+#include "assets/Model.hpp"
+
+#include "Utilities.hpp"
 
 Client::Client(int argc, char** argv)
 {
-    // TODO Auto-generated constructor stub
-
+    glutInit(&argc, argv);
 }
 
 Client::~Client()
@@ -34,11 +36,9 @@ Client::~Client()
 
 void Client::initialize()
 {
-    char fakeParam[] = "";
-    char *fakeargv[] = {fakeParam};
-    int argc = 0;
-
-    glutInit( &argc, fakeargv );
+//    char fakeParam[] = "";
+//    char *fakeargv[] = {fakeParam};
+//    int argc = 0;
 
     keyboardHandler = std::make_unique<KeyboardHandler>(shared_from_this());
     mouseHandler = std::make_unique<MouseHandler>(shared_from_this());
@@ -49,7 +49,7 @@ void Client::initialize()
 
     scene->camera->position = glm::vec3(0.0f, 0.0f, 20.0f);
 
-    scene->assetManager->get<Asset>("models/shuttle2.obj");
+    //scene->assetManager->get<Model>("models/test.obj");
 }
 
 void Client::reshape(Uint32 width, Uint32 height)
@@ -65,6 +65,8 @@ void Client::reshape(Uint32 width, Uint32 height)
 void Client::update(Uint32 ms)
 {
     cameraController->update(ms);
+
+    scene->assetManager->checkForFileChanges();
 }
 
 void Client::event(SDL_Event* event)
