@@ -8,14 +8,21 @@
 #ifndef MOUSEHANDLER_HPP_
 #define MOUSEHANDLER_HPP_
 
+#include <memory>
+
 #include <SDL2/SDL.h>
 
-#include "Client.hpp"
-#include "CommandSet.hpp"
+class Client;
+class CommandSet;
+
+struct SDL_MouseButtonEvent;
+struct SDL_MouseMotionEvent;
 
 class MouseHandler
 {
 public:
+    MouseHandler(std::shared_ptr<Client> client);
+
     void event(const SDL_MouseButtonEvent& event);
     void event(const SDL_MouseMotionEvent& event);
 

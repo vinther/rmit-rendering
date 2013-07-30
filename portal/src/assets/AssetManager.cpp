@@ -9,6 +9,8 @@
 
 #include <iostream>
 
+#include <SDL2/SDL_log.h>
+
 template<>
 std::weak_ptr<Asset> AssetManager::get<Asset>(const std::string& name)
 {
@@ -27,7 +29,7 @@ std::weak_ptr<Asset> AssetManager::get<Asset>(const std::string& name)
             return std::weak_ptr<Asset>(cachedAssets[name]);
         } else
         {
-            std::cout << "Model could not be found!" << std::endl;
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Model file could not be found: \"%s\"", name.c_str());
             return std::weak_ptr<Asset>();
         }
     } else

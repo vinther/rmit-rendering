@@ -9,12 +9,17 @@
 
 #include "input/KeyboardHandler.hpp"
 #include "input/MouseHandler.hpp"
-#include "input/DefaultCommandSet.hpp"
+
+#include "scene/Scene.hpp"
+#include "scene/Camera.hpp"
 
 #include "Interface.hpp"
+#include "CameraController.hpp"
+#include "Utilities.hpp"
+#include "Interface.hpp"
+#include "Renderer.hpp"
 
-#include <SDL2/SDL_ttf.h>
-
+#include "assets/AssetManager.hpp"
 
 Client::Client(int argc, char** argv)
 {
@@ -35,81 +40,36 @@ void Client::initialize()
 
     glutInit( &argc, fakeargv );
 
-    auto sharedCommandSet = std::make_shared<DefaultCommandSet>();
-    sharedCommandSet->client = shared_from_this();
-
-    keyboardHandler = std::unique_ptr<KeyboardHandler>(new KeyboardHandler());
-    keyboardHandler->setClient(shared_from_this());
-    keyboardHandler->commandSet = sharedCommandSet;
-
-    mouseHandler = std::unique_ptr<MouseHandler>(new MouseHandler());
-    mouseHandler->client = shared_from_this();
-    mouseHandler->commandSet = sharedCommandSet;
-
-    scene = std::unique_ptr<Scene>(new Scene());
-    interface = std::unique_ptr<Interface>(new Interface());
-
-    auto sceneObject = scene->assetManager->get<Asset>("models/shuttle.obj");
-
-    if (!sceneObject.expired())
-    {
-        auto d = sceneObject.lock();
-
-        indices.resize(d->scene->mNumMeshes);
-        for (unsigned int i = 0; i < d->scene->mNumMeshes; ++i)
-        {
-            for (unsigned int j = 0; j < d->scene->mMeshes[i]->mNumFaces; ++j)
-            {
-                std::copy(d->scene->mMeshes[i]->mFaces[j].mIndices, d->scene->mMeshes[i]->mFaces[j].mIndices + 3, std::back_inserter(indices[i]));
-            }
-        }
-
-    }
-
-    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST );
-    glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST );
-
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_MULTISAMPLE);
-    glEnable(GL_LINE_SMOOTH);
-    glEnable(GL_POLYGON_SMOOTH);
-    glEnable(GL_CULL_FACE);
-
-    glCullFace(GL_BACK);
+    keyboardHandler = std::make_unique<KeyboardHandler>(shared_from_this());
+    mouseHandler = std::make_unique<MouseHandler>(shared_from_this());
+    scene = std::make_unique<Scene>(shared_from_this());
+    interface = std::make_unique<Interface>(shared_from_this());
+    cameraController = std::make_unique<CameraController>(shared_from_this());
+    renderer = std::make_unique<Renderer>();
 
     scene->camera->position = glm::vec3(0.0f, 0.0f, 20.0f);
+
+    scene->assetManager->get<Asset>("models/shuttle2.obj");
 }
 
 void Client::reshape(Uint32 width, Uint32 height)
 {
-    glViewport(0, 0, (GLsizei) width, (GLsizei) height);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(65.0, (GLfloat) width / (GLfloat) height, 1.0, 2000.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glTranslatef(0.0, 0.0, -5.0);
+    auto& rendererSettings = renderer->settings;
+
+    rendererSettings.width = width;
+    rendererSettings.height = height;
+
+    renderer->initialize();
 }
-
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/ext.hpp>
-
-float rot = 0.0f;
-glm::quat r;
 
 void Client::update(Uint32 ms)
 {
-    //scene->camera->rotation = glm::angleAxis(rot, glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f)));
-    rot += (0.01f) * ms;
-
-    if (rot > 360)
-        rot = 0.0f;
+    cameraController->update(ms);
 }
 
 void Client::event(SDL_Event* event)
 {
-    if (0 == event)
+    if (nullptr == event)
         return;
 
     switch (event->type)
@@ -143,63 +103,21 @@ void Client::event(SDL_Event* event)
 }
 
 
-void Client::display(SDL_Surface* surface, Uint16 fps)
+void Client::display(SDL_Surface* surface)
 {
-    auto sceneObject = scene->assetManager->get<Asset>("models/shuttle.obj");
+    Renderer::RenderResults results;
+    renderer->render(*scene, results);
 
-    glMatrixMode(GL_MODELVIEW);
-
-    glClearColor(0, 0, 0, 0);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glClear(GL_DEPTH_BUFFER_BIT);
-
-    glPushMatrix();
-    glm::mat4 MVM = glm::mat4_cast(-scene->camera->rotation) * glm::translate(glm::mat4(1.0f), -scene->camera->position);
-
-    glLoadMatrixf(glm::value_ptr(MVM));
-
-    //glTranslatef(0.0f, 0.0f, -20.0f);
-    //glMultMatrixf(glm::value_ptr(glm::mat4_cast(r)));
-
-    static glm::vec3 cols[10] = {
-            glm::vec3(1.0f, 1.0f, 1.0f),
-            glm::vec3(1.0f, 1.0f, 0.0f),
-            glm::vec3(1.0f, 0.0f, 0.0f),
-            glm::vec3(0.0f, 0.0f, 1.0f),
-            glm::vec3(0.0f, 1.0f, 1.0f),
-            glm::vec3(1.0f, 0.5f, 1.0f),
-            glm::vec3(0.0f, 0.5f, 0.0f),
-            glm::vec3(0.5f, 0.0f, 0.0f),
-            glm::vec3(0.5f, 0.5f, 0.5f),
-            glm::vec3(1.0f, 0.0f, 0.5f),
-    };
-
-    if (!sceneObject.expired())
-    {
-        auto d = sceneObject.lock();
-
-        glEnableClientState(GL_VERTEX_ARRAY);
-
-        for (unsigned int i = 0; i < d->scene->mNumMeshes; ++i)
-        {
-            glColor3fv(glm::value_ptr(cols[i]));
-            glVertexPointer(3, GL_FLOAT, 0, d->scene->mMeshes[i]->mVertices);
-            glDrawElements(GL_TRIANGLES, indices[i].size(), GL_UNSIGNED_INT, indices[i].data());
-        }
-
-        glDisableClientState(GL_VERTEX_ARRAY);
-    }
-
-
-    glPopMatrix();
-
-    Interface::Data data;
-    data.fps = fps;
-
-    interface->display(data);
+    interface->display();
 }
 
 void Client::cleanup()
 {
+    keyboardHandler.reset();
+    mouseHandler.reset();
+    scene.reset();
+    interface.reset();
+    cameraController.reset();
+    renderer.reset();
 }
 

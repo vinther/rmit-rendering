@@ -9,9 +9,15 @@
 
 #include <iostream>
 
-Scene::Scene()
-    : camera(std::make_shared<Camera>())
-    , assetManager(std::make_shared<AssetManager>())
+#include "Client.hpp"
+#include "Utilities.hpp"
+#include "scene/Camera.hpp"
+#include "assets/AssetManager.hpp"
+
+Scene::Scene(std::shared_ptr<Client> client)
+    : camera(std::make_unique<Camera>())
+    , assetManager(std::make_unique<AssetManager>())
+    , client(client)
 {
     // TODO Auto-generated constructor stub
 

@@ -19,6 +19,8 @@ class KeyboardHandler;
 class MouseHandler;
 class Scene;
 class Interface;
+class CameraController;
+class Renderer;
 
 struct SDL_Surface;
 union SDL_Event;
@@ -32,7 +34,7 @@ public:
 	void reshape(Uint32 width, Uint32 height);
 	void update(Uint32 ms);
 	void event(SDL_Event* event);
-	void display(SDL_Surface* surface, Uint16 fps);
+	void display(SDL_Surface* surface);
 
 	void cleanup();
 public:
@@ -40,10 +42,8 @@ public:
 	std::unique_ptr<MouseHandler> mouseHandler;
 	std::unique_ptr<Scene> scene;
 	std::unique_ptr<Interface> interface;
-
-	// Testing
-
-	std::vector<std::vector<unsigned int>> indices;
+	std::unique_ptr<CameraController> cameraController;
+	std::unique_ptr<Renderer> renderer;
 };
 
 #endif /* CLIENT_HPP_ */

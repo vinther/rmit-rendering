@@ -8,31 +8,24 @@
 #ifndef KEYBOARDHANDLER_HPP_
 #define KEYBOARDHANDLER_HPP_
 
+#include <memory>
+
 #include <SDL2/SDL.h>
 
-#include "Client.hpp"
-#include "CommandSet.hpp"
+class Client;
+class CommandSet;
 
 class KeyboardHandler
 {
 public:
+    KeyboardHandler(std::shared_ptr<Client> client);
+
     void event(const SDL_KeyboardEvent& event);
 
     void keydown(SDL_Keycode key, Uint16 mod);
     void keyup(SDL_Keycode key, Uint16 mod);
-
-    void setClient(const std::shared_ptr<Client>& client)
-    {
-        this->client = client;
-    }
-
-    const std::shared_ptr<CommandSet>& getCommandSet() const
-    {
-        return commandSet;
-    }
-
+private:
     std::shared_ptr<Client> client;
-    std::shared_ptr<CommandSet> commandSet;
 };
 
 

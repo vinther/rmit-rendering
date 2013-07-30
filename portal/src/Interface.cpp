@@ -13,7 +13,14 @@
 
 #include <GL/glut.h>
 
-void Interface::display(const Data& data)
+#include "Client.hpp"
+
+Interface::Interface(std::shared_ptr<Client> client)
+    : client(client)
+{
+}
+
+void Interface::display()
 {
     /* Drawing text */
     glMatrixMode(GL_PROJECTION);
@@ -43,3 +50,5 @@ void Interface::writeText(const std::string& str)
       glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *c);
     }
 }
+
+

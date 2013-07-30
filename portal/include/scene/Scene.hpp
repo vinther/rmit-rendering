@@ -10,18 +10,21 @@
 
 #include <memory>
 
-#include "scene/Camera.hpp"
-#include "assets/AssetManager.hpp"
+class Client;
+class Camera;
+class AssetManager;
 
 class Scene
 {
 public:
-    Scene();
+    Scene(std::shared_ptr<Client> client);
     virtual ~Scene();
 
-public:
-    std::shared_ptr<Camera> camera;
-    std::shared_ptr<AssetManager> assetManager;
+    std::unique_ptr<Camera> camera;
+    std::unique_ptr<AssetManager> assetManager;
+
+private:
+    std::shared_ptr<Client> client;
 };
 
 #endif /* SCENE_HPP_ */

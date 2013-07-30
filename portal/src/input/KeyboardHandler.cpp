@@ -7,6 +7,14 @@
 
 #include "input/KeyboardHandler.hpp"
 
+#include "Client.hpp"
+#include "CameraController.hpp"
+
+KeyboardHandler::KeyboardHandler(std::shared_ptr<Client> client)
+    : client(client)
+{
+}
+
 void KeyboardHandler::event(const SDL_KeyboardEvent& event)
 {
     switch (event.type)
@@ -24,12 +32,15 @@ void KeyboardHandler::event(const SDL_KeyboardEvent& event)
 
 void KeyboardHandler::keydown(SDL_Keycode key, Uint16 mod)
 {
-    if (commandSet)
-        commandSet->keydown(key, mod);
+    if (key == SDLK_ESCAPE)
+        SDL_Log("ESC pressed, exit inevitable");
+
+    client->cameraController->keyDown(key, mod);
 }
 
 void KeyboardHandler::keyup(SDL_Keycode key, Uint16 mod)
 {
-    if (commandSet)
-        commandSet->keyup(key, mod);
+    client->cameraController->keyUp(key, mod);
 }
+
+

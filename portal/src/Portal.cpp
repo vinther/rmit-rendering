@@ -1,4 +1,10 @@
-#include "Portal.hpp"
+#include <stdexcept>
+
+#include <SDL2/SDL.h>
+#include <GL/gl.h>
+
+#include "Client.hpp"
+#include "Interface.hpp"
 
 const int DEFAULT_WIDTH = 800;
 const int DEFAULT_HEIGHT = 600;
@@ -118,7 +124,9 @@ int main(int argc, char **argv)
         last_frame_time = now;
 
         /* Refresh display and flip buffers */
-        client->display(0, fps);
+        client->interface->data.fps = fps;
+        client->display(0);
+
         SDL_GL_SwapWindow(mainwindow);
         SDL_Delay(10);
 
@@ -134,6 +142,9 @@ int main(int argc, char **argv)
     }
 
     client->cleanup();
+
+    if (1 != client.use_count())
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Client ptr use count is not 1; cleanup is not working properly!");
 
     SDL_GL_DeleteContext(maincontext);
     SDL_DestroyWindow(mainwindow);

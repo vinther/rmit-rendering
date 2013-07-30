@@ -9,20 +9,27 @@
 #define INTERFACE_HPP_
 
 #include <string>
+#include <memory>
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
+
+class Client;
 
 class Interface
 {
 public:
+    Interface(std::shared_ptr<Client> client);
+
 	struct Data
 	{
 	    Uint16 fps;
-	};
+	} data;
 
-    void display(const Data& data);
+    void display();
+
 
 private:
+    std::shared_ptr<Client> client;
     void writeText(const std::string& str);
 };
 
