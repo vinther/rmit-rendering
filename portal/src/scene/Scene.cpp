@@ -22,6 +22,7 @@
 
 Scene::Scene(std::shared_ptr<Client> client)
     : camera(std::make_unique<Camera>())
+    , root(std::make_unique<SceneNode>())
     , assetManager(std::make_unique<AssetManager>())
     , client(client)
 {
@@ -29,20 +30,19 @@ Scene::Scene(std::shared_ptr<Client> client)
 
     assetManager->initialize();
 
-    root = std::make_unique<SceneNode>();
-    root->asset = assetManager->getOrCreate<Model>("models/sibenik/sibenik.obj");
-
-    auto child = std::make_unique<SceneNode>();
-    child->asset = assetManager->getOrCreate<Model>("models/shuttle.obj");
-    child->transformation = glm::translate(child->transformation, glm::vec3(0.0f, 0.0f, -50.0f));
-
-    root->children.push_back(std::move(child));
-
-    child = std::make_unique<SceneNode>();
-    child->asset = assetManager->getOrCreate<Model>("models/shuttle.obj");
-    child->transformation = glm::translate(child->transformation, glm::vec3(0.0f, 0.0f, 50.0f));
-
-    root->children.push_back(std::move(child));
+    root->model = assetManager->getOrCreate<Model>("models/sibenik/sibenik.obj");
+//
+//    auto child = std::make_unique<SceneNode>();
+//    child->model = assetManager->getOrCreate<Model>("models/shuttle.obj");
+//    child->transformation = glm::translate(child->transformation, glm::vec3(0.0f, 0.0f, -50.0f));
+//
+//    root->children.push_back(std::move(child));
+//
+//    child = std::make_unique<SceneNode>();
+//    child->model = assetManager->getOrCreate<Model>("models/shuttle.obj");
+//    child->transformation = glm::translate(child->transformation, glm::vec3(0.0f, 0.0f, 50.0f));
+//
+//    root->children.push_back(std::move(child));
 }
 
 Scene::~Scene()

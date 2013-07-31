@@ -15,8 +15,14 @@
 
 #include <SDL2/SDL_log.h>
 
-class Asset;
+#include "assets/Asset.hpp"
+#include "assets/Model.hpp"
+
+//class Asset;
 class FileWatcher;
+
+template<class T>
+    using EnableIfBase = typename std::enable_if<std::is_base_of<Asset, T>::value>::type;
 
 class AssetManager
 {
@@ -24,13 +30,13 @@ public:
     AssetManager();
     virtual ~AssetManager();
 
-    template <class T>
+    template <  class T, class = EnableIfBase<T>>
     std::shared_ptr<T> get(const std::string& name);
 
-    template <class T, typename... Args>
+    template <class T, class = EnableIfBase<T>, typename... Args>
     std::shared_ptr<T> create(const std::string& name, Args... args);
 
-    template <class T, typename... Args>
+    template <class T, class = EnableIfBase<T>, typename... Args>
     std::shared_ptr<T> getOrCreate(const std::string& name, Args... args);
 
     void initialize();
@@ -44,7 +50,7 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Asset>> cachedAssets;
 };
 
-template<class T>
+template <class T, class Enable>
 inline std::shared_ptr<T> AssetManager::get(const std::string& name)
 {
     const auto& cachedAsset = cachedAssets.find(name);
@@ -60,11 +66,11 @@ inline std::shared_ptr<T> AssetManager::get(const std::string& name)
     return std::make_shared<T>(name);
 }
 
-template<class T, typename... Args>
+template<class T, class Enable, typename... Args>
 inline std::shared_ptr<T> AssetManager::create(const std::string& name, Args... args)
 {
     auto asset = std::make_shared<T>(name);
-    if (!asset->loadFromDisk(name, std::forward<Args>(args)...))
+    if (!asset->loadFromDisk(std::forward<Args>(args)...))
     {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
                 "Asset could not be loaded: \"%s\"", name.c_str());
@@ -76,7 +82,7 @@ inline std::shared_ptr<T> AssetManager::create(const std::string& name, Args... 
     return asset;
 }
 
-template<class T, typename... Args>
+template<class T, class Enable, typename... Args>
 inline std::shared_ptr<T> AssetManager::getOrCreate(const std::string& name, Args... args)
 {
     const auto& cachedAsset = cachedAssets.find(name);

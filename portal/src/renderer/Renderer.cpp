@@ -7,6 +7,8 @@
 
 #include "renderer/Renderer.hpp"
 
+#include <chrono>
+
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -25,7 +27,13 @@
 #include "assets/Model.hpp"
 #include "assets/Shader.hpp"
 
+#include "renderer/GLResourceManager.hpp"
+
+#include "Utilities.hpp"
+
 Renderer::Renderer()
+    : settings()
+    , resourceManager(std::make_unique<GLResourceManager>())
 {
     // TODO Auto-generated constructor stub
 
@@ -38,23 +46,26 @@ Renderer::~Renderer()
 
 void Renderer::render(const Scene& scene, RenderResults& results)
 {
+    using namespace std::chrono;
+    const auto timeBegin = high_resolution_clock::now();
+
     results.settings = settings;
 
     const auto& camera = *(scene.camera);
 
     glMatrixMode(GL_MODELVIEW);
 
-    glClearColor(0, 0, 0, 0);
+    glClearColor(125.0f / 255.0f, 235.0f / 255.0f, 239.0f / 255.0f, 0);
     glClear(GL_COLOR_BUFFER_BIT);
     glClear(GL_DEPTH_BUFFER_BIT);
 
     auto shader = *(scene.assetManager->get<Shader>("shaders/helloWorld"));
 
-    glUseProgram(shader.program);
+    glUseProgram(shader.renderInfo.program);
 
-    shader.renderInfo.model = glGetUniformLocation(shader.program, "model");
-    shader.renderInfo.view = glGetUniformLocation(shader.program, "view");
-    shader.renderInfo.projection = glGetUniformLocation(shader.program, "projection");
+    shader.renderInfo.model = glGetUniformLocation(shader.renderInfo.program, "model");
+    shader.renderInfo.view = glGetUniformLocation(shader.renderInfo.program, "view");
+    shader.renderInfo.projection = glGetUniformLocation(shader.renderInfo.program, "projection");
 
     const auto viewMatrix = glm::mat4_cast(-camera.rotation) * glm::translate(glm::mat4(1.0f), -camera.position);
     const auto projMatrix = glm::perspective(settings.fov, settings.width / (float) settings.height, settings.nearClip, settings.farClip);
@@ -62,9 +73,17 @@ void Renderer::render(const Scene& scene, RenderResults& results)
     glUniformMatrix4fv(shader.renderInfo.view, 1, GL_FALSE, glm::value_ptr(viewMatrix));
     glUniformMatrix4fv(shader.renderInfo.projection, 1, GL_FALSE, glm::value_ptr(projMatrix));
 
+    glEnableClientState(GL_VERTEX_ARRAY);
+
     renderNode(*(scene.root), camera, shader, glm::mat4(1.0f));
 
+    glDisableClientState(GL_VERTEX_ARRAY);
+
     glUseProgram(0);
+
+    const auto timeEnd = high_resolution_clock::now();
+
+    results.renderTime = duration_cast<microseconds>(timeEnd-timeBegin);
 }
 
 #include <SDL2/SDL_image.h>
@@ -110,109 +129,6 @@ void Renderer::initialize()
     }
 }
 
-void Renderer::bufferObject(Model& model)
-{
-    auto& renderInfo = model.renderInfo;
-
-    if (renderInfo.state &
-            (Model::RenderInfo::State::DIRTY | Model::RenderInfo::State::PRISTINE))
-    {
-        if (renderInfo.vbo.size() > 0)
-        {
-            glDeleteBuffers(renderInfo.vbo.size(), renderInfo.vbo.data());
-            glDeleteBuffers(renderInfo.vao.size(), renderInfo.vao.data());
-            glDeleteBuffers(renderInfo.ibo.size(), renderInfo.ibo.data());
-            glDeleteBuffers(renderInfo.normals.size(), renderInfo.normals.data());
-            glDeleteBuffers(renderInfo.tangents.size(), renderInfo.tangents.data());
-            glDeleteBuffers(renderInfo.texCoords.size(), renderInfo.texCoords.data());
-        }
-
-        //SDL_Log("No rendering information saved for \"%s\", now generating buffers etc.", model.name.c_str());
-
-        if (model.scene == nullptr)
-            throw std::runtime_error("Trying to render scene with NULL scene");
-
-        renderInfo.vbo.resize(model.scene->mNumMeshes);
-        renderInfo.vao.resize(model.scene->mNumMeshes);
-        renderInfo.ibo.resize(model.scene->mNumMeshes);
-        renderInfo.normals.resize(model.scene->mNumMeshes);
-        renderInfo.tangents.resize(model.scene->mNumMeshes);
-        renderInfo.texCoords.resize(model.scene->mNumMeshes);
-        renderInfo.numFaces.resize(model.scene->mNumMeshes);
-
-        glGenVertexArrays(model.scene->mNumMeshes, renderInfo.vao.data());
-        glGenBuffers(model.scene->mNumMeshes, renderInfo.vbo.data());
-        glGenBuffers(model.scene->mNumMeshes, renderInfo.ibo.data());
-        glGenBuffers(model.scene->mNumMeshes, renderInfo.normals.data());
-        glGenBuffers(model.scene->mNumMeshes, renderInfo.tangents.data());
-        glGenBuffers(model.scene->mNumMeshes, renderInfo.texCoords.data());
-
-
-        std::vector<GLuint> indices;
-
-        for (unsigned int i = 0; i < model.scene->mNumMeshes; ++i)
-        {
-            const auto& mesh = *(model.scene->mMeshes[i]);
-
-            indices.resize(mesh.mNumFaces * 3);
-            for (unsigned int j = 0; j < mesh.mNumFaces; ++j)
-            {
-                std::copy(mesh.mFaces[j].mIndices, mesh.mFaces[j].mIndices + 3, indices.data() + j * 3);
-            }
-
-            renderInfo.numFaces[i] = mesh.mNumFaces;
-
-            glBindVertexArray(renderInfo.vao[i]);
-
-            glBindBuffer(GL_ARRAY_BUFFER, renderInfo.vbo[i]);
-            glBufferData(GL_ARRAY_BUFFER, mesh.mNumVertices * sizeof(aiVector3D), mesh.mVertices, GL_STATIC_DRAW);
-
-            glEnableVertexAttribArray(0);
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-            glBindBuffer(GL_ARRAY_BUFFER, renderInfo.normals[i]);
-            glBufferData(GL_ARRAY_BUFFER, mesh.mNumVertices * sizeof(aiVector3D), mesh.mNormals, GL_STATIC_DRAW);
-
-            glEnableVertexAttribArray(1);
-            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-            glBindBuffer(GL_ARRAY_BUFFER, renderInfo.tangents[i]);
-            glBufferData(GL_ARRAY_BUFFER, mesh.mNumVertices * sizeof(aiVector3D), mesh.mTangents, GL_STATIC_DRAW);
-
-            glEnableVertexAttribArray(2);
-            glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-            glBindBuffer(GL_ARRAY_BUFFER, renderInfo.texCoords[i]);
-            glBufferData(GL_ARRAY_BUFFER, mesh.mNumVertices * sizeof(aiVector3D), mesh.mTextureCoords[0], GL_STATIC_DRAW);
-
-            glEnableVertexAttribArray(3);
-            glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderInfo.ibo[i]);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.mNumFaces * 3 * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
-        }
-
-        renderInfo.state = Model::RenderInfo::State::READY;
-
-        glBindVertexArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    }
-}
-
-static glm::vec3 cols[10] = {
-        glm::vec3(1.0f, 1.0f, 1.0f),
-        glm::vec3(1.0f, 1.0f, 0.0f),
-        glm::vec3(1.0f, 0.0f, 0.0f),
-        glm::vec3(0.0f, 0.0f, 1.0f),
-        glm::vec3(0.0f, 1.0f, 1.0f),
-        glm::vec3(1.0f, 0.5f, 1.0f),
-        glm::vec3(0.0f, 0.5f, 0.0f),
-        glm::vec3(0.5f, 0.0f, 0.0f),
-        glm::vec3(0.5f, 0.5f, 0.5f),
-        glm::vec3(1.0f, 0.0f, 0.5f),
-};
-
 void Renderer::renderNode(SceneNode& node, const Camera& camera, const Shader& activeShader, glm::mat4 modelMatrix)
 {
     glPushMatrix();
@@ -221,17 +137,11 @@ void Renderer::renderNode(SceneNode& node, const Camera& camera, const Shader& a
 
     glUniformMatrix4fv(activeShader.renderInfo.model, 1, GL_FALSE, glm::value_ptr(model));
 
-    if (!node.asset.expired())
+    if (!node.model.expired())
     {
-        auto& model = *std::static_pointer_cast<Model>(node.asset.lock());
+        auto object = node.model.lock();
 
-        bufferObject(model);
-
-        glEnableClientState(GL_VERTEX_ARRAY);
-
-        renderObject(model);
-
-        glDisableClientState(GL_VERTEX_ARRAY);
+        renderModel(resourceManager->bufferObject(*object));
     }
 
     for (auto& childNodePtr: node.children)
@@ -242,7 +152,7 @@ void Renderer::renderNode(SceneNode& node, const Camera& camera, const Shader& a
     glPopMatrix();
 }
 
-void Renderer::renderObject(const Model& model)
+void Renderer::renderModel(const Model& model)
 {
     auto& renderInfo = model.renderInfo;
 
@@ -250,7 +160,6 @@ void Renderer::renderObject(const Model& model)
     {
         glBindVertexArray(renderInfo.vao[i]);
 
-        glColor3fv(glm::value_ptr(cols[i % 10]));
         glDrawElements(GL_TRIANGLES, renderInfo.numFaces[i] * 3, GL_UNSIGNED_INT, 0);
     }
 

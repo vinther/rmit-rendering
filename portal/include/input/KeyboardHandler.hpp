@@ -19,6 +19,7 @@ class KeyboardHandler
 {
 public:
     KeyboardHandler(std::shared_ptr<Client> client);
+    ~KeyboardHandler();
 
     void event(const SDL_KeyboardEvent& event);
 

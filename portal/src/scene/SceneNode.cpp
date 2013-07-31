@@ -7,10 +7,12 @@
 
 #include "scene/SceneNode.hpp"
 
-#include "assets/Asset.hpp"
+#include "assets/Model.hpp"
 
 SceneNode::SceneNode()
-    : transformation(glm::mat4(1.0f))
+    : model(std::weak_ptr<Model>())
+    , transformation(glm::mat4(1.0f))
+    , children()
 {
     // TODO Auto-generated constructor stub
 

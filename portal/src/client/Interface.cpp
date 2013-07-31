@@ -16,7 +16,8 @@
 #include "client/Client.hpp"
 
 Interface::Interface(std::shared_ptr<Client> client)
-    : client(client)
+    : data()
+    , client(client)
 {
 }
 
@@ -24,7 +25,6 @@ void Interface::display()
 {
     std::stringstream sstream;
 
-    /* Drawing text */
     glColor3f(1.0f, 0.0f, 1.0f);
 
     glMatrixMode(GL_PROJECTION);
@@ -35,17 +35,19 @@ void Interface::display()
 
     glMatrixMode(GL_MODELVIEW);
 
-
     sstream << "FPS: " << data.fps;
-    writeText(sstream.str(), 20.0f, 20.0f);
+    writeText(sstream.str(), 20.0f, 16.0f);
 
     sstream.str("");
     sstream << "Cam: <" << data.camPos.x << ", " << data.camPos.y << ", " << data.camPos.z << ">";
-    writeText(sstream.str(), 20.0f, 40.0f);
+    writeText(sstream.str(), 20.0f, 32.0f);
+
+    sstream.str("");
+    sstream << "RenderTime: " << data.renderTime;
+    writeText(sstream.str(), 20.0f, 48.0f);
 
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
-    /* Back to normal drawing */
 }
 
 void Interface::writeText(const std::string& str, float x, float y)

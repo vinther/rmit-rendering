@@ -28,13 +28,14 @@
 #include "Utilities.hpp"
 
 Client::Client(int argc, char** argv)
+    : keyboardHandler()
+    , mouseHandler()
+    , scene()
+    , interface()
+    , cameraController()
+    , renderer()
 {
     glutInit(&argc, argv);
-}
-
-Client::~Client()
-{
-    // TODO Auto-generated destructor stub
 }
 
 void Client::initialize()
@@ -119,11 +120,12 @@ void Client::event(SDL_Event* event)
 }
 
 
-void Client::display(SDL_Surface* surface)
+void Client::display()
 {
     Renderer::RenderResults results;
     renderer->render(*scene, results);
 
+    interface->data.renderTime = results.renderTime.count();
     interface->display();
 }
 

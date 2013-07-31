@@ -5,6 +5,14 @@
 
 #include "client/Client.hpp"
 #include "client/Interface.hpp"
+#include "client/CameraController.hpp"
+
+#include "input/KeyboardHandler.hpp"
+#include "input/MouseHandler.hpp"
+
+#include "scene/Scene.hpp"
+
+#include "renderer/Renderer.hpp"
 
 const int DEFAULT_WIDTH = 800;
 const int DEFAULT_HEIGHT = 600;
@@ -140,7 +148,7 @@ int main(int argc, char **argv)
 
         /* Refresh display and flip buffers */
         client->interface->data.fps = fps;
-        client->display(0);
+        client->display();
 
         SDL_GL_SwapWindow(mainwindow);
         SDL_Delay(10);

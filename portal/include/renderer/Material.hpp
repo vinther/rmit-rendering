@@ -9,20 +9,21 @@
 #define MATERIAL_HPP_
 
 #include <string>
+#include <memory>
 
 #include <glm/glm.hpp>
 #include <SDL2/SDL.h>
 
 #include "assets/Asset.hpp"
 
-class Material: public Asset
+class Shader;
+class Texture;
+
+class Material
 {
 public:
     Material(const std::string& name);
     virtual ~Material();
-
-    bool loadFromDisk(const std::string& name);
-    size_t reportSize() const;
 
     glm::vec3 Ka;
     glm::vec3 Kd;
@@ -30,16 +31,13 @@ public:
     float Ns;
     float Tr;
 
-    Uint8 illum;
+    std::weak_ptr<Texture> texAmbient;
+    std::weak_ptr<Texture> texDiffuse;
+    std::weak_ptr<Texture> texSpecular;
+    std::weak_ptr<Texture> texNormal;
+    std::weak_ptr<Texture> texBump;
 
-//    std::string map_Ka;
-//    std::string map_Kd;
-//    std::string map_Ks;
-//    std::string map_Ns;
-//    std::string map_d;
-//    std::string map_bump;
-//
-//    std::weak_ptr<Asset> shader;
+    std::weak_ptr<Shader> shader;
 };
 
 #endif /* MATERIAL_HPP_ */

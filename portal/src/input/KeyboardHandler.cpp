@@ -17,6 +17,10 @@ KeyboardHandler::KeyboardHandler(std::shared_ptr<Client> client)
 {
 }
 
+KeyboardHandler::~KeyboardHandler()
+{
+}
+
 void KeyboardHandler::event(const SDL_KeyboardEvent& event)
 {
     switch (event.type)

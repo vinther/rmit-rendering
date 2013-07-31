@@ -11,6 +11,8 @@
 
 struct RenderInfoBase
 {
+    virtual ~RenderInfoBase() {};
+
     enum State
     {
         PRISTINE    = 0x01,

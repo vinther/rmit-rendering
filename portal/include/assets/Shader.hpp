@@ -23,17 +23,21 @@ public:
     Shader(const std::string& name);
     virtual ~Shader();
 
-    bool loadFromDisk(const std::string& path, const std::string& vertPath, const std::string& fragPath);
-    size_t reportSize() const;
+    bool loadFromDisk(const std::string& vertPath, const std::string& fragPath);
 
-    void reload();
+    size_t reportSize() const override;
+    void reload() override;
 
     struct RenderInfo
     {
+        /* Uniform locators */
         GLint model, view, projection;
+
+        /* Compiled program */
+        GLuint program;
     } renderInfo;
 
-    GLuint program;
+    std::string vertShader, fragShader;
 private:
     std::string getStringFromFile(const std::string& path);
 

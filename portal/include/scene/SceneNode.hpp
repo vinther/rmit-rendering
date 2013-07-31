@@ -13,7 +13,7 @@
 
 #include <glm/glm.hpp>
 
-class Asset;
+class Model;
 
 class SceneNode
 {
@@ -21,7 +21,7 @@ public:
     SceneNode();
     virtual ~SceneNode();
 
-    std::weak_ptr<Asset> asset;
+    std::weak_ptr<Model> model;
     glm::mat4 transformation;
 
     std::vector<std::unique_ptr<SceneNode>> children;

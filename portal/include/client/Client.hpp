@@ -25,16 +25,16 @@ class Renderer;
 struct SDL_Surface;
 union SDL_Event;
 
-class Client : public std::enable_shared_from_this<Client> {
+class Client : public std::enable_shared_from_this<Client>
+{
 public:
 	Client(int argc, char** argv);
-	virtual ~Client();
 
 	void initialize();
 	void reshape(Uint32 width, Uint32 height);
 	void update(Uint32 ms);
 	void event(SDL_Event* event);
-	void display(SDL_Surface* surface);
+	void display();
 
 	void cleanup();
 public:

@@ -10,6 +10,8 @@
 
 #include "assets/Asset.hpp"
 
+#include <memory>
+
 #include <GL/gl.h>
 #include <SDL2/SDL.h>
 #include <assimp/Importer.hpp>
@@ -18,6 +20,7 @@
 
 class aiScene;
 class AssetManager;
+class Material;
 
 class Model: public Asset
 {
@@ -27,17 +30,26 @@ public:
 
     struct RenderInfo: public RenderInfoBase
     {
-        std::vector<GLuint> vbo, vao, ibo;
-        std::vector<GLuint> normals, texCoords, tangents;
-        std::vector<GLuint> numFaces;
+        std::vector<GLuint> vbo = {}, vao = {}, ibo = {};
+        std::vector<GLuint> normals = {}, texCoords = {}, tangents = {};
+        std::vector<GLuint> numFaces = {};
+
+        std::unique_ptr<Material> material;
     } renderInfo;
 
-    bool loadFromDisk(const std::string& path);
-    size_t reportSize() const;
-    void reload();
+    struct SceneDeleter
+    {
+        constexpr SceneDeleter() = default;
+        void operator()(const void*) {};
+    };
+
+    bool loadFromDisk();
+    size_t reportSize() const override;
+    void reload() override;
 
     Assimp::Importer importer;
-    const aiScene* scene;
+
+    std::unique_ptr<const aiScene, std::function<void(const aiScene*)>> scene;
 };
 
 #endif /* MODEL_HPP_ */

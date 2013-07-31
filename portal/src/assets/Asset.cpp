@@ -14,7 +14,9 @@
 
 Asset::Asset(const std::string& name, Type type)
     : name(name)
+    , hash(0)
     , type(type)
+    , files(std::vector<std::string>())
 {
     std::hash<std::string> hash_fn;
     hash = hash_fn(name);
@@ -25,7 +27,7 @@ Asset::~Asset()
 }
 
 /* http://www.nexcius.net/2012/11/20/how-to-load-a-glsl-shader-in-opengl-using-c/ */
-std::string Asset::getStringFromFile(const std::string& path)
+std::string Asset::getStringFromFile(const std::string& path) const
 {
     std::string content;
     std::ifstream fileStream(path, std::ios::in);

@@ -21,4 +21,6 @@ std::unique_ptr<T> make_unique(Args&&... args)
 
 }
 
+#define UNUSED(x) (void)(x)
+
 #endif /* UTILITIES_HPP_ */

@@ -14,8 +14,11 @@
 #include "scene/Scene.hpp"
 #include "scene/Camera.hpp"
 
+#include "Utilities.hpp"
+
 CameraController::CameraController(std::shared_ptr<Client> client)
-    : client(client)
+    : state()
+    , client(client)
 {
 }
 
@@ -26,6 +29,8 @@ CameraController::~CameraController()
 
 void CameraController::keyDown(SDL_Keycode key, Uint16 mod)
 {
+    UNUSED(mod);
+
     switch (key)
     {
     case 'w':
@@ -49,6 +54,8 @@ void CameraController::keyDown(SDL_Keycode key, Uint16 mod)
 
 void CameraController::keyUp(SDL_Keycode key, Uint16 mod)
 {
+    UNUSED(mod);
+
     switch (key)
     {
     case 'w':
@@ -72,14 +79,23 @@ void CameraController::keyUp(SDL_Keycode key, Uint16 mod)
 
 void CameraController::mouseDown(Uint8 button, Uint16 x, Uint16 y)
 {
+    UNUSED(button);
+    UNUSED(x);
+    UNUSED(y);
 }
 
 void CameraController::mouseUp(Uint8 button, Uint16 x, Uint16 y)
 {
+    UNUSED(button);
+    UNUSED(x);
+    UNUSED(y);
 }
 
 void CameraController::mouseMove(Uint16 x, Uint16 y, Sint16 xrel, Sint16 yrel)
 {
+    UNUSED(x);
+    UNUSED(y);
+
     auto& rotation = client->scene->camera->rotation;
 
     rotation = rotation * (glm::quat(1.0f, glm::vec3(0.0f, xrel * 0.0001f, 0.0f)));
@@ -89,6 +105,8 @@ void CameraController::mouseMove(Uint16 x, Uint16 y, Sint16 xrel, Sint16 yrel)
 
 void CameraController::update(Uint32 ms)
 {
+    UNUSED(ms);
+
     auto& position = client->scene->camera->position;
     const auto& rotation = client->scene->camera->rotation;
 

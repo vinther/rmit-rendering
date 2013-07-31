@@ -9,21 +9,14 @@
 
 #include <iostream>
 
-#include <SDL2/SDL_log.h>
-
 #include "assets/Asset.hpp"
-#include "assets/Model.hpp"
-#include "assets/Material.hpp"
 #include "assets/FileWatcher.hpp"
 
 #include "Utilities.hpp"
 
-void AssetManager::initialize()
-{
-}
-
 AssetManager::AssetManager()
     : fileWatcher(std::make_unique<FileWatcher>())
+    , cachedAssets()
 {
 }
 
@@ -31,14 +24,20 @@ AssetManager::~AssetManager()
 {
 }
 
+void AssetManager::initialize()
+{
+}
+
 void AssetManager::addToCache(std::string name, std::shared_ptr<Asset> asset)
 {
     cachedAssets[name] = asset;
 
+#ifdef linux
     for (const auto& path: asset->files)
     {
         fileWatcher->addWatchDescriptor(path, asset);
     }
+#endif
 }
 
 std::shared_ptr<Asset> AssetManager::fetchFromCache(const std::string& name)

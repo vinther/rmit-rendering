@@ -15,9 +15,15 @@
 
 #include "assets/AssetManager.hpp"
 
+#include "renderer/Material.hpp"
+
+#include "Utilities.hpp"
+
 Model::Model(const std::string& name)
     : Asset(name, Type::TYPE_MODEL)
-    , scene(nullptr)
+    , renderInfo()
+    , importer()
+    , scene()
 {
 }
 
@@ -26,9 +32,9 @@ Model::~Model()
     // TODO Auto-generated destructor stub
 }
 
-bool Model::loadFromDisk(const std::string& name)
+bool Model::loadFromDisk()
 {
-    auto tempScene = importer.ReadFile("assets/" + name,
+    auto scene = importer.ReadFile("assets/" + name,
             aiProcess_CalcTangentSpace      |
             aiProcess_GenNormals            |
             aiProcess_JoinIdenticalVertices |
@@ -36,24 +42,28 @@ bool Model::loadFromDisk(const std::string& name)
             aiProcess_GenUVCoords           |
             aiProcess_SortByPType);
 
-//    for (unsigned int i = 0; i < scene->mNumMaterials; ++i)
-//    {
-//        const auto& material = *(scene->mMaterials[i]);
-//
-//        assetManager.get<Model>("TEST");
-//        d->Get(AI_MATKEY_TEXTURE(aiTextureType_HEIGHT,0), s);
-//        SDL_Log("Model \"%s\" has materials?: %s", name.c_str(), s.C_Str());
-//    }
-
-    if (tempScene)
+    if (scene)
     {
-        scene = tempScene;
+        this->scene = decltype(this->scene)(scene, [](const aiScene*){});
+
+        for (unsigned int i = 0; i < scene->mNumMaterials; ++i)
+        {
+//            const auto& material = *(scene->mMaterials[i]);
+
+//            importer.GetPropertyString()
+//
+//            aiString s;
+//            material.Get(AI_MATKEY_TEXTURE_AMBIENT(0), s);
+//            SDL_Log("Model \"%s\" has materials?: %s", name.c_str(), s.C_Str());
+        }
 
         files.clear();
         files.push_back("assets/" + name);
+
+        return true;
     }
 
-    return (scene);
+    return false;
 }
 
 size_t Model::reportSize() const
@@ -67,7 +77,7 @@ size_t Model::reportSize() const
 void Model::reload()
 {
     importer.FreeScene();
-    loadFromDisk(name);
+    loadFromDisk();
 
     renderInfo.state |= RenderInfo::DIRTY;
 }

@@ -14,8 +14,6 @@
 
 class Asset
 {
-    friend class AssetManager;
-
 public:
     enum Type
     {
@@ -23,6 +21,7 @@ public:
         TYPE_MODEL,
         TYPE_SHADER,
         TYPE_SOUND,
+        TYPE_TEXTURE,
         TYPE_MATERIAL,
 
         TYPE_CUSTOM=255,
@@ -47,7 +46,7 @@ public:
 protected:
     Asset(const std::string& name, Type type);
 
-    std::string getStringFromFile(const std::string& path);
+    std::string getStringFromFile(const std::string& path) const;
 };
 
 #endif /* ASSET_HPP_ */

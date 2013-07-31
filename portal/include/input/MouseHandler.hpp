@@ -13,7 +13,6 @@
 #include <SDL2/SDL.h>
 
 class Client;
-class CommandSet;
 
 struct SDL_MouseButtonEvent;
 struct SDL_MouseMotionEvent;
@@ -31,7 +30,6 @@ public:
     void mouseMove(Uint16 x, Uint16 y, Sint16 xrel, Sint16 yrel);
 
     std::shared_ptr<Client> client;
-    std::shared_ptr<CommandSet> commandSet;
 };
 
 
