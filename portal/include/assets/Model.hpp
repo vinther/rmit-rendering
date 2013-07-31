@@ -14,6 +14,8 @@
 #include <SDL2/SDL.h>
 #include <assimp/Importer.hpp>
 
+#include "renderer/RenderInfoBase.hpp"
+
 class aiScene;
 class AssetManager;
 
@@ -23,23 +25,16 @@ public:
     Model(const std::string& name);
     virtual ~Model();
 
-    struct RenderInformation
+    struct RenderInfo: public RenderInfoBase
     {
-        enum State
-        {
-            PRISTINE    = 0x01,
-            BUFFERED    = 0x02,
-            DIRTY       = 0x04,
-        };
-
-        std::vector<GLuint> vbo, ibo, vao;
+        std::vector<GLuint> vbo, vao, ibo;
+        std::vector<GLuint> normals, texCoords, tangents;
         std::vector<GLuint> numFaces;
+    } renderInfo;
 
-        Uint16 state = State::PRISTINE;
-    } renderInformation;
-
-    bool loadFromDisk(const std::string& name, AssetManager& assetManager);
+    bool loadFromDisk(const std::string& path);
     size_t reportSize() const;
+    void reload();
 
     Assimp::Importer importer;
     const aiScene* scene;

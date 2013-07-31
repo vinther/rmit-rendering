@@ -10,13 +10,12 @@
 
 #include <string>
 #include <functional>
-
-#include <assimp/scene.h>
-
-class AssetManager;
+#include <vector>
 
 class Asset
 {
+    friend class AssetManager;
+
 public:
     enum Type
     {
@@ -32,16 +31,23 @@ public:
 
     virtual ~Asset();
 
-    virtual bool loadFromDisk(const std::string& name, AssetManager& assetManager) = 0;
+    virtual void reload() = 0;
     virtual size_t reportSize() const = 0;
 
     std::string name;
     size_t hash;
     Type type;
 
+    /*
+     * Relative paths to every file that makes up this asset.
+     *
+     * If assets fill this vector with paths it will be picked up by the file watcher and get reloaded upon changes
+     */
+    std::vector<std::string> files;
 protected:
     Asset(const std::string& name, Type type);
-};
 
+    std::string getStringFromFile(const std::string& path);
+};
 
 #endif /* ASSET_HPP_ */

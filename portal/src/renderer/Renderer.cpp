@@ -15,11 +15,15 @@
 #include <glm/ext.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <assimp/scene.h>
+
 #include "scene/Scene.hpp"
+#include "scene/SceneNode.hpp"
 #include "scene/Camera.hpp"
 
 #include "assets/AssetManager.hpp"
 #include "assets/Model.hpp"
+#include "assets/Shader.hpp"
 
 Renderer::Renderer()
 {
@@ -44,31 +48,26 @@ void Renderer::render(const Scene& scene, RenderResults& results)
     glClear(GL_COLOR_BUFFER_BIT);
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    glPushMatrix();
+    auto shader = *(scene.assetManager->get<Shader>("shaders/helloWorld"));
 
-    glm::mat4 MVM = glm::mat4_cast(-camera.rotation) * glm::translate(glm::mat4(1.0f), -camera.position);
+    glUseProgram(shader.program);
 
-    glLoadMatrixf(glm::value_ptr(MVM));
+    shader.renderInfo.model = glGetUniformLocation(shader.program, "model");
+    shader.renderInfo.view = glGetUniformLocation(shader.program, "view");
+    shader.renderInfo.projection = glGetUniformLocation(shader.program, "projection");
 
-    const auto sceneObject = scene.assetManager->get<Model>("models/sibenik.obj");
-    scene.assetManager->get<Model>("models/shuttle.obj");
-    scene.assetManager->get<Model>("models/sibenik.obj");
-    scene.assetManager->get<Model>("models/CornellBox-Sphere.obj");
-    if (!sceneObject.expired())
-    {
-        auto& d = *(sceneObject.lock());
+    const auto viewMatrix = glm::mat4_cast(-camera.rotation) * glm::translate(glm::mat4(1.0f), -camera.position);
+    const auto projMatrix = glm::perspective(settings.fov, settings.width / (float) settings.height, settings.nearClip, settings.farClip);
 
-        bufferObject(d);
+    glUniformMatrix4fv(shader.renderInfo.view, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+    glUniformMatrix4fv(shader.renderInfo.projection, 1, GL_FALSE, glm::value_ptr(projMatrix));
 
-        glEnableClientState(GL_VERTEX_ARRAY);
+    renderNode(*(scene.root), camera, shader, glm::mat4(1.0f));
 
-        renderObject(d);
-
-        glDisableClientState(GL_VERTEX_ARRAY);
-    }
-
-    glPopMatrix();
+    glUseProgram(0);
 }
+
+#include <SDL2/SDL_image.h>
 
 void Renderer::initialize()
 {
@@ -82,38 +81,72 @@ void Renderer::initialize()
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_LINE_SMOOTH);
     glEnable(GL_POLYGON_SMOOTH);
+    glEnable(GL_TEXTURE_2D);
     glEnable(GL_CULL_FACE);
 
     glCullFace(GL_BACK);
 
-    glViewport(0, 0, (GLsizei) settings.width, (GLsizei) settings.height);
+    // Create one OpenGL texture
+    GLuint textureID;
+    glGenTextures(1, &textureID);
 
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(settings.fov, (GLfloat) settings.width / (GLfloat) settings.height, 1.0, 2000.0);
+    // "Bind" the newly created texture : all future texture functions will modify this texture
+    glBindTexture(GL_TEXTURE_2D, textureID);
 
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    // Give the image to OpenGL
+    auto image = IMG_Load("assets/models/sibenik/kamen.png");
+
+    if (image)
+    {
+        SDL_Log("Bytes per pixel: %d, w %d, h %d", image->format->BitsPerPixel, image->w, image->h);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->w, image->h, 0, GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    } else
+    {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "No luck with the image");
+    }
 }
 
 void Renderer::bufferObject(Model& model)
 {
-    auto& renderInformation = model.renderInformation;
+    auto& renderInfo = model.renderInfo;
 
-    if (renderInformation.state &
-            (Model::RenderInformation::State::DIRTY | Model::RenderInformation::State::PRISTINE))
+    if (renderInfo.state &
+            (Model::RenderInfo::State::DIRTY | Model::RenderInfo::State::PRISTINE))
     {
+        if (renderInfo.vbo.size() > 0)
+        {
+            glDeleteBuffers(renderInfo.vbo.size(), renderInfo.vbo.data());
+            glDeleteBuffers(renderInfo.vao.size(), renderInfo.vao.data());
+            glDeleteBuffers(renderInfo.ibo.size(), renderInfo.ibo.data());
+            glDeleteBuffers(renderInfo.normals.size(), renderInfo.normals.data());
+            glDeleteBuffers(renderInfo.tangents.size(), renderInfo.tangents.data());
+            glDeleteBuffers(renderInfo.texCoords.size(), renderInfo.texCoords.data());
+        }
+
         //SDL_Log("No rendering information saved for \"%s\", now generating buffers etc.", model.name.c_str());
 
         if (model.scene == nullptr)
-            throw std::runtime_error("Something wrong...");
+            throw std::runtime_error("Trying to render scene with NULL scene");
 
-        renderInformation.vbo.resize(model.scene->mNumMeshes);
-        renderInformation.ibo.resize(model.scene->mNumMeshes);
-        renderInformation.numFaces.resize(model.scene->mNumMeshes);
+        renderInfo.vbo.resize(model.scene->mNumMeshes);
+        renderInfo.vao.resize(model.scene->mNumMeshes);
+        renderInfo.ibo.resize(model.scene->mNumMeshes);
+        renderInfo.normals.resize(model.scene->mNumMeshes);
+        renderInfo.tangents.resize(model.scene->mNumMeshes);
+        renderInfo.texCoords.resize(model.scene->mNumMeshes);
+        renderInfo.numFaces.resize(model.scene->mNumMeshes);
 
-        glGenBuffers(model.scene->mNumMeshes, renderInformation.vbo.data());
-        glGenBuffers(model.scene->mNumMeshes, renderInformation.ibo.data());
+        glGenVertexArrays(model.scene->mNumMeshes, renderInfo.vao.data());
+        glGenBuffers(model.scene->mNumMeshes, renderInfo.vbo.data());
+        glGenBuffers(model.scene->mNumMeshes, renderInfo.ibo.data());
+        glGenBuffers(model.scene->mNumMeshes, renderInfo.normals.data());
+        glGenBuffers(model.scene->mNumMeshes, renderInfo.tangents.data());
+        glGenBuffers(model.scene->mNumMeshes, renderInfo.texCoords.data());
+
 
         std::vector<GLuint> indices;
 
@@ -127,16 +160,43 @@ void Renderer::bufferObject(Model& model)
                 std::copy(mesh.mFaces[j].mIndices, mesh.mFaces[j].mIndices + 3, indices.data() + j * 3);
             }
 
-            renderInformation.numFaces[i] = mesh.mNumFaces;
+            renderInfo.numFaces[i] = mesh.mNumFaces;
 
-            glBindBuffer(GL_ARRAY_BUFFER, renderInformation.vbo[i]);
+            glBindVertexArray(renderInfo.vao[i]);
+
+            glBindBuffer(GL_ARRAY_BUFFER, renderInfo.vbo[i]);
             glBufferData(GL_ARRAY_BUFFER, mesh.mNumVertices * sizeof(aiVector3D), mesh.mVertices, GL_STATIC_DRAW);
 
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderInformation.ibo[i]);
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+            glBindBuffer(GL_ARRAY_BUFFER, renderInfo.normals[i]);
+            glBufferData(GL_ARRAY_BUFFER, mesh.mNumVertices * sizeof(aiVector3D), mesh.mNormals, GL_STATIC_DRAW);
+
+            glEnableVertexAttribArray(1);
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+            glBindBuffer(GL_ARRAY_BUFFER, renderInfo.tangents[i]);
+            glBufferData(GL_ARRAY_BUFFER, mesh.mNumVertices * sizeof(aiVector3D), mesh.mTangents, GL_STATIC_DRAW);
+
+            glEnableVertexAttribArray(2);
+            glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+            glBindBuffer(GL_ARRAY_BUFFER, renderInfo.texCoords[i]);
+            glBufferData(GL_ARRAY_BUFFER, mesh.mNumVertices * sizeof(aiVector3D), mesh.mTextureCoords[0], GL_STATIC_DRAW);
+
+            glEnableVertexAttribArray(3);
+            glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderInfo.ibo[i]);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.mNumFaces * 3 * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
         }
 
-        renderInformation.state = Model::RenderInformation::State::BUFFERED;
+        renderInfo.state = Model::RenderInfo::State::READY;
+
+        glBindVertexArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 }
 
@@ -153,20 +213,46 @@ static glm::vec3 cols[10] = {
         glm::vec3(1.0f, 0.0f, 0.5f),
 };
 
-void Renderer::renderObject(const Model& model)
+void Renderer::renderNode(SceneNode& node, const Camera& camera, const Shader& activeShader, glm::mat4 modelMatrix)
 {
-    auto& renderInformation = model.renderInformation;
+    glPushMatrix();
 
-    for (unsigned int i = 0; i < renderInformation.vbo.size(); ++i)
+    auto model = modelMatrix * node.transformation;
+
+    glUniformMatrix4fv(activeShader.renderInfo.model, 1, GL_FALSE, glm::value_ptr(model));
+
+    if (!node.asset.expired())
     {
-        glBindBuffer(GL_ARRAY_BUFFER, renderInformation.vbo[i]);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderInformation.ibo[i]);
+        auto& model = *std::static_pointer_cast<Model>(node.asset.lock());
 
-        glColor3fv(glm::value_ptr(cols[i % 10]));
-        glVertexPointer(3, GL_FLOAT, 0, 0);
-        glDrawElements(GL_TRIANGLES, renderInformation.numFaces[i] * 3, GL_UNSIGNED_INT, 0);
+        bufferObject(model);
+
+        glEnableClientState(GL_VERTEX_ARRAY);
+
+        renderObject(model);
+
+        glDisableClientState(GL_VERTEX_ARRAY);
     }
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    for (auto& childNodePtr: node.children)
+    {
+        renderNode(*(childNodePtr), camera, activeShader, model);
+    }
+
+    glPopMatrix();
+}
+
+void Renderer::renderObject(const Model& model)
+{
+    auto& renderInfo = model.renderInfo;
+
+    for (unsigned int i = 0; i < renderInfo.vbo.size(); ++i)
+    {
+        glBindVertexArray(renderInfo.vao[i]);
+
+        glColor3fv(glm::value_ptr(cols[i % 10]));
+        glDrawElements(GL_TRIANGLES, renderInfo.numFaces[i] * 3, GL_UNSIGNED_INT, 0);
+    }
+
+    glBindVertexArray(0);
 }

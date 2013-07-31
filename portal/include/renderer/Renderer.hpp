@@ -12,9 +12,14 @@
 #include <vector>
 
 #include <SDL2/SDL.h>
+#include <glm/glm.hpp>
 
 class Scene;
+class SceneNode;
+class Camera;
+
 class Model;
+class Shader;
 
 class Renderer
 {
@@ -25,7 +30,7 @@ public:
     struct Settings
     {
         Uint16 width, height;
-        float fov = 65.0;
+        float fov = 65.0, nearClip = 1.0f, farClip = 2000.0f;
     } settings;
 
     struct RenderResults
@@ -38,6 +43,7 @@ public:
 
 private:
     void bufferObject(Model& model);
+    void renderNode(SceneNode& node, const Camera& camera, const Shader& activeShader, glm::mat4 modelMatrix);
     void renderObject(const Model& model);
 };
 

@@ -7,7 +7,7 @@ find_package(GLUT REQUIRED)
 find_package(GLM REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(SDL2 REQUIRED)
-find_package(SDL2_ttf REQUIRED)
+find_package(SDL2_image REQUIRED)
 find_package(Assimp REQUIRED)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
@@ -37,7 +37,7 @@ endif ()
 include_directories(${GLM_INCLUDE_DIRS})
 include_directories(${ASSIMP_INCLUDE_DIR})
 include_directories(${SDL2_INCLUDE_DIR})
-include_directories(${SDLTTF2_INCLUDE_DIR})
+include_directories(${SDL2IMAGE_INCLUDE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 file(GLOB_RECURSE PORTAL_SOURCES src/*.cpp)
@@ -45,4 +45,4 @@ file(GLOB_RECURSE PORTAL_SOURCES src/*.cpp)
 add_executable (portal ${PORTAL_SOURCES})
 
 target_link_libraries(portal 
-	${SDL2_LIBRARY} ${SDL2TTF_LIBRARY} ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARIES} ${ASSIMP_LIBRARIES})
+	${SDL2_LIBRARY} ${SDL2IMAGE_LIBRARY} ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARIES} ${ASSIMP_LIBRARIES})

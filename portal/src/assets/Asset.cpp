@@ -8,9 +8,9 @@
 
 #include "assets/Asset.hpp"
 
-#include <SDL2/SDL_log.h>
+#include <fstream>
 
-#include "assets/AssetManager.hpp"
+#include <SDL2/SDL_log.h>
 
 Asset::Asset(const std::string& name, Type type)
     : name(name)
@@ -22,4 +22,25 @@ Asset::Asset(const std::string& name, Type type)
 
 Asset::~Asset()
 {
+}
+
+/* http://www.nexcius.net/2012/11/20/how-to-load-a-glsl-shader-in-opengl-using-c/ */
+std::string Asset::getStringFromFile(const std::string& path)
+{
+    std::string content;
+    std::ifstream fileStream(path, std::ios::in);
+
+    if(!fileStream.is_open()) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Shader source file does not exist: \"%s\"", path.c_str());
+        return "";
+    }
+
+    std::string line = "";
+    while(!fileStream.eof()) {
+        std::getline(fileStream, line);
+        content.append(line + "\n");
+    }
+
+    fileStream.close();
+    return content;
 }

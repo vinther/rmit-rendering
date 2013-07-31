@@ -12,6 +12,7 @@
 #include <memory>
 
 #include <SDL2/SDL.h>
+#include <glm/glm.hpp>
 
 class Client;
 
@@ -23,14 +24,13 @@ public:
 	struct Data
 	{
 	    Uint16 fps;
+	    glm::vec3 camPos;
 	} data;
 
     void display();
-
-
 private:
     std::shared_ptr<Client> client;
-    void writeText(const std::string& str);
+    void writeText(const std::string& str, float x, float y);
 };
 
 #endif /* INTERFACE_HPP_ */

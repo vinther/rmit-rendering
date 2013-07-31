@@ -19,7 +19,7 @@ Material::~Material()
     // TODO Auto-generated destructor stub
 }
 
-bool Material::loadFromDisk(const std::string& name, AssetManager& assetManager)
+bool Material::loadFromDisk(const std::string& name)
 {
     return false;
 }

@@ -22,6 +22,8 @@ Interface::Interface(std::shared_ptr<Client> client)
 
 void Interface::display()
 {
+    std::stringstream sstream;
+
     /* Drawing text */
     glColor3f(1.0f, 0.0f, 1.0f);
 
@@ -33,21 +35,24 @@ void Interface::display()
 
     glMatrixMode(GL_MODELVIEW);
 
-    std::stringstream sstream;
-    sstream << "FPS: " << data.fps;
 
-    glRasterPos2f(20, 20);
-    writeText(sstream.str());
+    sstream << "FPS: " << data.fps;
+    writeText(sstream.str(), 20.0f, 20.0f);
+
+    sstream.str("");
+    sstream << "Cam: <" << data.camPos.x << ", " << data.camPos.y << ", " << data.camPos.z << ">";
+    writeText(sstream.str(), 20.0f, 40.0f);
 
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
     /* Back to normal drawing */
 }
 
-void Interface::writeText(const std::string& str)
+void Interface::writeText(const std::string& str, float x, float y)
 {
     const char* c_str = str.c_str();
 
+    glRasterPos2f(x, y);
     for (const char* c = c_str; *c != '\0'; ++c) {
       glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *c);
     }

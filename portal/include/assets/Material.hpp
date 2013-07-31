@@ -21,7 +21,7 @@ public:
     Material(const std::string& name);
     virtual ~Material();
 
-    bool loadFromDisk(const std::string& name, AssetManager& assetManager);
+    bool loadFromDisk(const std::string& name);
     size_t reportSize() const;
 
     glm::vec3 Ka;

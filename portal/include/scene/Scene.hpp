@@ -13,6 +13,7 @@
 class Client;
 class Camera;
 class AssetManager;
+class SceneNode;
 
 class Scene
 {
@@ -21,6 +22,7 @@ public:
     virtual ~Scene();
 
     std::unique_ptr<Camera> camera;
+    std::unique_ptr<SceneNode> root;
     std::unique_ptr<AssetManager> assetManager;
 
 private:
