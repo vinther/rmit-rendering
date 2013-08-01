@@ -30,14 +30,20 @@ public:
 
     struct State
     {
-        bool moveForward = false;
-        bool moveBackward = false;
-        bool moveLeft = false;
-        bool moveRight = false;
-        bool moveUp = false;
-        bool moveDown = false;
+        State()
+            : moveForward(false), moveBackward(false), moveLeft(false)
+            , moveRight(false), moveUp(false), moveDown(false)
+            , speedFactor(1.0f)
+        {}
 
-        float speedFactor = 1.0f;
+        bool moveForward;
+        bool moveBackward;
+        bool moveLeft;
+        bool moveRight;
+        bool moveUp;
+        bool moveDown;
+
+        float speedFactor;
     } state;
 private:
     std::shared_ptr<Client> client;

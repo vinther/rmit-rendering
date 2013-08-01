@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <array>
+#include <string>
 #include <unordered_map>
 #include <type_traits>
 

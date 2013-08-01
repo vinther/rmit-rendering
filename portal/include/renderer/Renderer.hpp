@@ -32,14 +32,24 @@ public:
 
     struct Settings
     {
-        Uint16 width = 640, height = 480;
-        float fov = 65.0, nearClip = 1.0f, farClip = 2000.0f;
+        Settings()
+            : width(640), height(480)
+            , fov(65.0f), nearClip(1.0f), farClip(2000.0f)
+        {}
+
+        Uint16 width, height;
+        float fov, nearClip, farClip;
     } settings;
 
     struct RenderResults
     {
-        Settings settings = Settings();
-        std::chrono::microseconds renderTime = std::chrono::microseconds(0);
+		RenderResults()
+			: settings()
+			, renderTime(0)
+		{}
+
+        Settings settings;
+        std::chrono::microseconds renderTime;
     };
 
     struct RenderState
@@ -52,8 +62,9 @@ public:
 
     std::unique_ptr<GLResourceManager> resourceManager;
 private:
-    void renderNode(SceneNode& node, const Camera& camera, const Shader& activeShader, glm::mat4 modelMatrix);
     void renderModel(const Model& model);
+    void renderNode(SceneNode& node, const Camera& camera, const Shader& activeShader, glm::mat4 modelMatrix);
+    void renderObject(const Model& model);
 };
 
 #endif /* RENDERER_HPP_ */

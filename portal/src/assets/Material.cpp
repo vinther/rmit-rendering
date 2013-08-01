@@ -9,17 +9,17 @@
 
 #include "Utilities.hpp"
 
-//Material::Material(const std::string& name)
-//    : Asset(name, Asset::Type::TYPE_MATERIAL)
-//{
-//    // TODO Auto-generated constructor stub
-//
-//}
-//
-//Material::~Material()
-//{
-//    // TODO Auto-generated destructor stub
-//}
+Material::Material(const std::string& name)
+{
+    UNUSED(name);
+    // TODO Auto-generated constructor stub
+
+}
+
+Material::~Material()
+{
+    // TODO Auto-generated destructor stub
+}
 //
 //bool Material::loadFromDisk(const std::string& path)
 //{

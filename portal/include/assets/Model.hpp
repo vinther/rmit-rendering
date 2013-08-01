@@ -30,10 +30,11 @@ public:
 
     struct RenderInfo: public RenderInfoBase
     {
-        std::vector<GLuint> vbo = {}, vao = {}, ibo = {};
-        std::vector<GLuint> normals = {}, texCoords = {}, tangents = {};
-        std::vector<GLuint> numFaces = {};
+        RenderInfo();
 
+        std::vector<GLuint> vbo, vao, ibo;
+        std::vector<GLuint> normals, texCoords, tangents;
+        std::vector<GLuint> numFaces;
         std::unique_ptr<Material> material;
     } renderInfo;
 

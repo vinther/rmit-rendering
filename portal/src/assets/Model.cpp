@@ -81,3 +81,10 @@ void Model::reload()
 
     renderInfo.state |= RenderInfo::DIRTY;
 }
+
+Model::RenderInfo::RenderInfo()
+    : vbo(), vao(), ibo()
+    , normals(), texCoords(), tangents()
+    , numFaces(), material()
+{
+}

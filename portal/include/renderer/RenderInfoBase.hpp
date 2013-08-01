@@ -11,7 +11,9 @@
 
 struct RenderInfoBase
 {
-    virtual ~RenderInfoBase() {};
+    RenderInfoBase()
+        : state(State::PRISTINE)
+    {};
 
     enum State
     {
@@ -20,7 +22,7 @@ struct RenderInfoBase
         READY       = 0x04,
     };
 
-    Uint16 state = State::PRISTINE;
+    Uint16 state;
 };
 
 #endif /* RENDERINFOBASE_HPP_ */

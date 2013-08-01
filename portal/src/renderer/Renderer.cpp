@@ -7,6 +7,7 @@
 
 #include "renderer/Renderer.hpp"
 
+#include <stdexcept>
 #include <chrono>
 
 #include <GL/glew.h>
@@ -29,11 +30,7 @@
 
 #include "renderer/GLResourceManager.hpp"
 
-#include "Utilities.hpp"
-
 Renderer::Renderer()
-    : settings()
-    , resourceManager(std::make_unique<GLResourceManager>())
 {
     // TODO Auto-generated constructor stub
 
