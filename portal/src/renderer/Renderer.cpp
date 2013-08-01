@@ -29,6 +29,7 @@
 #include "assets/Shader.hpp"
 
 #include "renderer/GLResourceManager.hpp"
+#include "renderer/Material.hpp"
 
 Renderer::Renderer()
 {
@@ -41,6 +42,8 @@ Renderer::~Renderer()
     // TODO Auto-generated destructor stub
 }
 
+GLuint buffer = 0;
+
 void Renderer::render(const Scene& scene, RenderResults& results)
 {
     using namespace std::chrono;
@@ -50,15 +53,28 @@ void Renderer::render(const Scene& scene, RenderResults& results)
 
     const auto& camera = *(scene.camera);
 
-    glMatrixMode(GL_MODELVIEW);
-
-    glClearColor(125.0f / 255.0f, 235.0f / 255.0f, 239.0f / 255.0f, 0);
+    glClearColor(125.0f / 255.0f, 190.0f / 255.0f, 239.0f / 255.0f, 0);
     glClear(GL_COLOR_BUFFER_BIT);
     glClear(GL_DEPTH_BUFFER_BIT);
 
     auto shader = *(scene.assetManager->get<Shader>("shaders/helloWorld"));
 
     glUseProgram(shader.renderInfo.program);
+
+    if (0 == buffer)
+    {
+        glGenBuffers(1, &buffer);
+        glBindBuffer(GL_UNIFORM_BUFFER, buffer);
+
+        GLuint bindingPoint = 1, blockIndex;
+        blockIndex = glGetUniformBlockIndex(shader.renderInfo.program, "UBOData");
+        glUniformBlockBinding(shader.renderInfo.program, blockIndex, bindingPoint);
+
+        float myFloats[8] = {1.0, 0.0, 0.0, 1.0,   0.4, 0.0, 0.0, 1.0};
+
+        glBufferData(GL_UNIFORM_BUFFER, sizeof(myFloats), myFloats, GL_DYNAMIC_DRAW);
+        glBindBufferBase(GL_UNIFORM_BUFFER, bindingPoint, buffer);
+    }
 
     shader.renderInfo.model = glGetUniformLocation(shader.renderInfo.program, "model");
     shader.renderInfo.view = glGetUniformLocation(shader.renderInfo.program, "view");
@@ -72,7 +88,7 @@ void Renderer::render(const Scene& scene, RenderResults& results)
 
     glEnableClientState(GL_VERTEX_ARRAY);
 
-    renderNode(*(scene.root), camera, shader, glm::mat4(1.0f));
+    renderNode(*(scene.root), camera, shader, glm::mat4(1.0f), *(scene.assetManager));
 
     glDisableClientState(GL_VERTEX_ARRAY);
 
@@ -101,32 +117,9 @@ void Renderer::initialize()
     glEnable(GL_CULL_FACE);
 
     glCullFace(GL_BACK);
-
-    // Create one OpenGL texture
-    GLuint textureID;
-    glGenTextures(1, &textureID);
-
-    // "Bind" the newly created texture : all future texture functions will modify this texture
-    glBindTexture(GL_TEXTURE_2D, textureID);
-
-    // Give the image to OpenGL
-    auto image = IMG_Load("assets/models/sibenik/kamen.png");
-
-    if (image)
-    {
-        SDL_Log("Bytes per pixel: %d, w %d, h %d", image->format->BitsPerPixel, image->w, image->h);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->w, image->h, 0, GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    } else
-    {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "No luck with the image");
-    }
 }
 
-void Renderer::renderNode(SceneNode& node, const Camera& camera, const Shader& activeShader, glm::mat4 modelMatrix)
+void Renderer::renderNode(SceneNode& node, const Camera& camera, const Shader& activeShader, glm::mat4 modelMatrix, AssetManager& assetManager)
 {
     glPushMatrix();
 
@@ -138,12 +131,12 @@ void Renderer::renderNode(SceneNode& node, const Camera& camera, const Shader& a
     {
         auto object = node.model.lock();
 
-        renderModel(resourceManager->bufferObject(*object));
+        renderModel(resourceManager->bufferObject(*object, assetManager));
     }
 
     for (auto& childNodePtr: node.children)
     {
-        renderNode(*(childNodePtr), camera, activeShader, model);
+        renderNode(*(childNodePtr), camera, activeShader, model, assetManager);
     }
 
     glPopMatrix();
@@ -151,14 +144,24 @@ void Renderer::renderNode(SceneNode& node, const Camera& camera, const Shader& a
 
 void Renderer::renderModel(const Model& model)
 {
-    auto& renderInfo = model.renderInfo;
+    if (!(model.renderInfo.state & Model::RenderInfo::State::READY))
+        return;
 
-    for (unsigned int i = 0; i < renderInfo.vbo.size(); ++i)
+    //SDL_Log("SPAM: Rendering model \"%s\" (%d meshes)", model.name.c_str(), model.renderInfo.meshes.size());
+
+    for (const auto& mesh: model.renderInfo.meshes)
     {
-        glBindVertexArray(renderInfo.vao[i]);
+        mesh.material->activate();
 
-        glDrawElements(GL_TRIANGLES, renderInfo.numFaces[i] * 3, GL_UNSIGNED_INT, 0);
+        glBufferData(GL_UNIFORM_BUFFER, 4 * 4 * 4, &mesh.material->materialInfo, GL_DYNAMIC_DRAW);
+
+        glBindVertexArray(mesh.vao);
+
+        glDrawElements(GL_TRIANGLES, mesh.numFaces * 3, GL_UNSIGNED_INT, 0);
     }
 
+    //throw std::runtime_error("Enough");
+
+    glBindTexture(GL_TEXTURE_2D, 0);
     glBindVertexArray(0);
 }

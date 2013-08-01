@@ -19,6 +19,7 @@ class Scene;
 class SceneNode;
 class Camera;
 
+class AssetManager;
 class Model;
 class Shader;
 
@@ -63,7 +64,7 @@ public:
     std::unique_ptr<GLResourceManager> resourceManager;
 private:
     void renderModel(const Model& model);
-    void renderNode(SceneNode& node, const Camera& camera, const Shader& activeShader, glm::mat4 modelMatrix);
+    void renderNode(SceneNode& node, const Camera& camera, const Shader& activeShader, glm::mat4 modelMatrix, AssetManager&);
     void renderObject(const Model& model);
 };
 

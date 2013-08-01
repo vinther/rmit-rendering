@@ -16,20 +16,27 @@
 
 #include "assets/Asset.hpp"
 
+class AssetManager;
 class Shader;
 class Texture;
+class Model;
+
+class aiMaterial;
+
+typedef unsigned int GLuint;
 
 class Material
 {
 public:
-    Material(const std::string& name);
+    Material();
     virtual ~Material();
 
-    glm::vec3 Ka;
-    glm::vec3 Kd;
-    glm::vec3 Ks;
-    float Ns;
-    float Tr;
+    struct MaterialInfo
+    {
+        glm::vec4 Ka;
+        glm::vec4 Kd;
+        glm::vec4 Ks;
+    } materialInfo;
 
     std::weak_ptr<Texture> texAmbient;
     std::weak_ptr<Texture> texDiffuse;
@@ -38,6 +45,12 @@ public:
     std::weak_ptr<Texture> texBump;
 
     std::weak_ptr<Shader> shader;
+
+    std::string name;
+    GLuint texIDTEST;
+
+    void activate();
+    void createFromAssimpMaterial(const aiMaterial& material, const Model& model, AssetManager& assetManager);
 };
 
 #endif /* MATERIAL_HPP_ */

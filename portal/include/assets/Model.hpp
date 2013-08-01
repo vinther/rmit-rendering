@@ -11,6 +11,7 @@
 #include "assets/Asset.hpp"
 
 #include <memory>
+#include <array>
 
 #include <GL/gl.h>
 #include <SDL2/SDL.h>
@@ -30,12 +31,30 @@ public:
 
     struct RenderInfo: public RenderInfoBase
     {
-        RenderInfo();
+        struct MeshInfo
+        {
+            enum BufferIndices
+            {
+                BUFFER_VBO = 0,
+                BUFFER_NORMALS,
+                BUFFER_TANGENTS,
+                BUFFER_TEXCOORDS,
+                BUFFER_IBO,
 
-        std::vector<GLuint> vbo, vao, ibo;
-        std::vector<GLuint> normals, texCoords, tangents;
-        std::vector<GLuint> numFaces;
-        std::unique_ptr<Material> material;
+                BUFFER_LAST_INDEX
+            };
+
+            std::array<GLuint, BufferIndices::BUFFER_LAST_INDEX> buffers;
+            std::unique_ptr<Material> material;
+
+            GLuint vao;
+
+            unsigned int numFaces;
+            unsigned int numVertices;
+        };
+
+        std::vector<MeshInfo> meshes;
+
     } renderInfo;
 
     struct SceneDeleter
@@ -51,6 +70,9 @@ public:
     Assimp::Importer importer;
 
     std::unique_ptr<const aiScene, std::function<void(const aiScene*)>> scene;
+
+    std::string path;
+    std::string basePath;
 };
 
 #endif /* MODEL_HPP_ */

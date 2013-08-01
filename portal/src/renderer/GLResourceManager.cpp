@@ -15,9 +15,14 @@
 
 #include "scene/Scene.hpp"
 
+#include "assets/AssetManager.hpp"
 #include "assets/Model.hpp"
 #include "assets/Shader.hpp"
 #include "assets/Texture.hpp"
+
+#include "renderer/Material.hpp"
+
+#include "Utilities.hpp"
 
 GLResourceManager::GLResourceManager()
 {
@@ -31,83 +36,81 @@ GLResourceManager::~GLResourceManager()
 }
 
 template<>
-Model& GLResourceManager::bufferObject<Model>(Model& model)
+Model& GLResourceManager::bufferObject<Model>(Model& model, AssetManager& assetManager)
 {
-    auto& renderInfo = model.renderInfo;
+    if (nullptr == model.scene)
+        throw std::runtime_error("Trying to render scene with NULL scene");
 
-    if (renderInfo.state &
-            (Model::RenderInfo::State::DIRTY | Model::RenderInfo::State::PRISTINE))
+    using BufferIndices = Model::RenderInfo::MeshInfo::BufferIndices;
+    auto& renderInfo = model.renderInfo;
+    const auto& scene = *(model.scene);
+
+    if (model.renderInfo.state & Model::RenderInfo::State::PRISTINE)
     {
-        if (renderInfo.vbo.size() > 0)
+        model.renderInfo.meshes.resize(scene.mNumMeshes);
+        model.renderInfo.state ^= Model::RenderInfo::State::PRISTINE;
+
+        for (unsigned int i = 0; i < scene.mNumMeshes; ++i)
         {
-            glDeleteBuffers(renderInfo.vbo.size(), renderInfo.vbo.data());
-            glDeleteBuffers(renderInfo.vao.size(), renderInfo.vao.data());
-            glDeleteBuffers(renderInfo.ibo.size(), renderInfo.ibo.data());
-            glDeleteBuffers(renderInfo.normals.size(), renderInfo.normals.data());
-            glDeleteBuffers(renderInfo.tangents.size(), renderInfo.tangents.data());
-            glDeleteBuffers(renderInfo.texCoords.size(), renderInfo.texCoords.data());
+            model.renderInfo.meshes[i].numFaces = scene.mMeshes[i]->mNumFaces;
+            model.renderInfo.meshes[i].numVertices = scene.mMeshes[i]->mNumVertices;
         }
 
-        if (model.scene == nullptr)
-            throw std::runtime_error("Trying to render scene with NULL scene");
+        model.renderInfo.state |= Model::RenderInfo::State::DIRTY;
+    }
 
-        renderInfo.vbo.resize(model.scene->mNumMeshes);
-        renderInfo.vao.resize(model.scene->mNumMeshes);
-        renderInfo.ibo.resize(model.scene->mNumMeshes);
-        renderInfo.normals.resize(model.scene->mNumMeshes);
-        renderInfo.tangents.resize(model.scene->mNumMeshes);
-        renderInfo.texCoords.resize(model.scene->mNumMeshes);
-        renderInfo.numFaces.resize(model.scene->mNumMeshes);
-
-        glGenVertexArrays(model.scene->mNumMeshes, renderInfo.vao.data());
-        glGenBuffers(model.scene->mNumMeshes, renderInfo.vbo.data());
-        glGenBuffers(model.scene->mNumMeshes, renderInfo.ibo.data());
-        glGenBuffers(model.scene->mNumMeshes, renderInfo.normals.data());
-        glGenBuffers(model.scene->mNumMeshes, renderInfo.tangents.data());
-        glGenBuffers(model.scene->mNumMeshes, renderInfo.texCoords.data());
-
-        std::vector<GLuint> indices;
-
-        for (unsigned int i = 0; i < model.scene->mNumMeshes; ++i)
+    if (renderInfo.state & (Model::RenderInfo::State::DIRTY))
+    {
+        unsigned int meshIdx = 0;
+        for (auto& mesh: model.renderInfo.meshes)
         {
-            const auto& mesh = *(model.scene->mMeshes[i]);
+            glDeleteBuffers(mesh.buffers.size(), mesh.buffers.data());
+            glDeleteVertexArrays(1, &mesh.vao);
 
-            indices.resize(mesh.mNumFaces * 3);
-            for (unsigned int j = 0; j < mesh.mNumFaces; ++j)
+            glGenBuffers(mesh.buffers.size(), mesh.buffers.data());
+            glGenVertexArrays(1, &mesh.vao);
+
+            std::vector<GLuint> indices(mesh.numFaces * 3, 0);
+
+            const auto& sceneMesh = *(scene.mMeshes[meshIdx]);
+            for (unsigned int j = 0; j < mesh.numFaces; ++j)
             {
-                std::copy(mesh.mFaces[j].mIndices, mesh.mFaces[j].mIndices + 3, indices.data() + j * 3);
+                std::copy(sceneMesh.mFaces[j].mIndices, sceneMesh.mFaces[j].mIndices + 3, indices.data() + j * 3);
             }
 
-            renderInfo.numFaces[i] = mesh.mNumFaces;
+            glBindVertexArray(mesh.vao);
 
-            glBindVertexArray(renderInfo.vao[i]);
-
-            glBindBuffer(GL_ARRAY_BUFFER, renderInfo.vbo[i]);
-            glBufferData(GL_ARRAY_BUFFER, mesh.mNumVertices * sizeof(aiVector3D), mesh.mVertices, GL_STATIC_DRAW);
+            glBindBuffer(GL_ARRAY_BUFFER, mesh.buffers[BufferIndices::BUFFER_VBO]);
+            glBufferData(GL_ARRAY_BUFFER, mesh.numVertices * sizeof(aiVector3D), sceneMesh.mVertices, GL_STATIC_DRAW);
 
             glEnableVertexAttribArray(0);
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-            glBindBuffer(GL_ARRAY_BUFFER, renderInfo.normals[i]);
-            glBufferData(GL_ARRAY_BUFFER, mesh.mNumVertices * sizeof(aiVector3D), mesh.mNormals, GL_STATIC_DRAW);
+            glBindBuffer(GL_ARRAY_BUFFER, mesh.buffers[BufferIndices::BUFFER_NORMALS]);
+            glBufferData(GL_ARRAY_BUFFER, mesh.numVertices * sizeof(aiVector3D), sceneMesh.mNormals, GL_STATIC_DRAW);
 
             glEnableVertexAttribArray(1);
             glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-            glBindBuffer(GL_ARRAY_BUFFER, renderInfo.tangents[i]);
-            glBufferData(GL_ARRAY_BUFFER, mesh.mNumVertices * sizeof(aiVector3D), mesh.mTangents, GL_STATIC_DRAW);
+            glBindBuffer(GL_ARRAY_BUFFER, mesh.buffers[BufferIndices::BUFFER_TANGENTS]);
+            glBufferData(GL_ARRAY_BUFFER, mesh.numVertices * sizeof(aiVector3D), sceneMesh.mTangents, GL_STATIC_DRAW);
 
             glEnableVertexAttribArray(2);
             glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-            glBindBuffer(GL_ARRAY_BUFFER, renderInfo.texCoords[i]);
-            glBufferData(GL_ARRAY_BUFFER, mesh.mNumVertices * sizeof(aiVector3D), mesh.mTextureCoords[0], GL_STATIC_DRAW);
+            glBindBuffer(GL_ARRAY_BUFFER, mesh.buffers[BufferIndices::BUFFER_TEXCOORDS]);
+            glBufferData(GL_ARRAY_BUFFER, mesh.numVertices * sizeof(aiVector3D), sceneMesh.mTextureCoords[0], GL_STATIC_DRAW);
 
             glEnableVertexAttribArray(3);
             glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderInfo.ibo[i]);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.mNumFaces * 3 * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.buffers[BufferIndices::BUFFER_IBO]);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.numFaces * 3 * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
+
+            mesh.material = std::make_unique<Material>();
+            mesh.material->createFromAssimpMaterial(*(scene.mMaterials[sceneMesh.mMaterialIndex]), model, assetManager);
+
+            meshIdx += 1;
         }
 
         renderInfo.state = Model::RenderInfo::State::READY;
@@ -120,3 +123,13 @@ Model& GLResourceManager::bufferObject<Model>(Model& model)
     return model;
 }
 
+std::unique_ptr<Material> GLResourceManager::createMaterial(const aiMaterial& material, const Model& model, AssetManager& assetManager)
+{
+    auto result = std::make_unique<Material>();
+
+    UNUSED(material);
+    UNUSED(model);
+    UNUSED(assetManager);
+
+    return result;
+}

@@ -10,6 +10,10 @@
 #include <iostream>
 #include <stdexcept>
 
+#ifdef linux
+#include <libgen.h>
+#endif
+
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
@@ -46,22 +50,20 @@ bool Model::loadFromDisk()
     {
         this->scene = decltype(this->scene)(scene, [](const aiScene*){});
 
-        for (unsigned int i = 0; i < scene->mNumMaterials; ++i)
-        {
-//            const auto& material = *(scene->mMaterials[i]);
-
-//            importer.GetPropertyString()
-//
-//            aiString s;
-//            material.Get(AI_MATKEY_TEXTURE_AMBIENT(0), s);
-//            SDL_Log("Model \"%s\" has materials?: %s", name.c_str(), s.C_Str());
-        }
-
         files.clear();
-        files.push_back("assets/" + name);
+        files.push_back(name);
+
+        path = name;
+
+#ifdef linux
+        auto pathCopy = path;
+        basePath = std::string(dirname((char*)pathCopy.c_str()));
+#endif
 
         return true;
     }
+
+
 
     return false;
 }
@@ -82,9 +84,9 @@ void Model::reload()
     renderInfo.state |= RenderInfo::DIRTY;
 }
 
-Model::RenderInfo::RenderInfo()
-    : vbo(), vao(), ibo()
-    , normals(), texCoords(), tangents()
-    , numFaces(), material()
-{
-}
+//Model::RenderInfo::RenderInfo()
+//    : vbo(), vao(), ibo()
+//    , normals(), texCoords(), tangents()
+//    , numFaces(), materials()
+//{
+//}

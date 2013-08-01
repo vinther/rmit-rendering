@@ -44,8 +44,8 @@ bool Shader::loadFromDisk(const std::string& vertPath, const std::string& fragPa
     this->fragShader = Asset::getStringFromFile("assets/" + fragPath);
 
     files.clear();
-    files.push_back("assets/" + vertPath);
-    files.push_back("assets/" + fragPath);
+    files.push_back(vertPath);
+    files.push_back(fragPath);
 
     glDeleteProgram(renderInfo.program);
 
@@ -116,8 +116,6 @@ bool Shader::loadFromDisk(const std::string& vertPath, const std::string& fragPa
 
     glDeleteShader(vertShader);
     glDeleteShader(fragShader);
-
-
 
     return true;
 }

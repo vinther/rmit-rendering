@@ -61,7 +61,7 @@ void FileWatcher::update()
 #ifdef linux
 void FileWatcher::addWatchDescriptor(const std::string& path, std::shared_ptr<Asset> asset)
 {
-    int watchDescriptor = inotify_add_watch(inotifyFileDescriptor, path.c_str(), IN_MODIFY);
+    int watchDescriptor = inotify_add_watch(inotifyFileDescriptor, ("assets/" + path).c_str(), IN_MODIFY);
 
     if (0 > watchDescriptor)
     {

@@ -11,16 +11,16 @@
 
 struct RenderInfoBase
 {
-    RenderInfoBase()
-        : state(State::PRISTINE)
-    {};
-
     enum State
     {
         PRISTINE    = 0x01,
         DIRTY       = 0x02,
         READY       = 0x04,
     };
+
+    RenderInfoBase()
+        : state(State::PRISTINE)
+    {};
 
     Uint16 state;
 };

@@ -71,7 +71,6 @@ void Client::update(Uint32 ms)
     cameraController->update(ms);
     scene->assetManager->fileWatcher->update();
 
-//    //rot += 0.01f;
 //    scene->root->transformation =
 //            glm::rotate(scene->root->transformation, 1.0f, glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f)));
 //
@@ -98,9 +97,10 @@ void Client::event(SDL_Event* event)
             quitEvent.type = SDL_QUIT;
 
             SDL_PushEvent(&quitEvent);
+        } else
+        {
+            keyboardHandler->event(event->key);
         }
-
-        keyboardHandler->event(event->key);
         break;
     case SDL_KEYUP:
         keyboardHandler->event(event->key);

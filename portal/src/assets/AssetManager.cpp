@@ -54,6 +54,7 @@ void AssetManager::reportCacheContents() const
         case Asset::Type::TYPE_MODEL: return "Model"; break;
         case Asset::Type::TYPE_SHADER: return "Shader"; break;
         case Asset::Type::TYPE_SOUND: return "Sound"; break;
+        case Asset::Type::TYPE_TEXTURE: return "Texture"; break;
         case Asset::Type::TYPE_CUSTOM: return "Custom"; break;
         default: return "Unknown"; break;
         }

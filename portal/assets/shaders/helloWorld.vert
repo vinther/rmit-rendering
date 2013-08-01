@@ -10,9 +10,17 @@ uniform mat4 view;
 uniform mat4 model;
 
 out vec2 uv;
+out vec4 DEBUG_COLOR;
+
+layout(std140) uniform UBOData {
+	vec4 ambient;
+	vec4 diffuse;
+	vec4 specular;
+};
 
 void main()
 {
     gl_Position = projection * view * model * vec4(position, 1.0f);
     uv = texCoord.xy;
+    DEBUG_COLOR = diffuse; 
 }

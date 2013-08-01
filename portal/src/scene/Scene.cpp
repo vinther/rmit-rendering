@@ -15,6 +15,7 @@
 
 #include "assets/AssetManager.hpp"
 #include "assets/Model.hpp"
+#include "assets/Texture.hpp"
 
 #include "Utilities.hpp"
 
@@ -31,7 +32,9 @@ Scene::Scene(std::shared_ptr<Client> client)
     assetManager->initialize();
 
     root->model = assetManager->getOrCreate<Model>("models/sibenik/sibenik.obj");
-//
+
+    assetManager->getOrCreate<Texture>("dims", "models/capsule/capsule.png");
+
 //    auto child = std::make_unique<SceneNode>();
 //    child->model = assetManager->getOrCreate<Model>("models/shuttle.obj");
 //    child->transformation = glm::translate(child->transformation, glm::vec3(0.0f, 0.0f, -50.0f));
