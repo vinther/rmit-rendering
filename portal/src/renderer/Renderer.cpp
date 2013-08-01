@@ -7,6 +7,8 @@
 
 #include "renderer/Renderer.hpp"
 
+#include <stdexcept>
+
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/glu.h>

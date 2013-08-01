@@ -11,6 +11,7 @@
 #include <memory>
 #include <array>
 #include <tuple>
+#include <string>
 #include <unordered_map>
 
 #ifdef linux

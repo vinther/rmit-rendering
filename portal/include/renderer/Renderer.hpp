@@ -29,8 +29,12 @@ public:
 
     struct Settings
     {
+        Settings()
+            : fov(65.0f), nearClip(1.0f), farClip(2000.0f)
+        {}
+
         Uint16 width, height;
-        float fov = 65.0, nearClip = 1.0f, farClip = 2000.0f;
+        float fov, nearClip, farClip;
     } settings;
 
     struct RenderResults

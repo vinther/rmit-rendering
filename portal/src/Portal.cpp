@@ -1,7 +1,6 @@
 #include <stdexcept>
 
 #include <SDL2/SDL.h>
-#include <GL/gl.h>
 
 #include "client/Client.hpp"
 #include "client/Interface.hpp"
@@ -62,7 +61,7 @@ int main(int argc, char **argv)
         windowHeight = DEFAULT_HEIGHT;
 
         mainwindow = SDL_CreateWindow("RMIT Portal", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowWidth,
-                windowHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_INPUT_GRABBED);
+                windowHeight, SDL_WINDOW_OPENGL);
     }
 
     if (nullptr == mainwindow)
