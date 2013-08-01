@@ -27,6 +27,12 @@ public:
 
     struct RenderInfo: public RenderInfoBase
     {
+        RenderInfo()
+            : vbo(), vao(), ibo()
+            , normals(), texCoords(), tangents()
+            , numFaces()
+        {}
+
         std::vector<GLuint> vbo, vao, ibo;
         std::vector<GLuint> normals, texCoords, tangents;
         std::vector<GLuint> numFaces;

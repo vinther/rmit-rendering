@@ -30,7 +30,8 @@ public:
     struct Settings
     {
         Settings()
-            : fov(65.0f), nearClip(1.0f), farClip(2000.0f)
+            : width(640), height(480)
+            , fov(65.0f), nearClip(1.0f), farClip(2000.0f)
         {}
 
         Uint16 width, height;
