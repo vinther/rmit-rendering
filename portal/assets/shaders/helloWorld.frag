@@ -9,5 +9,5 @@ uniform sampler2D texSampler;
 
 void main()
 {
-    color = texture(texSampler, uv) * DEBUG_COLOR;
+    color = texture(texSampler, uv);// * DEBUG_COLOR;
 }

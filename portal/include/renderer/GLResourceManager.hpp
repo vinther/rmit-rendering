@@ -30,7 +30,6 @@ public:
     T& bufferObject(T& object, AssetManager& assetManager);
 
 private:
-    std::unique_ptr<Material> createMaterial(const aiMaterial& material, const Model&, AssetManager& assetManager);
 };
 
 #endif /* GLRESOURCEMANAGER_HPP_ */

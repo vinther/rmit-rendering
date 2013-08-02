@@ -84,9 +84,30 @@ void Model::reload()
     renderInfo.state |= RenderInfo::DIRTY;
 }
 
-//Model::RenderInfo::RenderInfo()
-//    : vbo(), vao(), ibo()
-//    , normals(), texCoords(), tangents()
-//    , numFaces(), materials()
-//{
-//}
+Model::RenderInfo::MeshInfo::MeshInfo()
+    : buffers{{0, 0, 0, 0, 0}}
+    , material()
+    , vao(0)
+    , numVertices(0), numFaces(0)
+{
+}
+
+Model::RenderInfo::MeshInfo::MeshInfo(Model::RenderInfo::MeshInfo&& other)
+    : buffers(std::move(other.buffers))
+    , material(std::move(other.material))
+    , vao(other.vao)
+    , numVertices(other.numVertices), numFaces(other.numVertices)
+{
+}
+
+Model::RenderInfo::MeshInfo& Model::RenderInfo::MeshInfo::operator=(Model::RenderInfo::MeshInfo&& other)
+{
+    buffers = std::move(other.buffers);
+    material = std::move(other.material);
+    vao = other.vao;
+    numVertices = other.numVertices; numFaces = other.numVertices;
+
+    return *this;
+}
+
+

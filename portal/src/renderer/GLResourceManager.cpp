@@ -8,6 +8,8 @@
 #include "renderer/GLResourceManager.hpp"
 
 #include <stdexcept>
+#include <array>
+#include <tuple>
 
 #include <GL/glew.h>
 #include <GL/gl.h>
@@ -35,6 +37,26 @@ GLResourceManager::~GLResourceManager()
     // TODO Auto-generated destructor stub
 }
 
+struct MeshData
+{
+    struct SubMesh
+    {
+        unsigned int numVertices, numFaces;
+        std::array<void*,  4> pointers;
+
+        std::vector<GLuint> indices;
+    };
+
+    std::vector<SubMesh> subMeshes;
+
+    unsigned int totalNumVertices;
+    unsigned int totalNumFaces;
+
+
+};
+
+
+
 template<>
 Model& GLResourceManager::bufferObject<Model>(Model& model, AssetManager& assetManager)
 {
@@ -45,91 +67,160 @@ Model& GLResourceManager::bufferObject<Model>(Model& model, AssetManager& assetM
     auto& renderInfo = model.renderInfo;
     const auto& scene = *(model.scene);
 
-    if (model.renderInfo.state & Model::RenderInfo::State::PRISTINE)
-    {
-        model.renderInfo.meshes.resize(scene.mNumMeshes);
-        model.renderInfo.state ^= Model::RenderInfo::State::PRISTINE;
+//    if (model.renderInfo.state & Model::RenderInfo::State::PRISTINE)
+//    {
+//        model.renderInfo.meshes.resize(scene.mNumMeshes);
+//        model.renderInfo.state ^= Model::RenderInfo::State::PRISTINE;
+//
+//        for (unsigned int i = 0; i < scene.mNumMeshes; ++i)
+//        {
+//            model.renderInfo.meshes[i].numFaces = scene.mMeshes[i]->mNumFaces;
+//            model.renderInfo.meshes[i].numVertices = scene.mMeshes[i]->mNumVertices;
+//        }
+//
+//        model.renderInfo.state |= Model::RenderInfo::State::DIRTY;
+//    }
 
+    if (renderInfo.state & (Model::RenderInfo::State::DIRTY | Model::RenderInfo::State::PRISTINE))
+    {
+        //            glDeleteBuffers(mesh.buffers.size(), mesh.buffers.data());
+        //            glDeleteVertexArrays(1, &mesh.vao);
+
+        std::unordered_map<unsigned int, MeshData> test;
         for (unsigned int i = 0; i < scene.mNumMeshes; ++i)
         {
-            model.renderInfo.meshes[i].numFaces = scene.mMeshes[i]->mNumFaces;
-            model.renderInfo.meshes[i].numVertices = scene.mMeshes[i]->mNumVertices;
-        }
+            const auto& mesh = *(scene.mMeshes[i]);
+            auto& tempMesh = test[mesh.mMaterialIndex];
 
-        model.renderInfo.state |= Model::RenderInfo::State::DIRTY;
-    }
 
-    if (renderInfo.state & (Model::RenderInfo::State::DIRTY))
-    {
-        unsigned int meshIdx = 0;
-        for (auto& mesh: model.renderInfo.meshes)
-        {
-            glDeleteBuffers(mesh.buffers.size(), mesh.buffers.data());
-            glDeleteVertexArrays(1, &mesh.vao);
 
-            glGenBuffers(mesh.buffers.size(), mesh.buffers.data());
-            glGenVertexArrays(1, &mesh.vao);
+            auto subMesh = MeshData::SubMesh{
+                mesh.mNumVertices,
+                mesh.mNumFaces,
+                {{mesh.mVertices, mesh.mNormals, mesh.mTangents, mesh.mTextureCoords[0]}},
+                {}
+            };
 
-            std::vector<GLuint> indices(mesh.numFaces * 3, 0);
+            subMesh.indices.resize(mesh.mNumFaces * 3);
 
-            const auto& sceneMesh = *(scene.mMeshes[meshIdx]);
-            for (unsigned int j = 0; j < mesh.numFaces; ++j)
+            for (unsigned int j = 0; j < mesh.mNumFaces; ++j)
             {
-                std::copy(sceneMesh.mFaces[j].mIndices, sceneMesh.mFaces[j].mIndices + 3, indices.data() + j * 3);
+                std::copy(mesh.mFaces[j].mIndices, mesh.mFaces[j].mIndices + 3, subMesh.indices.data() + j * 3);
             }
 
-            glBindVertexArray(mesh.vao);
+            for (auto& index: subMesh.indices)
+            {
+                index += tempMesh.totalNumVertices;
+            }
 
-            glBindBuffer(GL_ARRAY_BUFFER, mesh.buffers[BufferIndices::BUFFER_VBO]);
-            glBufferData(GL_ARRAY_BUFFER, mesh.numVertices * sizeof(aiVector3D), sceneMesh.mVertices, GL_STATIC_DRAW);
-
-            glEnableVertexAttribArray(0);
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-            glBindBuffer(GL_ARRAY_BUFFER, mesh.buffers[BufferIndices::BUFFER_NORMALS]);
-            glBufferData(GL_ARRAY_BUFFER, mesh.numVertices * sizeof(aiVector3D), sceneMesh.mNormals, GL_STATIC_DRAW);
-
-            glEnableVertexAttribArray(1);
-            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-            glBindBuffer(GL_ARRAY_BUFFER, mesh.buffers[BufferIndices::BUFFER_TANGENTS]);
-            glBufferData(GL_ARRAY_BUFFER, mesh.numVertices * sizeof(aiVector3D), sceneMesh.mTangents, GL_STATIC_DRAW);
-
-            glEnableVertexAttribArray(2);
-            glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-            glBindBuffer(GL_ARRAY_BUFFER, mesh.buffers[BufferIndices::BUFFER_TEXCOORDS]);
-            glBufferData(GL_ARRAY_BUFFER, mesh.numVertices * sizeof(aiVector3D), sceneMesh.mTextureCoords[0], GL_STATIC_DRAW);
-
-            glEnableVertexAttribArray(3);
-            glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.buffers[BufferIndices::BUFFER_IBO]);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.numFaces * 3 * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
-
-            mesh.material = std::make_unique<Material>();
-            mesh.material->createFromAssimpMaterial(*(scene.mMaterials[sceneMesh.mMaterialIndex]), model, assetManager);
-
-            meshIdx += 1;
+            tempMesh.subMeshes.push_back(std::move(subMesh));
+            tempMesh.totalNumVertices += mesh.mNumVertices;
+            tempMesh.totalNumFaces += mesh.mNumFaces;
         }
 
-        renderInfo.state = Model::RenderInfo::State::READY;
+        for (const auto& tempMeshIterator: test)
+        {
+            unsigned int materialIndex = tempMeshIterator.first;
+            const MeshData& tempMesh = tempMeshIterator.second;
 
-        glBindVertexArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+            Model::RenderInfo::MeshInfo mesh;
+
+            mesh.numVertices = tempMesh.totalNumVertices;
+            mesh.numFaces = tempMesh.totalNumFaces;
+
+            glGenVertexArrays(1, &mesh.vao);
+            glBindVertexArray(mesh.vao);
+
+            glGenBuffers(mesh.buffers.size(), mesh.buffers.data());
+
+            size_t offset = 0;
+
+            /* Upload vertex data */
+            glBindBuffer(GL_ARRAY_BUFFER, mesh.buffers[BufferIndices::BUFFER_VBO]);
+            glBufferData(GL_ARRAY_BUFFER, mesh.numVertices * sizeof(aiVector3D), 0, GL_STATIC_DRAW);
+
+            offset = 0;
+            for (const auto& subMesh: tempMesh.subMeshes)
+            {
+                glBufferSubData(GL_ARRAY_BUFFER, offset, subMesh.numVertices * sizeof(aiVector3D), subMesh.pointers[BufferIndices::BUFFER_VBO]);
+                offset += subMesh.numVertices * sizeof(aiVector3D);
+            }
+
+            glEnableVertexAttribArray(BufferIndices::BUFFER_VBO);
+            glVertexAttribPointer(BufferIndices::BUFFER_VBO, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+            /* Upload normal data */
+            glBindBuffer(GL_ARRAY_BUFFER, mesh.buffers[BufferIndices::BUFFER_NORMALS]);
+            glBufferData(GL_ARRAY_BUFFER, mesh.numVertices * sizeof(aiVector3D), 0, GL_STATIC_DRAW);
+
+            offset = 0;
+            for (const auto& subMesh: tempMesh.subMeshes)
+            {
+                glBufferSubData(GL_ARRAY_BUFFER, offset, subMesh.numVertices * sizeof(aiVector3D), subMesh.pointers[BufferIndices::BUFFER_NORMALS]);
+                offset += subMesh.numVertices * sizeof(aiVector3D);
+            }
+
+            glEnableVertexAttribArray(BufferIndices::BUFFER_NORMALS);
+            glVertexAttribPointer(BufferIndices::BUFFER_NORMALS, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+            /* Upload tangent data */
+            glBindBuffer(GL_ARRAY_BUFFER, mesh.buffers[BufferIndices::BUFFER_TANGENTS]);
+            glBufferData(GL_ARRAY_BUFFER, mesh.numVertices * sizeof(aiVector3D), 0, GL_STATIC_DRAW);
+
+            offset = 0;
+            for (const auto& subMesh: tempMesh.subMeshes)
+            {
+                glBufferSubData(GL_ARRAY_BUFFER, offset, subMesh.numVertices * sizeof(aiVector3D), subMesh.pointers[BufferIndices::BUFFER_TANGENTS]);
+                offset += subMesh.numVertices * sizeof(aiVector3D);
+            }
+
+            glEnableVertexAttribArray(BufferIndices::BUFFER_TANGENTS);
+            glVertexAttribPointer(BufferIndices::BUFFER_TANGENTS, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+            /* Upload tex-coords data */
+            glBindBuffer(GL_ARRAY_BUFFER, mesh.buffers[BufferIndices::BUFFER_TEXCOORDS]);
+            glBufferData(GL_ARRAY_BUFFER, mesh.numVertices * sizeof(aiVector3D), 0, GL_STATIC_DRAW);
+
+            offset = 0;
+            for (const auto& subMesh: tempMesh.subMeshes)
+            {
+                glBufferSubData(GL_ARRAY_BUFFER, offset, subMesh.numVertices * sizeof(aiVector3D), subMesh.pointers[BufferIndices::BUFFER_TEXCOORDS]);
+                offset += subMesh.numVertices * sizeof(aiVector3D);
+            }
+
+            glEnableVertexAttribArray(BufferIndices::BUFFER_TEXCOORDS);
+            glVertexAttribPointer(BufferIndices::BUFFER_TEXCOORDS, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+            /* Upload index data */
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.buffers[BufferIndices::BUFFER_IBO]);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.numFaces * 3 * sizeof(GLuint), 0, GL_STATIC_DRAW);
+
+            offset = 0;
+            for (const auto& subMesh: tempMesh.subMeshes)
+            {
+                glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset, subMesh.indices.size() * sizeof(GLuint), subMesh.indices.data());
+                offset += subMesh.indices.size() * sizeof(GLuint);
+            }
+
+            glBindVertexArray(0);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+            mesh.material = std::make_unique<Material>();
+            mesh.material->createFromAssimpMaterial(*(scene.mMaterials[materialIndex]), model, assetManager);
+
+            model.renderInfo.meshes.push_back(std::move(mesh));
+        }
+
+        const auto sorter = [](const Model::RenderInfo::MeshInfo& meshA, const Model::RenderInfo::MeshInfo& meshB)
+        {
+            return (meshA.material->name < meshB.material->name);
+        };
+
+        std::sort(model.renderInfo.meshes.begin(), model.renderInfo.meshes.end(), sorter);
+
+        renderInfo.state = Model::RenderInfo::State::READY;
     }
 
     return model;
-}
-
-std::unique_ptr<Material> GLResourceManager::createMaterial(const aiMaterial& material, const Model& model, AssetManager& assetManager)
-{
-    auto result = std::make_unique<Material>();
-
-    UNUSED(material);
-    UNUSED(model);
-    UNUSED(assetManager);
-
-    return result;
 }

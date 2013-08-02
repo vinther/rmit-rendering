@@ -147,20 +147,28 @@ void Renderer::renderModel(const Model& model)
     if (!(model.renderInfo.state & Model::RenderInfo::State::READY))
         return;
 
-    //SDL_Log("SPAM: Rendering model \"%s\" (%d meshes)", model.name.c_str(), model.renderInfo.meshes.size());
+    std::string currentMaterialName = "";
 
     for (const auto& mesh: model.renderInfo.meshes)
     {
         mesh.material->activate();
 
-        glBufferData(GL_UNIFORM_BUFFER, 4 * 4 * 4, &mesh.material->materialInfo, GL_DYNAMIC_DRAW);
+        //SDL_Log("SPAM: Rendering mesh %d. VAO: %d., VBO: %d, faces: %d", 0, mesh.vao, mesh.buffers[0], mesh.numFaces * 3);
+
+        if (mesh.material->name != currentMaterialName)
+        {
+            glBufferData(GL_UNIFORM_BUFFER, 4 * 4 * 4, &mesh.material->materialInfo, GL_DYNAMIC_DRAW);
+            currentMaterialName = mesh.material->name;
+
+            //SDL_Log("Switched material to \"%s\"", currentMaterialName.c_str());
+        }
 
         glBindVertexArray(mesh.vao);
 
         glDrawElements(GL_TRIANGLES, mesh.numFaces * 3, GL_UNSIGNED_INT, 0);
     }
 
-    //throw std::runtime_error("Enough");
+    //sssssssssssssssssssssssthrow std::runtime_error("Enough");
 
     glBindTexture(GL_TEXTURE_2D, 0);
     glBindVertexArray(0);

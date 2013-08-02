@@ -34,6 +34,10 @@ bool Texture::loadFromDisk(const std::string& path)
         this->path = path;
 
         return true;
+    } else
+    {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                "Texture could not be loaded: \"%s\"", ("assets/" + path).c_str());
     }
 
     return false;

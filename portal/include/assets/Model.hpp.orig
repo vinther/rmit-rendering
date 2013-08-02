@@ -11,7 +11,6 @@
 #include "assets/Asset.hpp"
 
 #include <memory>
-#include <array>
 
 #include <GL/gl.h>
 #include <SDL2/SDL.h>
@@ -31,34 +30,23 @@ public:
 
     struct RenderInfo: public RenderInfoBase
     {
-        struct MeshInfo
-        {
-            MeshInfo();
-            MeshInfo(MeshInfo&& other);
-            MeshInfo& operator=(MeshInfo&& other);
+<<<<<<< HEAD
+        std::vector<GLuint> vbo = {}, vao = {}, ibo = {};
+        std::vector<GLuint> normals = {}, texCoords = {}, tangents = {};
+        std::vector<GLuint> numFaces = {};
 
-            enum BufferIndices
-            {
-                BUFFER_VBO = 0,
-                BUFFER_NORMALS,
-                BUFFER_TANGENTS,
-                BUFFER_TEXCOORDS,
-                BUFFER_IBO,
+        std::unique_ptr<Material> material;
+=======
+        RenderInfo()
+            : vbo(), vao(), ibo()
+            , normals(), texCoords(), tangents()
+            , numFaces()
+        {}
 
-                BUFFER_LAST_INDEX
-            };
-
-            std::array<GLuint, BufferIndices::BUFFER_LAST_INDEX> buffers;
-            std::unique_ptr<Material> material;
-
-            GLuint vao;
-
-            unsigned int numVertices;
-            unsigned int numFaces;
-        };
-
-        std::vector<MeshInfo> meshes;
-
+        std::vector<GLuint> vbo, vao, ibo;
+        std::vector<GLuint> normals, texCoords, tangents;
+        std::vector<GLuint> numFaces;
+>>>>>>> 528c4d5381ba11da9c7a2b03ce83b754dbda835e
     } renderInfo;
 
     struct SceneDeleter
@@ -74,9 +62,6 @@ public:
     Assimp::Importer importer;
 
     std::unique_ptr<const aiScene, std::function<void(const aiScene*)>> scene;
-
-    std::string path;
-    std::string basePath;
 };
 
 #endif /* MODEL_HPP_ */
