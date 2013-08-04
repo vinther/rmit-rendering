@@ -13,7 +13,7 @@
 
 #include "assets/Asset.hpp"
 
-FileWatcher::FileWatcher()
+assets::FileWatcher::FileWatcher()
 {
 #ifdef linux
     inotifyFileDescriptor = inotify_init1(IN_NONBLOCK);
@@ -23,11 +23,11 @@ FileWatcher::FileWatcher()
 #endif
 }
 
-FileWatcher::~FileWatcher()
+assets::FileWatcher::~FileWatcher()
 {
 }
 
-void FileWatcher::update()
+void assets::FileWatcher::update()
 {
 #ifdef linux
     ssize_t length = read(inotifyFileDescriptor, inotifyBuffer.data(), inotifyBuffer.size());
@@ -59,7 +59,7 @@ void FileWatcher::update()
 }
 
 #ifdef linux
-void FileWatcher::addWatchDescriptor(const std::string& path, std::shared_ptr<Asset> asset)
+void assets::FileWatcher::addWatchDescriptor(const std::string& path, std::shared_ptr<Asset> asset)
 {
     int watchDescriptor = inotify_add_watch(inotifyFileDescriptor, ("assets/" + path).c_str(), IN_MODIFY);
 

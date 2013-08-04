@@ -1,0 +1,53 @@
+/*
+ * Material.hpp
+ *
+ *  Created on: 31/07/2013
+ *      Author: svp
+ */
+
+#ifndef GLBUFFEREDMATERIAL_HPP_
+#define GLBUFFEREDMATERIAL_HPP_
+
+#include <string>
+#include <memory>
+
+#include <glm/glm.hpp>
+#include <SDL2/SDL.h>
+
+#include "renderer/GLBufferObject.hpp"
+#include "assets/Material.hpp"
+
+class aiMaterial;
+
+typedef unsigned int GLuint;
+
+class GLBufferedMaterial: public GLBufferObject<assets::Material>
+{
+public:
+    GLBufferedMaterial();
+    virtual ~GLBufferedMaterial();
+
+    struct MaterialInfo
+    {
+        glm::vec4 emission;
+        glm::vec4 ambient;
+        glm::vec4 diffuse;
+        glm::vec4 specular;
+        float shininess;
+    } materialInfo;
+
+    size_t texAmbient;
+    size_t texDiffuse;
+    size_t texSpecular;
+    size_t texNormal;
+    size_t texBump;
+
+    size_t shaderHash;
+
+    std::string name;
+
+    void activate(GLResourceManager& resourceManager) const;
+    void loadFromAsset(std::shared_ptr<const asset_type>& asset, GLResourceManager& resourceManager);
+};
+
+#endif /* GLBUFFEREDMATERIAL_HPP_ */

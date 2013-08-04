@@ -128,3 +128,10 @@ void CameraController::update(Uint32 ms)
     if (state.moveDown)
         position += glm::vec3(0.0f, -state.speedFactor,  0.0f);// * rotation;
 }
+
+CameraController::State::State()
+    : moveForward(false), moveBackward(false), moveLeft(false)
+    , moveRight(false), moveUp(false), moveDown(false)
+    , speedFactor(0.5f)
+{
+}

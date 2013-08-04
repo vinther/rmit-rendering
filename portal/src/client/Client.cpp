@@ -14,7 +14,7 @@
 #include "scene/SceneNode.hpp"
 #include "scene/Camera.hpp"
 
-#include "renderer/Renderer.hpp"
+#include "renderer/GLRenderer.hpp"
 
 #include "client/Interface.hpp"
 #include "client/CameraController.hpp"
@@ -38,6 +38,9 @@ Client::Client(int argc, char** argv)
     glutInit(&argc, argv);
 }
 
+#include "renderer/GLResourceManager.hpp"
+#include "renderer/GLBufferedShader.hpp"
+
 void Client::initialize()
 {
     keyboardHandler = std::make_unique<KeyboardHandler>(shared_from_this());
@@ -45,12 +48,15 @@ void Client::initialize()
     scene = std::make_unique<Scene>(shared_from_this());
     interface = std::make_unique<Interface>(shared_from_this());
     cameraController = std::make_unique<CameraController>(shared_from_this());
-    renderer = std::make_unique<Renderer>();
+    renderer = std::make_unique<GLRenderer>();
     renderer->initialize();
 
     scene->camera->position = glm::vec3(0.0f, 0.0f, 20.0f);
 
-    scene->assetManager->create<Shader>("shaders/helloWorld", "shaders/helloWorld.vert", "shaders/helloWorld.frag");
+    auto shader = scene->assetManager->create<assets::Shader>("shaders/default", "shaders/default.vert", "shaders/default.frag");
+
+    renderer->shaderHash = shader->hash;
+    renderer->resourceManager->getByAsset<GLBufferedShader>(shader);
 }
 
 void Client::reshape(Uint32 width, Uint32 height)
@@ -122,7 +128,7 @@ void Client::event(SDL_Event* event)
 
 void Client::display()
 {
-    Renderer::RenderResults results;
+    GLRenderer::RenderResults results;
     renderer->render(*scene, results);
 
     interface->data.renderTime = results.renderTime.count();

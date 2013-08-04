@@ -19,11 +19,15 @@
 #include "assets/Asset.hpp"
 #include "assets/Model.hpp"
 
-//class Asset;
+namespace assets
+{
 class FileWatcher;
 
+namespace detail
+{
 template<class T>
     using EnableIfBase = typename std::enable_if<std::is_base_of<Asset, T>::value>::type;
+}
 
 class AssetManager
 {
@@ -31,13 +35,13 @@ public:
     AssetManager();
     virtual ~AssetManager();
 
-    template <  class T, class = EnableIfBase<T>>
+    template <  class T, class = detail::EnableIfBase<T>>
     std::shared_ptr<T> get(const std::string& name);
 
-    template <class T, class = EnableIfBase<T>, typename... Args>
+    template <class T, class = detail::EnableIfBase<T>, typename... Args>
     std::shared_ptr<T> create(const std::string& name, Args... args);
 
-    template <class T, class = EnableIfBase<T>, typename... Args>
+    template <class T, class = detail::EnableIfBase<T>, typename... Args>
     std::shared_ptr<T> getOrCreate(const std::string& name, Args... args);
 
     void initialize();
@@ -95,6 +99,8 @@ inline std::shared_ptr<T> AssetManager::getOrCreate(const std::string& name, Arg
         return std::static_pointer_cast<T>(fetchFromCache(name));
 
     return std::make_shared<T>(name);
+}
+
 }
 
 #endif /* ASSETMANAGER_HPP_ */

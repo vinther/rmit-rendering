@@ -24,16 +24,18 @@
 Scene::Scene(std::shared_ptr<Client> client)
     : camera(std::make_unique<Camera>())
     , root(std::make_unique<SceneNode>())
-    , assetManager(std::make_unique<AssetManager>())
+    , assetManager(std::make_unique<assets::AssetManager>())
     , client(client)
 {
-    // TODO Auto-generated constructor stub
-
     assetManager->initialize();
 
-    root->model = assetManager->getOrCreate<Model>("models/sibenik/sibenik.obj");
+    root->model = assetManager->getOrCreate<assets::Model>("models/sibenik/sibenik.obj", std::ref(*assetManager));
 
-    assetManager->getOrCreate<Texture>("dims", "models/capsule/capsule.png");
+    //root->model = assetManager->getOrCreate<assets::Model>("models/capsule/capsule.obj", std::ref(*assetManager));
+    //root->model = assetManager->getOrCreate<Model>("models/dabrovic-sponza/sponza.obj");
+    //root->model = assetManager->getOrCreate<assets::Model>("models/portal/Portal Gun.obj", std::ref(*assetManager));
+    //assetManager->getOrCreate<Texture>("dims", "models/capsule/capsule.png");
+    //assetManager->getOrCreate<Texture>("dims", "models/portal/textures/portalgun_col.jpg");
 
 //    auto child = std::make_unique<SceneNode>();
 //    child->model = assetManager->getOrCreate<Model>("models/shuttle.obj");

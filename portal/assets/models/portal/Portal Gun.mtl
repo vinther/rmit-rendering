@@ -9,5 +9,5 @@ Ks 0.500000 0.500000 0.500000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Disp textures\\portalgun_nor.jpg
-map_Kd textures\\portalgun_col.jpg
+map_Disp textures/portalgun_nor.jpg
+map_Kd textures/portalgun_col.jpg

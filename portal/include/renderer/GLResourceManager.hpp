@@ -9,16 +9,14 @@
 #define GLRESOURCEMANAGER_HPP_
 
 #include <memory>
+#include <unordered_map>
 
-class AssetManager;
+#include "Utilities.hpp"
 
-class Model;
-class Shader;
-class Texture;
-
-class Material;
-
-class aiMaterial;
+class GLBufferedModel;
+class GLBufferedTexture;
+class GLBufferedMaterial;
+class GLBufferedShader;
 
 class GLResourceManager
 {
@@ -27,9 +25,15 @@ public:
     virtual ~GLResourceManager();
 
     template <class T>
-    T& bufferObject(T& object, AssetManager& assetManager);
+    const T& getByAsset(std::shared_ptr<const typename T::asset_type> asset);
 
+    template <class T>
+    const T& getByHash(size_t hash);
 private:
+    std::unordered_map<size_t, std::unique_ptr<GLBufferedModel>> bufferedModels;
+    std::unordered_map<size_t, std::unique_ptr<GLBufferedTexture>> bufferedTextures;
+    std::unordered_map<size_t, std::unique_ptr<GLBufferedMaterial>> bufferedMaterials;
+    std::unordered_map<size_t, std::unique_ptr<GLBufferedShader>> bufferedShaders;
 };
 
 #endif /* GLRESOURCEMANAGER_HPP_ */

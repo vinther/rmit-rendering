@@ -11,7 +11,7 @@
 
 #include "scene/Scene.hpp"
 
-#include "renderer/Renderer.hpp"
+#include "renderer/GLRenderer.hpp"
 
 const int DEFAULT_WIDTH = 800;
 const int DEFAULT_HEIGHT = 600;

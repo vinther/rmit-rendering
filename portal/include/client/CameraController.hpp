@@ -30,11 +30,7 @@ public:
 
     struct State
     {
-        State()
-            : moveForward(false), moveBackward(false), moveLeft(false)
-            , moveRight(false), moveUp(false), moveDown(false)
-            , speedFactor(1.0f)
-        {}
+        State();
 
         bool moveForward;
         bool moveBackward;

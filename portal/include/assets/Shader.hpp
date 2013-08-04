@@ -15,6 +15,9 @@
 typedef unsigned int GLuint;
 typedef int GLint;
 
+namespace assets
+{
+
 class AssetManager;
 
 class Shader: public Asset
@@ -28,20 +31,13 @@ public:
     size_t reportSize() const override;
     void reload() override;
 
-    struct RenderInfo
-    {
-        /* Uniform locators */
-        GLint model, view, projection;
-
-        /* Compiled program */
-        GLuint program;
-    } renderInfo;
-
     std::string vertShader, fragShader;
 private:
     std::string getStringFromFile(const std::string& path);
 
     std::string vertPath, fragPath;
 };
+
+}
 
 #endif /* SHADER_HPP_ */

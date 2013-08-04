@@ -12,8 +12,13 @@
 
 class Client;
 class Camera;
-class AssetManager;
+
 class SceneNode;
+
+namespace assets
+{
+class AssetManager;
+}
 
 class Scene
 {
@@ -23,8 +28,7 @@ public:
 
     std::unique_ptr<Camera> camera;
     std::unique_ptr<SceneNode> root;
-    std::unique_ptr<AssetManager> assetManager;
-
+    std::unique_ptr<assets::AssetManager> assetManager;
 private:
     std::shared_ptr<Client> client;
 };

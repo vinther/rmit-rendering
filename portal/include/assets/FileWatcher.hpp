@@ -19,6 +19,9 @@
 #include <sys/inotify.h>
 #endif
 
+namespace assets
+{
+
 class Asset;
 
 class FileWatcher
@@ -40,5 +43,7 @@ private:
     std::unordered_map<int, std::tuple<std::string, std::shared_ptr<Asset>>> inotifyWatchDescriptors;
 #endif
 };
+
+}
 
 #endif /* FILEWATCHER_HPP_ */

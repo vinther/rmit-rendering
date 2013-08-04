@@ -14,21 +14,21 @@
 
 #include "Utilities.hpp"
 
-AssetManager::AssetManager()
+assets::AssetManager::AssetManager()
     : fileWatcher(std::make_unique<FileWatcher>())
     , cachedAssets()
 {
 }
 
-AssetManager::~AssetManager()
+assets::AssetManager::~AssetManager()
 {
 }
 
-void AssetManager::initialize()
+void assets::AssetManager::initialize()
 {
 }
 
-void AssetManager::addToCache(std::string name, std::shared_ptr<Asset> asset)
+void assets::AssetManager::addToCache(std::string name, std::shared_ptr<Asset> asset)
 {
     cachedAssets[name] = asset;
 
@@ -40,12 +40,12 @@ void AssetManager::addToCache(std::string name, std::shared_ptr<Asset> asset)
 #endif
 }
 
-std::shared_ptr<Asset> AssetManager::fetchFromCache(const std::string& name)
+std::shared_ptr<assets::Asset> assets::AssetManager::fetchFromCache(const std::string& name)
 {
     return cachedAssets[name];
 }
 
-void AssetManager::reportCacheContents() const
+void assets::AssetManager::reportCacheContents() const
 {
     auto getTypeName = [](Asset::Type type) -> std::string {
         switch (type)
@@ -55,6 +55,7 @@ void AssetManager::reportCacheContents() const
         case Asset::Type::TYPE_SHADER: return "Shader"; break;
         case Asset::Type::TYPE_SOUND: return "Sound"; break;
         case Asset::Type::TYPE_TEXTURE: return "Texture"; break;
+        case Asset::Type::TYPE_MATERIAL: return "Material"; break;
         case Asset::Type::TYPE_CUSTOM: return "Custom"; break;
         default: return "Unknown"; break;
         }

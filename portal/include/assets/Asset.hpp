@@ -12,6 +12,9 @@
 #include <functional>
 #include <vector>
 
+namespace assets
+{
+
 class Asset
 {
 public:
@@ -26,7 +29,6 @@ public:
 
         TYPE_CUSTOM=255,
     };
-
 
     virtual ~Asset();
 
@@ -43,10 +45,13 @@ public:
      * If assets fill this vector with paths it will be picked up by the file watcher and get reloaded upon changes
      */
     std::vector<std::string> files;
+    size_t version;
 protected:
     Asset(const std::string& name, Type type);
 
     std::string getStringFromFile(const std::string& path) const;
 };
+
+}
 
 #endif /* ASSET_HPP_ */

@@ -20,7 +20,7 @@ class MouseHandler;
 class Scene;
 class Interface;
 class CameraController;
-class Renderer;
+class GLRenderer;
 
 struct SDL_Surface;
 union SDL_Event;
@@ -43,7 +43,7 @@ public:
 	std::unique_ptr<Scene> scene;
 	std::unique_ptr<Interface> interface;
 	std::unique_ptr<CameraController> cameraController;
-	std::unique_ptr<Renderer> renderer;
+	std::unique_ptr<GLRenderer> renderer;
 };
 
 #endif /* CLIENT_HPP_ */

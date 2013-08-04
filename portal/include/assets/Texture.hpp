@@ -11,9 +11,14 @@
 #include <string>
 #include <memory>
 
-#include <SDL2/SDL_image.h>
-
 #include "assets/Asset.hpp"
+
+class SDL_Surface;
+
+typedef unsigned int GLuint;
+
+namespace assets
+{
 
 class Texture: public Asset
 {
@@ -29,5 +34,7 @@ public:
     std::unique_ptr<const SDL_Surface> surface;
     std::string path;
 };
+
+}
 
 #endif /* TEXTURE_HPP_ */

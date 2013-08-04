@@ -10,7 +10,7 @@
 #include "assets/Model.hpp"
 
 SceneNode::SceneNode()
-    : model(std::weak_ptr<Model>())
+    : model()
     , transformation(glm::mat4(1.0f))
     , children()
 {

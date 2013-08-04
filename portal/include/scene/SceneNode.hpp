@@ -13,7 +13,10 @@
 
 #include <glm/glm.hpp>
 
+namespace assets
+{
 class Model;
+}
 
 class SceneNode
 {
@@ -21,7 +24,7 @@ public:
     SceneNode();
     virtual ~SceneNode();
 
-    std::weak_ptr<Model> model;
+    std::shared_ptr<const assets::Model> model;
     glm::mat4 transformation;
 
     std::vector<std::unique_ptr<SceneNode>> children;

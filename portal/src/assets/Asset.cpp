@@ -9,25 +9,27 @@
 #include "assets/Asset.hpp"
 
 #include <fstream>
+#include <iostream>
 
 #include <SDL2/SDL_log.h>
 
-Asset::Asset(const std::string& name, Type type)
+assets::Asset::Asset(const std::string& name, Type type)
     : name(name)
     , hash(0)
     , type(type)
     , files(std::vector<std::string>())
+    , version(0)
 {
     std::hash<std::string> hash_fn;
     hash = hash_fn(name);
 }
 
-Asset::~Asset()
+assets::Asset::~Asset()
 {
 }
 
 /* http://www.nexcius.net/2012/11/20/how-to-load-a-glsl-shader-in-opengl-using-c/ */
-std::string Asset::getStringFromFile(const std::string& path) const
+std::string assets::Asset::getStringFromFile(const std::string& path) const
 {
     std::string content;
     std::ifstream fileStream(path, std::ios::in);
