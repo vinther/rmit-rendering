@@ -23,9 +23,9 @@ public:
 
 	struct Data
 	{
-	    Uint16 fps = 0;
-	    Uint16 renderTime = 0;
-	    glm::vec3 camPos = glm::vec3(0.0f);
+	    Uint16 fps;
+	    Uint16 renderTime;
+	    glm::vec3 camPos;
 	} data;
 
     void display();

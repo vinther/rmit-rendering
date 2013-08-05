@@ -27,7 +27,7 @@ public:
 
     GLuint program;
 
-    void loadFromAsset(std::shared_ptr<const asset_type>& asset, GLResourceManager& resourceManager) override;
+    void loadFromAsset(std::shared_ptr<const asset_type>& asset, GLResourceManager& resourceManager);
 };
 
 #endif /* GLBUFFEREDSHADER_HPP_ */

@@ -7,6 +7,7 @@
 
 #include "renderer/GLBufferedModel.hpp"
 
+#include <stdexcept>
 #include <unordered_map>
 
 #include <GL/glew.h>
@@ -71,7 +72,7 @@ void GLBufferedModel::loadFromAsset(std::shared_ptr<const asset_type>& asset, GL
     if (nullptr == asset->scene)
        throw std::runtime_error("Trying to render scene with NULL scene");
 
-    using BufferIndices = MeshInfo::BufferIndices;
+    typedef GLBufferedModel::MeshInfo::BufferIndices BufferIndices;
     const auto& scene = *(asset->scene);
 
    for (const auto& mesh: meshes)

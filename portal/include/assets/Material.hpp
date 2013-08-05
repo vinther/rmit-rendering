@@ -45,8 +45,8 @@ public:
 
     bool loadFromDisk(const std::string& basePath, const aiMaterial& material, AssetManager& assetManager);
 
-    size_t reportSize() const override;
-    void reload() override;
+    size_t reportSize() const;
+    void reload();
 };
 
 } /* namespace assets */

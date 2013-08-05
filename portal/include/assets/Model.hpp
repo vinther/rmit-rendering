@@ -37,8 +37,8 @@ public:
 
     bool loadFromDisk();
     bool loadFromDisk(AssetManager& assetManager);
-    size_t reportSize() const override;
-    void reload() override;
+    size_t reportSize() const;
+    void reload();
 
     Assimp::Importer importer;
 

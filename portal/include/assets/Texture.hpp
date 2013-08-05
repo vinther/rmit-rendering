@@ -26,8 +26,8 @@ public:
     Texture(const std::string& name);
     virtual ~Texture();
 
-    void reload() override;
-    size_t reportSize() const override;
+    void reload();
+    size_t reportSize() const;
 
     bool loadFromDisk(const std::string& path);
 

@@ -28,8 +28,8 @@ public:
 
     bool loadFromDisk(const std::string& vertPath, const std::string& fragPath);
 
-    size_t reportSize() const override;
-    void reload() override;
+    size_t reportSize() const;
+    void reload();
 
     std::string vertShader, fragShader;
 private:

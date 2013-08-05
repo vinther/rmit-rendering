@@ -28,7 +28,7 @@ public:
     {
         PRISTINE    = 0x01,
         DIRTY       = 0x02,
-        READY       = 0x04,
+        READY       = 0x04
     };
 
     typedef T asset_type;

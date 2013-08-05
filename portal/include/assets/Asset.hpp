@@ -27,7 +27,7 @@ public:
         TYPE_TEXTURE,
         TYPE_MATERIAL,
 
-        TYPE_CUSTOM=255,
+        TYPE_CUSTOM=255
     };
 
     virtual ~Asset();

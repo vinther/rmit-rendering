@@ -22,7 +22,7 @@ public:
 
     GLuint tex;
 
-    void loadFromAsset(std::shared_ptr<const asset_type>& asset, GLResourceManager& resourceManager) override;
+    void loadFromAsset(std::shared_ptr<const asset_type>& asset, GLResourceManager& resourceManager);
 };
 
 #endif /* GLBUFFEREDTEXTURE_HPP_ */

@@ -49,7 +49,7 @@ public:
 
     std::vector<MeshInfo> meshes;
 
-    void loadFromAsset(std::shared_ptr<const asset_type>& asset, GLResourceManager& resourceManager) override;
+    void loadFromAsset(std::shared_ptr<const asset_type>& asset, GLResourceManager& resourceManager);
 };
 
 #endif /* GLBUFFEREDMODEL_HPP_ */
