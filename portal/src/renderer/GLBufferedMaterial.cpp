@@ -38,14 +38,29 @@ GLBufferedMaterial::~GLBufferedMaterial()
 
 void GLBufferedMaterial::activate(GLResourceManager& resourceManager) const
 {
-    if (texDiffuse) {
-        const auto& tex = resourceManager.getByHash<GLBufferedTexture>(texDiffuse);
+    if (texAmbient) {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, resourceManager.getByHash<GLBufferedTexture>(texAmbient).tex);
+    }
 
-        if (tex.tex)
-        {
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, tex.tex);
-        }
+    if (texDiffuse) {
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, resourceManager.getByHash<GLBufferedTexture>(texDiffuse).tex);
+    }
+
+    if (texSpecular) {
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, resourceManager.getByHash<GLBufferedTexture>(texSpecular).tex);
+    }
+
+    if (texNormal) {
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, resourceManager.getByHash<GLBufferedTexture>(texNormal).tex);
+    }
+
+    if (texBump) {
+        glActiveTexture(GL_TEXTURE4);
+        glBindTexture(GL_TEXTURE_2D, resourceManager.getByHash<GLBufferedTexture>(texBump).tex);
     }
 }
 
@@ -72,6 +87,12 @@ void GLBufferedMaterial::loadFromAsset(std::shared_ptr<const asset_type>& asset,
         texSpecular = material.texSpecular->hash;
     }
 
+    if (material.texNormal)
+    {
+        resourceManager.getByAsset<GLBufferedTexture>(material.texNormal);
+        texSpecular = material.texNormal->hash;
+    }
+
 
     if (material.texBump)
     {
@@ -79,5 +100,9 @@ void GLBufferedMaterial::loadFromAsset(std::shared_ptr<const asset_type>& asset,
         texBump = material.texBump->hash;
     }
 
+    materialInfo.emission = material.materialInfo.emission;
+    materialInfo.ambient = material.materialInfo.ambient;
     materialInfo.diffuse = material.materialInfo.diffuse;
+    materialInfo.specular = material.materialInfo.specular;
+    materialInfo.shininess = material.materialInfo.shininess;
 }

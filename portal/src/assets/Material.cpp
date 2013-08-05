@@ -51,15 +51,18 @@ bool assets::Material::loadFromDisk(const std::string& basePath, const aiMateria
         texBump = assetManager.getOrCreate<Texture>(std::string(heightTexture.C_Str()), basePath + std::string(heightTexture.C_Str()));
 
     aiColor3D emissive, ambient, diffuse, specular;
+    float shininess;
     material.Get(AI_MATKEY_COLOR_EMISSIVE, emissive);
     material.Get(AI_MATKEY_COLOR_AMBIENT, ambient);
     material.Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
     material.Get(AI_MATKEY_COLOR_SPECULAR, specular);
+    material.Get(AI_MATKEY_SHININESS, shininess);
 
     materialInfo.emission = glm::vec4(emissive.r, emissive.g, emissive.b, 0.0f);
     materialInfo.ambient = glm::vec4(ambient.r, ambient.g, ambient.b, 0.0f);
     materialInfo.diffuse = glm::vec4(diffuse.r, diffuse.g, diffuse.b, 0.0f);
     materialInfo.specular = glm::vec4(specular.r, specular.g, specular.b, 0.0f);
+    materialInfo.shininess = shininess;
 
     return true;
 }

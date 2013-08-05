@@ -57,6 +57,8 @@ struct LightSourceParameters
   glm::vec4 position;
 } lights[8];
 
+float test = 0.0f;
+
 void GLRenderer::render(const Scene& scene, RenderResults& results)
 {
     using namespace std::chrono;
@@ -64,6 +66,7 @@ void GLRenderer::render(const Scene& scene, RenderResults& results)
 
     results.settings = settings;
 
+    test += 0.01f;
     const auto& camera = *(scene.camera);
 
     glClearColor(125.0f / 255.0f, 190.0f / 255.0f, 239.0f / 255.0f, 0);
@@ -73,6 +76,14 @@ void GLRenderer::render(const Scene& scene, RenderResults& results)
     const auto shader = resourceManager->getByHash<GLBufferedShader>(shaderHash);
 
     glUseProgram(shader.program);
+
+    glUniform1i(shader.getUniformLocation("ambientTexSampler"), 0);
+    glUniform1i(shader.getUniformLocation("diffuseTexSampler"), 1);
+    glUniform1i(shader.getUniformLocation("specularTexSampler"), 2);
+    glUniform1i(shader.getUniformLocation("normalTexSampler"), 3);
+    glUniform1i(shader.getUniformLocation("bumpTexSampler"), 4);
+
+    glUniform1f(shader.getUniformLocation("test"), test);
 
     if (0 == buffer)
     {

@@ -95,3 +95,8 @@ void GLBufferedShader::loadFromAsset(std::shared_ptr<const asset_type>& asset, G
     glDeleteShader(vertShader);
     glDeleteShader(fragShader);
 }
+
+GLint GLBufferedShader::getUniformLocation(const std::string& name) const
+{
+    return glGetUniformLocation(program, name.c_str());
+}

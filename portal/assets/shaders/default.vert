@@ -11,15 +11,15 @@ uniform mat4 model;
 
 out	vec3 vertNormal;
 out	vec3 vertPosition;
+out	vec3 vertTangent;
 out	vec3 vertTexCoord;
 
 void main()
 {
-	mat4 worldToCameraMatrix = (view * model);
-
-	vertNormal = mat3(worldToCameraMatrix) * normal;
-	vertPosition = mat3(worldToCameraMatrix) * position;
+	vertNormal = normal;
+	vertPosition = position;
 	vertTexCoord = texCoord;
+    vertTangent = tangent;
     
     gl_Position = projection * view * model * vec4(position, 1.0f);
 }

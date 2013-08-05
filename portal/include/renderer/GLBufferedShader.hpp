@@ -13,6 +13,7 @@
 #include "assets/Shader.hpp"
 
 typedef unsigned int GLuint;
+typedef int GLint;
 
 class GLResourceManager;
 
@@ -28,6 +29,8 @@ public:
     GLuint program;
 
     void loadFromAsset(std::shared_ptr<const asset_type>& asset, GLResourceManager& resourceManager);
+
+    GLint getUniformLocation(const std::string& name) const;
 };
 
 #endif /* GLBUFFEREDSHADER_HPP_ */
