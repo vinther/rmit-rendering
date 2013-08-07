@@ -2,6 +2,8 @@
 
 #include <SDL2/SDL.h>
 
+#include "assets/AssetManager.hpp"
+
 #include "client/Client.hpp"
 #include "client/Interface.hpp"
 #include "client/CameraController.hpp"
@@ -11,40 +13,39 @@
 
 #include "scene/Scene.hpp"
 
-#include "renderer/GLRenderer.hpp"
+#include "renderer/Renderer.hpp"
+#include "renderer/DebugRenderer.hpp"
+
+#include "threading/ThreadPool.hpp"
 
 const int DEFAULT_WIDTH = 800;
 const int DEFAULT_HEIGHT = 600;
 const int DEFAULT_DEPTH = 32;
 
-/* Frame counting */
-static int frame_count;
-static Uint32 frame_time;
-static int quit_flag;
-int fps;
+static int exitConditions;
 
 void quit()
 {
-    quit_flag = 1;
+    exitConditions = 1;
 }
 
 int main(int argc, char **argv)
 {
-    std::shared_ptr<Client> client = std::make_shared<Client>(argc, argv);
-
     Uint16 windowWidth, windowHeight;
 
-    SDL_Window *mainwindow; /* Our window handle */
-    SDL_GLContext maincontext; /* Our opengl context handle */
+    SDL_Window *window;
+    SDL_Renderer* renderer;
+    SDL_GLContext glContext;
+
     SDL_Event ev;
     SDL_DisplayMode displayMode;
-    Uint32 now, last_frame_time;
+
     bool windowFocus = true;
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 
-    if (SDL_Init(SDL_INIT_EVERYTHING) < 0) /* Initialize SDL's Video subsystem */
+    if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
         throw std::runtime_error(SDL_GetError());
 
     SDL_GetDesktopDisplayMode(0, &displayMode);
@@ -60,7 +61,7 @@ int main(int argc, char **argv)
         windowWidth = displayMode.w;
         windowHeight = displayMode.h;
 
-        mainwindow = SDL_CreateWindow("RMIT Portal", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowWidth,
+        window = SDL_CreateWindow("RMIT Portal", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowWidth,
                 windowHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_INPUT_GRABBED | SDL_WINDOW_FULLSCREEN_DESKTOP);
     }
     else
@@ -68,17 +69,22 @@ int main(int argc, char **argv)
         windowWidth = DEFAULT_WIDTH;
         windowHeight = DEFAULT_HEIGHT;
 
-        mainwindow = SDL_CreateWindow("RMIT Portal", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowWidth,
+        window = SDL_CreateWindow("RMIT Portal", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowWidth,
                 windowHeight, SDL_WINDOW_OPENGL);
     }
 
-    if (nullptr == mainwindow)
+    if (nullptr == window)
         throw std::runtime_error(SDL_GetError());
 
-    maincontext = SDL_GL_CreateContext(mainwindow);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+
+    if (nullptr == renderer)
+        throw std::runtime_error(SDL_GetError());
+
+    glContext = SDL_GL_CreateContext(window);
 
     SDL_ShowCursor(0);
-    //SDL_SetWindowGrab(mainwindow, SDL_TRUE);
+    SDL_SetWindowGrab(window, SDL_TRUE);
 
     SDL_Log("Platform: %s", SDL_GetPlatform());
     SDL_Log("CPU cores: %d", SDL_GetCPUCount());
@@ -86,13 +92,11 @@ int main(int argc, char **argv)
     SDL_Log("OpenGL renderer: %s", (char*) glGetString(GL_RENDERER));
     SDL_Log("Display resolution: %dx%d", displayMode.w, displayMode.h);
 
-    client->initialize();
+    std::shared_ptr<Client> client = std::make_shared<Client>(argc, argv);
+    client->initialize(window, renderer);
     client->reshape(windowWidth, windowHeight);
 
-    fps = 0;
-    frame_count = 0;
-    last_frame_time = frame_time = SDL_GetTicks();
-    while (!quit_flag)
+    while (!exitConditions)
     {
         /* Process all pending events */
         while (SDL_PollEvent(&ev))
@@ -125,8 +129,8 @@ int main(int argc, char **argv)
                 {
                     ev.motion.xrel = -(windowWidth / 2 - ev.motion.x);
                     ev.motion.yrel = -(windowHeight / 2 - ev.motion.y);
-
                 }
+
                 client->event(&ev);
                 break;
             default:
@@ -137,29 +141,14 @@ int main(int argc, char **argv)
 
         // Ugly hack to simulate mouse grabbing
         if (windowFocus)
-            SDL_WarpMouseInWindow(mainwindow, windowWidth / 2, windowHeight / 2);
+            SDL_WarpMouseInWindow(window, windowWidth / 2, windowHeight / 2);
 
 
-        /* Calculate time passed */
-        now = SDL_GetTicks();
-        client->update(now - last_frame_time);
-        last_frame_time = now;
-
-        /* Refresh display and flip buffers */
-        client->interface->data.fps = fps;
-        client->display();
-
-        SDL_GL_SwapWindow(mainwindow);
+        client->prepareFrame();
         SDL_Delay(10);
+        client->finalizeFrame();
 
-        /* Update FPS */
-        frame_count++;
-        if (now - frame_time > 1000)
-        {
-            fps = (frame_count * 1000) / (now - frame_time);
-            frame_count = 0;
-            frame_time = now;
-        }
+        SDL_GL_SwapWindow(window);
     }
 
     client->cleanup();
@@ -167,8 +156,8 @@ int main(int argc, char **argv)
     if (1 != client.use_count())
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Client ptr use count is not 1; cleanup is not working properly!");
 
-    SDL_GL_DeleteContext(maincontext);
-    SDL_DestroyWindow(mainwindow);
+    SDL_GL_DeleteContext(glContext);
+    SDL_DestroyWindow(window);
     SDL_Quit();
 
     return EXIT_SUCCESS;

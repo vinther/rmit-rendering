@@ -12,13 +12,13 @@ uniform mat4 model;
 out	vec3 vertNormal;
 out	vec3 vertPosition;
 out	vec3 vertTangent;
-out	vec3 vertTexCoord;
+out	vec2 vertTexCoord;
 
 void main()
 {
 	vertNormal = normal;
 	vertPosition = position;
-	vertTexCoord = texCoord;
+	vertTexCoord = vec2(1.0 - texCoord.x, 1.0 - texCoord.y);
     vertTangent = tangent;
     
     gl_Position = projection * view * model * vec4(position, 1.0f);

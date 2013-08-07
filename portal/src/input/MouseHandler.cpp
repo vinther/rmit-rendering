@@ -11,12 +11,12 @@
 #include "client/CameraController.hpp"
 #include "scene/Scene.hpp"
 
-MouseHandler::MouseHandler(std::shared_ptr<Client> client)
+input::MouseHandler::MouseHandler(std::shared_ptr<Client> client)
     : client(client)
 {
 }
 
-void MouseHandler::event(const SDL_MouseButtonEvent& event)
+void input::MouseHandler::event(const SDL_MouseButtonEvent& event)
 {
     switch (event.type)
     {
@@ -29,22 +29,22 @@ void MouseHandler::event(const SDL_MouseButtonEvent& event)
     }
 }
 
-void MouseHandler::event(const SDL_MouseMotionEvent& event)
+void input::MouseHandler::event(const SDL_MouseMotionEvent& event)
 {
     mouseMove(event.x, event.y, event.xrel, event.yrel);
 }
 
-void MouseHandler::mouseDown(Uint8 button, Uint16 x, Uint16 y)
+void input::MouseHandler::mouseDown(Uint8 button, Uint16 x, Uint16 y)
 {
     client->cameraController->mouseDown(button, x, y);
 }
 
-void MouseHandler::mouseUp(Uint8 button, Uint16 x, Uint16 y)
+void input::MouseHandler::mouseUp(Uint8 button, Uint16 x, Uint16 y)
 {
     client->cameraController->mouseUp(button, x, y);
 }
 
-void MouseHandler::mouseMove(Uint16 x, Uint16 y, Sint16 xrel, Sint16 yrel)
+void input::MouseHandler::mouseMove(Uint16 x, Uint16 y, Sint16 xrel, Sint16 yrel)
 {
     client->cameraController->mouseMove(x, y, xrel, yrel);
 }

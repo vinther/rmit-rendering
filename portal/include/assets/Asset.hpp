@@ -26,6 +26,7 @@ public:
         TYPE_SOUND,
         TYPE_TEXTURE,
         TYPE_MATERIAL,
+        TYPE_FONT,
 
         TYPE_CUSTOM=255
     };

@@ -37,6 +37,8 @@ public:
         float shininess;
     } materialInfo;
 
+    bool translucent;
+
     std::shared_ptr<assets::Texture> texAmbient;
     std::shared_ptr<assets::Texture> texDiffuse;
     std::shared_ptr<assets::Texture> texSpecular;

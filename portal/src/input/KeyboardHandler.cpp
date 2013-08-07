@@ -7,21 +7,27 @@
 
 #include "input/KeyboardHandler.hpp"
 
+#include <glm/glm.hpp>
+
 #include "client/Client.hpp"
 #include "client/CameraController.hpp"
+
 #include "scene/Scene.hpp"
+
+#include "renderer/DebugRenderer.hpp"
+
 #include "assets/AssetManager.hpp"
 
-KeyboardHandler::KeyboardHandler(std::shared_ptr<Client> client)
+input::KeyboardHandler::KeyboardHandler(std::shared_ptr<Client> client)
     : client(client)
 {
 }
 
-KeyboardHandler::~KeyboardHandler()
+input::KeyboardHandler::~KeyboardHandler()
 {
 }
 
-void KeyboardHandler::event(const SDL_KeyboardEvent& event)
+void input::KeyboardHandler::event(const SDL_KeyboardEvent& event)
 {
     switch (event.type)
     {
@@ -36,18 +42,30 @@ void KeyboardHandler::event(const SDL_KeyboardEvent& event)
     }
 }
 
-void KeyboardHandler::keydown(SDL_Keycode key, Uint16 mod)
+void input::KeyboardHandler::keydown(SDL_Keycode key, Uint16 mod)
 {
     if (key == SDLK_ESCAPE)
         SDL_Log("ESC pressed, exit inevitable");
 
     if ('q' == key)
-        client->scene->assetManager->reportCacheContents();
+        client->assetManager->reportCacheContents();
+
+    if ('1' == key)
+        client->debugRenderer->settings.enabled = !client->debugRenderer->settings.enabled;
+
+    if ('j' == key)
+        client->debugRenderer->settings.maxTreeDepth += 1;
+
+    if ('k' == key)
+    {
+        client->debugRenderer->settings.maxTreeDepth -= 1;
+        client->debugRenderer->settings.maxTreeDepth = glm::max(1u, client->debugRenderer->settings.maxTreeDepth);
+    }
 
     client->cameraController->keyDown(key, mod);
 }
 
-void KeyboardHandler::keyup(SDL_Keycode key, Uint16 mod)
+void input::KeyboardHandler::keyup(SDL_Keycode key, Uint16 mod)
 {
     client->cameraController->keyUp(key, mod);
 }

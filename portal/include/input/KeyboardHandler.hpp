@@ -15,6 +15,9 @@
 class Client;
 class CommandSet;
 
+namespace input
+{
+
 class KeyboardHandler
 {
 public:
@@ -29,6 +32,6 @@ private:
     std::shared_ptr<Client> client;
 };
 
-
+}
 
 #endif /* KEYBOARDHANDLER_HPP_ */

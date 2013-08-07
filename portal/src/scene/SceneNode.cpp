@@ -9,7 +9,7 @@
 
 #include "assets/Model.hpp"
 
-SceneNode::SceneNode()
+scene::SceneNode::SceneNode()
     : model()
     , transformation(glm::mat4(1.0f))
     , children()
@@ -18,7 +18,7 @@ SceneNode::SceneNode()
 
 }
 
-SceneNode::~SceneNode()
+scene::SceneNode::~SceneNode()
 {
     // TODO Auto-generated destructor stub
 }

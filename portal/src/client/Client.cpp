@@ -14,7 +14,10 @@
 #include "scene/SceneNode.hpp"
 #include "scene/Camera.hpp"
 
-#include "renderer/GLRenderer.hpp"
+#include "renderer/Renderer.hpp"
+#include "renderer/DebugRenderer.hpp"
+#include "renderer/ResourceManager.hpp"
+#include "renderer/BufferedShader.hpp"
 
 #include "client/Interface.hpp"
 #include "client/CameraController.hpp"
@@ -25,6 +28,8 @@
 #include "assets/Shader.hpp"
 #include "assets/FileWatcher.hpp"
 
+#include "threading/ThreadPool.hpp"
+
 #include "Utilities.hpp"
 
 Client::Client(int argc, char** argv)
@@ -33,30 +38,68 @@ Client::Client(int argc, char** argv)
     , scene()
     , interface()
     , cameraController()
+    , assetManager()
     , renderer()
+    , debugRenderer()
+    , threadPool()
 {
     glutInit(&argc, argv);
 }
 
-#include "renderer/GLResourceManager.hpp"
-#include "renderer/GLBufferedShader.hpp"
-
-void Client::initialize()
+void Client::initialize(SDL_Window* sdlWindow, SDL_Renderer* sdlRenderer)
 {
-    keyboardHandler = std::make_unique<KeyboardHandler>(shared_from_this());
-    mouseHandler = std::make_unique<MouseHandler>(shared_from_this());
-    scene = std::make_unique<Scene>(shared_from_this());
+    cleanup();
+
+    this->sdlWindow = sdlWindow;
+    this->sdlRenderer = sdlRenderer;
+
+    keyboardHandler = std::make_unique<input::KeyboardHandler>(shared_from_this());
+    mouseHandler = std::make_unique<input::MouseHandler>(shared_from_this());
+    scene = std::make_unique<scene::Scene>(shared_from_this());
     interface = std::make_unique<Interface>(shared_from_this());
     cameraController = std::make_unique<CameraController>(shared_from_this());
-    renderer = std::make_unique<GLRenderer>();
+    assetManager = std::make_unique<assets::AssetManager>();
+    renderer = std::make_unique<renderer::Renderer>();
+    debugRenderer = std::make_unique<renderer::DebugRenderer>();
+    threadPool = std::make_unique<threading::ThreadPool>();
+
+    threadPool->settings.numThreads = SDL_GetCPUCount() - 1;
+
+    interface->initialize();
     renderer->initialize();
+    debugRenderer->initialize();
+    threadPool->initialize();
 
-    scene->camera->position = glm::vec3(0.0f, 0.0f, 20.0f);
+    scene->camera->state.position = glm::vec3(-14.0f, 1.5f, 0.0f);
+    scene->camera->state.rotation = glm::rotate(scene->camera->state.rotation, 90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+    scene->camera->state.rotation = glm::rotate(scene->camera->state.rotation, 30.0f, glm::vec3(0.0f, 0.0f, 1.0f));
 
-    auto shader = scene->assetManager->create<assets::Shader>("shaders/default", "shaders/default.vert", "shaders/default.frag");
+    scene->root->model = assetManager->getOrCreate<assets::Model>("models/crytek-sponza/sponza.obj", std::ref(*assetManager));
+
+    //root->model = assetManager->getOrCreate<assets::Model>("models/capsule/capsule.obj", std::ref(*assetManager));
+    //root->model = assetManager->getOrCreate<Model>("models/dabrovic-sponza/sponza.obj");
+    //root->model = assetManager->getOrCreate<assets::Model>("models/portal/Portal Gun.obj", std::ref(*assetManager));
+    //assetManager->getOrCreate<Texture>("dims", "models/capsule/capsule.png");
+    //assetManager->getOrCreate<Texture>("dims", "models/portal/textures/portalgun_col.jpg");
+
+//    auto child = std::make_unique<SceneNode>();
+//    child->model = assetManager->getOrCreate<Model>("models/shuttle.obj");
+//    child->transformation = glm::translate(child->transformation, glm::vec3(0.0f, 0.0f, -50.0f));
+//
+//    root->children.push_back(std::move(child));
+//
+//    child = std::make_unique<SceneNode>();
+//    child->model = assetManager->getOrCreate<Model>("models/shuttle.obj");
+//    child->transformation = glm::translate(child->transformation, glm::vec3(0.0f, 0.0f, 50.0f));
+//
+//    root->children.push_back(std::move(child));
+
+    auto shader = assetManager->create<assets::Shader>("shaders/default", "shaders/default.vert", "shaders/default.frag");
 
     renderer->shaderHash = shader->hash;
-    renderer->resourceManager->getByAsset<GLBufferedShader>(shader);
+    renderer->resourceManager->getByAsset<renderer::BufferedShader>(shader);
+
+    scene->initialize();
 }
 
 void Client::reshape(Uint32 width, Uint32 height)
@@ -66,16 +109,40 @@ void Client::reshape(Uint32 width, Uint32 height)
     rendererSettings.width = width;
     rendererSettings.height = height;
 
-    renderer->initialize();
+    auto& debugRendererSettings = debugRenderer->settings;
+
+    debugRendererSettings.width = width;
+    debugRendererSettings.height = height;
+
+    auto& interfaceSettings = interface->settings;
+
+    interfaceSettings.width = width;
+    interfaceSettings.height = height;
+
+    interface->initialize();
 }
 
-
-#include <glm/gtc/matrix_transform.hpp>
-
-void Client::update(Uint32 ms)
+void Client::prepareFrame()
 {
-    cameraController->update(ms);
-    scene->assetManager->fileWatcher->update();
+    ++frameCount;
+    ++frameCountFPS;
+
+    const auto now = timeFrameBegin = std::chrono::high_resolution_clock::now();
+    const auto msSinceLastFrame = std::chrono::duration_cast<std::chrono::milliseconds>(now - timeFrameEnd).count();
+    const auto msSinceLastFPS = std::chrono::duration_cast<std::chrono::milliseconds>((now - timeFrameFPS)).count();
+
+    if (msSinceLastFPS > 1000)
+    {
+        const unsigned int framesPerSecond = (frameCountFPS * 1000) / (msSinceLastFPS);
+
+        frameCountFPS = 0;
+        timeFrameFPS = now;
+
+        interface->data.fps = framesPerSecond;
+    }
+
+    cameraController->update(msSinceLastFrame);
+    assetManager->fileWatcher->update();
 
 //    scene->root->transformation =
 //            glm::rotate(scene->root->transformation, 1.0f, glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f)));
@@ -86,7 +153,35 @@ void Client::update(Uint32 ms)
 //    scene->root->children[1]->transformation =
 //            glm::rotate(scene->root->children[1]->transformation, 1.0f, glm::normalize(glm::vec3(0.0f, 0.0f, 1.0f)));
 
-    interface->data.camPos = scene->camera->position;
+    if (1)
+    {
+        std::vector<threading::Task> tasks;
+
+        for (unsigned int i = 0; i < 10; ++i)
+        {
+            tasks.emplace_back([=](){ for(unsigned int i = 0; i < 100000; ++i); });
+        }
+
+        threadPool->enqueue(tasks);
+    }
+
+    threadPool->synchronize(threading::Task::Flags::ALL_FLAGS);
+
+    assert(threadPool->getNumTasks() == 0);
+}
+
+void Client::finalizeFrame()
+{
+    renderer::Renderer::RenderResults results;
+    renderer->render(*scene, results);
+
+    debugRenderer->render(*scene);
+
+    interface->data.cameraState = scene->camera->state;
+    interface->data.renderTime = results.renderTime.count();
+    interface->display(sdlRenderer);
+
+    timeFrameEnd = std::chrono::high_resolution_clock::now();
 }
 
 void Client::event(SDL_Event* event)
@@ -125,23 +220,17 @@ void Client::event(SDL_Event* event)
     }
 }
 
-
-void Client::display()
-{
-    GLRenderer::RenderResults results;
-    renderer->render(*scene, results);
-
-    interface->data.renderTime = results.renderTime.count();
-    interface->display();
-}
-
 void Client::cleanup()
 {
+    if (threadPool)
+        threadPool->synchronize(threading::Task::Flags::ALL_FLAGS);
+
     keyboardHandler.reset();
     mouseHandler.reset();
     scene.reset();
     interface.reset();
     cameraController.reset();
     renderer.reset();
+    threadPool.reset();
 }
 

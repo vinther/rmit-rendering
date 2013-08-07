@@ -11,13 +11,21 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 
+namespace scene
+{
+
 class Camera
 {
 public:
 	Camera();
 
-	glm::vec3 position;
-	glm::quat rotation;
+	struct State
+	{
+	    glm::vec3 position;
+        glm::quat rotation;
+	} state;
 };
+
+}
 
 #endif /* CAMERA_HPP_ */

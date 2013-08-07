@@ -11,14 +11,18 @@
 #include <memory>
 
 class Client;
-class Camera;
 
-class SceneNode;
-
-namespace assets
+namespace physics
 {
-class AssetManager;
+template <unsigned int bucketSize>
+class Octree;
 }
+
+namespace scene
+{
+
+class Camera;
+class SceneNode;
 
 class Scene
 {
@@ -26,11 +30,15 @@ public:
     Scene(std::shared_ptr<Client> client);
     virtual ~Scene();
 
+    void initialize();
+
     std::unique_ptr<Camera> camera;
     std::unique_ptr<SceneNode> root;
-    std::unique_ptr<assets::AssetManager> assetManager;
+    std::unique_ptr<physics::Octree<256> > intersectionTree;
 private:
     std::shared_ptr<Client> client;
 };
+
+}
 
 #endif /* SCENE_HPP_ */

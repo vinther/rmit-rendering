@@ -17,6 +17,9 @@ class Client;
 struct SDL_MouseButtonEvent;
 struct SDL_MouseMotionEvent;
 
+namespace input
+{
+
 class MouseHandler
 {
 public:
@@ -32,6 +35,6 @@ public:
     std::shared_ptr<Client> client;
 };
 
-
+}
 
 #endif /* MOUSEHANDLER_HPP_ */

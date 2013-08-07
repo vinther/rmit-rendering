@@ -18,6 +18,9 @@ namespace assets
 class Model;
 }
 
+namespace scene
+{
+
 class SceneNode
 {
 public:
@@ -29,5 +32,7 @@ public:
 
     std::vector<std::unique_ptr<SceneNode>> children;
 };
+
+}
 
 #endif /* SCENENODE_HPP_ */

@@ -33,7 +33,7 @@ uniform mat4 model;
 in vec3 vertNormal;
 in vec3 vertPosition;
 in vec3 vertTangent;
-in vec3 vertTexCoord;
+in vec2 vertTexCoord;
 
 out vec4 fragColor;
 
@@ -50,17 +50,17 @@ void main()
     mat4 worldToCameraMatrix = (view * model);
 
     vec3 cameraPosition = -worldToCameraMatrix[3].xyz * mat3(worldToCameraMatrix);
-    vec3 lightPos = vec3(sin(test) * 16, -11.0 + cos(test) * 4 + 4, 0.0);
+    vec3 lightPos = vec3(sin(test) * 1000, 200, 0.0);
     
-    const vec3 lightColor = vec3(1, 1, 1);
-    const vec3 globalAmbient = vec3(0.2, 0.2, 0.2);
+    const vec4 lightColor = vec4(1, 1, 1, 1.0);
+    const vec4 globalAmbient = vec4(0.2, 0.2, 0.2, 1.0);
     
     vec3 binormal = cross(vertTangent, vertNormal);
   	mat3 rotation = mat3(vertTangent, binormal, vertNormal);
   		
   	/* http://stackoverflow.com/a/5284527 */
 	const ivec3 off = ivec3(-1, 0, 1);
-	const vec2 size = vec2(1.0, 0.0);  		
+	const vec2 size = vec2(1.0, 1.0);  		
 	vec4 wave = texture(bumpTexSampler, vertTexCoord.xy);
     float s11 = wave.x;
     float s01 = textureOffset(bumpTexSampler, vertTexCoord.xy, off.xy).x;
@@ -77,22 +77,22 @@ void main()
   // Normalize normal in eye space
   	vec3 N;
   	
-  	if (length(vertTangent) > 0.1f)
+  	if (length(vertTangent) > 0.1f && false)
   		N = normalize((rotation * bump) + vertNormal);
   	else
   		N = normalize(vertNormal);
 
   // Compute the emissive term
-    vec3 emissive = vec3(frontMaterial.emission);
+    vec4 emissive = frontMaterial.emission;
 
   // Compute the ambient term
-    vec3 ambient = vec3(frontMaterial.ambient) * globalAmbient;
+    vec4 ambient = frontMaterial.ambient * globalAmbient * texture(ambientTexSampler, vertTexCoord);
 
   // Compute the diffuse term
   // Normalized vector toward the light source
     vec3 L = normalize(vec3(lightPos) - P);
     float diffuseLight = max(dot(N, L), 0);
-    vec3 diffuse = vec3(frontMaterial.diffuse) * lightColor * diffuseLight * vec3(texture(diffuseTexSampler, vec2(vertTexCoord)));
+    vec4 diffuse = frontMaterial.diffuse * lightColor * diffuseLight * texture(diffuseTexSampler, vertTexCoord);
 
   // Compute the specular term
     vec3 V = normalize(-P);      // Normalized vector toward the viewpoint
@@ -100,8 +100,10 @@ void main()
     float specularLight = pow(max(dot(N, H),0), frontMaterial.shininess);
     if(diffuseLight <= 0)
     	specularLight = 0;
-    vec3 specular = vec3(frontMaterial.specular) * lightColor * specularLight;
+    vec4 specular = frontMaterial.specular * lightColor * specularLight;
 
   	// Define the final fragment color
-    fragColor.xyz =  emissive + ambient + diffuse + specular;
-}
+    fragColor = emissive + ambient + diffuse + specular;
+    //fragColor = vec4(N, 1.0);
+    fragColor = ambient + diffuse + specular;
+}	

@@ -36,7 +36,7 @@ assets::Model::~Model()
 
 bool assets::Model::loadFromDisk()
 {
-    auto scene = importer.ReadFile("assets/" + name, aiProcessPreset_TargetRealtime_Fast);
+    auto scene = importer.ReadFile("assets/" + name, aiProcessPreset_TargetRealtime_Quality ^ (aiProcess_JoinIdenticalVertices | aiProcess_GenUVCoords) );
 
     if (scene && !(scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE))
     {

@@ -7,9 +7,8 @@
 
 #include "scene/Camera.hpp"
 
-Camera::Camera()
-    : position(glm::vec3(0.0f))
-    , rotation(glm::quat(1.0f, glm::vec3(0.0f)))
+scene::Camera::Camera()
+    : state({glm::vec3(0.0f), glm::quat(1.0f, glm::vec3(0.0f))})
 {
 }
 

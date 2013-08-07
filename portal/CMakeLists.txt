@@ -8,6 +8,7 @@ find_package(GLM REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
+find_package(SDL2_ttf REQUIRED)
 find_package(JPEG REQUIRED)
 find_package(Assimp REQUIRED)
 
@@ -45,5 +46,4 @@ file(GLOB_RECURSE PORTAL_SOURCES src/*.cpp)
 
 add_executable (portal ${PORTAL_SOURCES})
 
-target_link_libraries(portal 
-	${SDL2_LIBRARY} ${SDL2IMAGE_LIBRARY} ${JPEG_LIBRARY} ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARIES} ${ASSIMP_LIBRARIES})
+target_link_libraries(portal ${SDL2_LIBRARY} ${SDL2IMAGE_LIBRARY} ${SDL2TTF_LIBRARY} ${JPEG_LIBRARY} ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARIES} ${ASSIMP_LIBRARIES})
