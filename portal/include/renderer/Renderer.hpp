@@ -66,8 +66,6 @@ public:
 
     struct RenderState
     {
-        scene::Camera::State cameraState;
-
         glm::mat4 modelMatrix;
 
         struct

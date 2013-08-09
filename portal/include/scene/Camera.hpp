@@ -19,11 +19,26 @@ class Camera
 public:
 	Camera();
 
-	struct State
-	{
-	    glm::vec3 position;
-        glm::quat rotation;
-	} state;
+	glm::vec3 position;
+
+	float fieldOfView;
+	float aspectRatio;
+	float nearPlane;
+	float farPlane;
+
+	float horizontalAngle, verticalAngle;
+
+    glm::mat4 getViewProjectionMatrix() const;
+    glm::mat4 projection() const;
+    glm::mat4 view() const;
+
+    glm::mat4 orientation() const;
+
+    glm::vec3 forward() const;
+    glm::vec3 right() const;
+    glm::vec3 up() const;
+
+    void rotate(float horizontalAngle, float vertialAngle);
 };
 
 }

@@ -24,38 +24,57 @@ class SceneNode;
 namespace physics
 {
 
-template <unsigned int bucketSize = 256>
-class Octree
+template <unsigned int bucketSize>
+class OctreeT
 {
 public:
-    Octree();
-    ~Octree();
+    OctreeT();
+    ~OctreeT();
 
     struct Node
     {
+        const static unsigned int nodeBucketSize = bucketSize;
+
+        Node()
+            : isLeaf(true)
+        {}
+
         std::array<std::unique_ptr<Node>, 8> children;
         std::vector<unsigned int> bucket;
 
         AABB aabb;
 
-        bool isLeaf = true;
+        bool isLeaf;
     };
 
     std::unique_ptr<Node> root;
-
     std::vector<Triangle> objects;
 
     void createFromScene(const scene::SceneNode& sceneRoot);
 
+    struct IntersectionDetails
+    {
+        glm::vec3 normal;
+        glm::vec3 position;
+        bool intersection;
+    };
+
+    bool trace(const Ray& ray, IntersectionDetails& result);
+
     unsigned int nodeRoot;
 
     std::vector<std::array<unsigned int, 8>> nodeChildren;
-    std::vector<AABB> nodeAABB;
-    std::vector<bool> nodeIsLeaf;
+    std::vector<std::array<bool, 8>> nodeChildIsLeaf;
+    std::vector<std::array<AABB, 8>> nodeChildAABB;
     std::vector<std::pair<unsigned int, std::array<Triangle, bucketSize>>> buckets;
 
     void optimize();
+
+private:
+    std::vector<unsigned int> bucketBuffer;
 };
+
+typedef OctreeT<32> Octree;
 
 }
 

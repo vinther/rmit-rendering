@@ -21,6 +21,8 @@
 
 #include "physics/Octree.hpp"
 
+#include "Utilities.hpp"
+
 namespace renderer
 {
 
@@ -36,51 +38,49 @@ renderer::DebugRenderer::~DebugRenderer()
 }
 
 void renderIntersectionTree(
-        const physics::Octree<256>::Node& node,
+        const physics::Octree& tree,
         unsigned int depth,
         const renderer::DebugRenderer::Settings& settings)
 {
-    if (depth > settings.maxTreeDepth)
-        return;
+    UNUSED(depth);
+    UNUSED(settings);
 
-    glBegin(GL_LINE_STRIP);
-    glVertex3f(node.aabb.min.x, node.aabb.min.y, node.aabb.min.z); // v0
-    glVertex3f(node.aabb.max.x, node.aabb.min.y, node.aabb.min.z); // v1
-
-    glVertex3f(node.aabb.max.x, node.aabb.max.y, node.aabb.min.z); // v2
-    glVertex3f(node.aabb.min.x, node.aabb.max.y, node.aabb.min.z); // v3
-
-    glVertex3f(node.aabb.min.x, node.aabb.min.y, node.aabb.min.z); // v0
-    glEnd();
-
-    glBegin(GL_LINE_STRIP);
-    glVertex3f(node.aabb.min.x, node.aabb.min.y, node.aabb.max.z); // v0
-    glVertex3f(node.aabb.max.x, node.aabb.min.y, node.aabb.max.z); // v1
-
-    glVertex3f(node.aabb.max.x, node.aabb.max.y, node.aabb.max.z); // v2
-    glVertex3f(node.aabb.min.x, node.aabb.max.y, node.aabb.max.z); // v3
-
-    glVertex3f(node.aabb.min.x, node.aabb.min.y, node.aabb.max.z); // v0
-    glEnd();
-
-    glBegin(GL_LINES);
-    glVertex3f(node.aabb.min.x, node.aabb.min.y, node.aabb.min.z); // v0
-    glVertex3f(node.aabb.min.x, node.aabb.min.y, node.aabb.max.z); // v0
-    glVertex3f(node.aabb.max.x, node.aabb.min.y, node.aabb.min.z); // v1
-    glVertex3f(node.aabb.max.x, node.aabb.min.y, node.aabb.max.z); // v1
-
-    glVertex3f(node.aabb.max.x, node.aabb.max.y, node.aabb.min.z); // v2
-    glVertex3f(node.aabb.max.x, node.aabb.max.y, node.aabb.max.z); // v2
-    glVertex3f(node.aabb.min.x, node.aabb.max.y, node.aabb.min.z); // v3
-    glVertex3f(node.aabb.min.x, node.aabb.max.y, node.aabb.max.z); // v3
-
-    glEnd();
-
-    if (!node.isLeaf)
+    for (const auto& aabbs: tree.nodeChildAABB)
     {
-        for (const auto& child: node.children)
+        for (const auto& aabb: aabbs)
         {
-            renderIntersectionTree(*(child), depth + 1, settings);
+            glBegin(GL_LINE_STRIP);
+            glVertex3f(aabb.min.x, aabb.min.y, aabb.min.z); // v0
+            glVertex3f(aabb.max.x, aabb.min.y, aabb.min.z); // v1
+
+            glVertex3f(aabb.max.x, aabb.max.y, aabb.min.z); // v2
+            glVertex3f(aabb.min.x, aabb.max.y, aabb.min.z); // v3
+
+            glVertex3f(aabb.min.x, aabb.min.y, aabb.min.z); // v0
+            glEnd();
+
+            glBegin(GL_LINE_STRIP);
+            glVertex3f(aabb.min.x, aabb.min.y, aabb.max.z); // v0
+            glVertex3f(aabb.max.x, aabb.min.y, aabb.max.z); // v1
+
+            glVertex3f(aabb.max.x, aabb.max.y, aabb.max.z); // v2
+            glVertex3f(aabb.min.x, aabb.max.y, aabb.max.z); // v3
+
+            glVertex3f(aabb.min.x, aabb.min.y, aabb.max.z); // v0
+            glEnd();
+
+            glBegin(GL_LINES);
+            glVertex3f(aabb.min.x, aabb.min.y, aabb.min.z); // v0
+            glVertex3f(aabb.min.x, aabb.min.y, aabb.max.z); // v0
+            glVertex3f(aabb.max.x, aabb.min.y, aabb.min.z); // v1
+            glVertex3f(aabb.max.x, aabb.min.y, aabb.max.z); // v1
+
+            glVertex3f(aabb.max.x, aabb.max.y, aabb.min.z); // v2
+            glVertex3f(aabb.max.x, aabb.max.y, aabb.max.z); // v2
+            glVertex3f(aabb.min.x, aabb.max.y, aabb.min.z); // v3
+            glVertex3f(aabb.min.x, aabb.max.y, aabb.max.z); // v3
+
+            glEnd();
         }
     }
 }
@@ -109,20 +109,50 @@ void DebugRenderer::render(const scene::Scene& scene)
         return;
 
     const auto& camera = *(scene.camera);
-    const auto viewMatrix = glm::mat4_cast(-camera.state.rotation) * glm::translate(glm::mat4(1.0f), -camera.state.position);
-    const auto projMatrix = glm::perspective(settings.fov, settings.width / (float) settings.height, settings.nearClip, settings.farClip);
+    const glm::mat4 viewProjectionMatrix = camera.getViewProjectionMatrix();
 
     glColor3f(1.0f, 0.0f, 1.0f);
 
+    glLineWidth(10.0f);
+
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
-    glLoadMatrixf(glm::value_ptr(projMatrix));
+    glLoadIdentity();
 
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
-    glLoadMatrixf(glm::value_ptr(viewMatrix));
+    glLoadMatrixf(glm::value_ptr(viewProjectionMatrix));
 
-    renderIntersectionTree(*(scene.intersectionTree->root), 0, settings);
+
+//    const auto pos = camera.position + camera.forward() * 100.0f;
+
+//    glColor3f(0.0f, 1.0f, 0.0f);
+//    glBegin(GL_LINES);
+//        glColor3f(1,0,0);
+//        glVertex3f(0.0f, 200.0f, 0.0f);
+//
+//        glColor3f(0.0f, 1.0f, 0.0f);
+//        glVertex3f(pos.x, pos.y, pos.z);
+//    glEnd();
+
+    glLineWidth(1.0f);
+
+    glColor3f(1.0f, 0.0f, 1.0f);
+    //renderIntersectionTree(*(scene.intersectionTree), 0, settings);
+
+    glLineWidth(10.0f);
+    glPointSize(10.0f);
+    glBegin(GL_LINES);
+    for (const auto& point: points)
+    {
+        glColor3f(0.0f, 1.0f, 0.0f);
+        glVertex3f(0.0f, 200.0f, 0.0f);
+
+        glColor3f(1,0,0);
+        glVertex3f(point.x, point.y, point.z);
+    }
+    glEnd();
+
 
     glPopMatrix();
 

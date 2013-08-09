@@ -9,7 +9,13 @@
 
 #include "client/Client.hpp"
 #include "client/CameraController.hpp"
+
 #include "scene/Scene.hpp"
+#include "scene/Camera.hpp"
+
+#include "physics/Octree.hpp"
+
+#include "renderer/DebugRenderer.hpp"
 
 input::MouseHandler::MouseHandler(std::shared_ptr<Client> client)
     : client(client)
@@ -37,6 +43,19 @@ void input::MouseHandler::event(const SDL_MouseMotionEvent& event)
 void input::MouseHandler::mouseDown(Uint8 button, Uint16 x, Uint16 y)
 {
     client->cameraController->mouseDown(button, x, y);
+
+    physics::Octree::IntersectionDetails intersectionResult;
+    client->scene->intersectionTree->trace(
+            physics::Ray{
+                client->scene->camera->position,
+                client->scene->camera->forward()},
+            intersectionResult
+    );
+
+    if (intersectionResult.intersection)
+    {
+        client->debugRenderer->points.push_back(intersectionResult.position);
+    }
 }
 
 void input::MouseHandler::mouseUp(Uint8 button, Uint16 x, Uint16 y)

@@ -12,11 +12,7 @@
 
 class Client;
 
-namespace physics
-{
-template <unsigned int bucketSize>
-class Octree;
-}
+#include "physics/Octree.hpp"
 
 namespace scene
 {
@@ -34,7 +30,7 @@ public:
 
     std::unique_ptr<Camera> camera;
     std::unique_ptr<SceneNode> root;
-    std::unique_ptr<physics::Octree<256> > intersectionTree;
+    std::unique_ptr<physics::Octree > intersectionTree;
 private:
     std::shared_ptr<Client> client;
 };

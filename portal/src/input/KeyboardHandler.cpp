@@ -62,6 +62,11 @@ void input::KeyboardHandler::keydown(SDL_Keycode key, Uint16 mod)
         client->debugRenderer->settings.maxTreeDepth = glm::max(1u, client->debugRenderer->settings.maxTreeDepth);
     }
 
+    if ('c' == key)
+    {
+        client->debugRenderer->points.clear();
+    }
+
     client->cameraController->keyDown(key, mod);
 }
 

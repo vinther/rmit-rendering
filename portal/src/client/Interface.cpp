@@ -94,13 +94,14 @@ void Interface::display(SDL_Renderer* sdlRenderer)
     writeText(sstream.str(), 20.0f, 1 * fontHeight + 4);
 
     sstream.str("");
-    const auto& pos = data.cameraState.position;
+    const auto& pos = data.cameraPosition;
     sstream << "Pos: <" << pos.x << ", " << pos.y << ", " << pos.z << ">";
     writeText(sstream.str(), 20.0f, 2 * fontHeight + 4);
 
-//    const auto rot = glm::eulerAngles(data.cameraState.rotation);
-//    sstream << "Rot: <" << rot.x << ", " << rot.y << ", " << rot.z << ">";
-//    writeText(sstream.str(), 20.0f, 3 * fontHeight + 4);
+    sstream.str("");
+    const auto rot = data.cameraDirection;
+    sstream << "Rot: <" << rot.x << ", " << rot.y << ", " << rot.z << ">";
+    writeText(sstream.str(), 20.0f, 3 * fontHeight + 4);
 
     sstream.str("");
     sstream << "RenderTime: " << data.renderTime;

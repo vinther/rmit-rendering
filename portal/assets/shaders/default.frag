@@ -26,8 +26,7 @@ layout(std140) uniform MaterialParametersLoc {
 	MaterialParameters backMaterial;
 };
 
-uniform mat4 projection;
-uniform mat4 view;
+uniform mat4 viewProjectionMatrix;
 uniform mat4 model;
 
 in vec3 vertNormal;
@@ -47,7 +46,7 @@ uniform float test;
 
 void main()
 {
-    mat4 worldToCameraMatrix = (view * model);
+    mat4 worldToCameraMatrix = viewProjectionMatrix;
 
     vec3 cameraPosition = -worldToCameraMatrix[3].xyz * mat3(worldToCameraMatrix);
     vec3 lightPos = vec3(sin(test) * 1000, 200, 0.0);

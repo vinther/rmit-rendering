@@ -27,7 +27,7 @@
 scene::Scene::Scene(std::shared_ptr<Client> client)
     : camera(std::make_unique<Camera>())
     , root(std::make_unique<SceneNode>())
-    , intersectionTree(std::make_unique<physics::Octree<256> >())
+    , intersectionTree(std::make_unique<physics::Octree >())
     , client(client)
 {
 }

@@ -42,7 +42,7 @@ include_directories(${SDL2_INCLUDE_DIR})
 include_directories(${SDL2IMAGE_INCLUDE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-file(GLOB_RECURSE PORTAL_SOURCES src/*.cpp)
+file(GLOB_RECURSE PORTAL_SOURCES src/*.cpp src/*.c)
 
 add_executable (portal ${PORTAL_SOURCES})
 

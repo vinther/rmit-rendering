@@ -38,7 +38,7 @@ public:
 	    Uint16 fps;
 	    Uint16 renderTime;
 
-	    scene::Camera::State cameraState;
+	    glm::vec3 cameraPosition, cameraDirection;
 	} data;
 
 	struct Settings

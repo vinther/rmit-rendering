@@ -8,7 +8,10 @@
 #ifndef DEBUGRENDERER_HPP_
 #define DEBUGRENDERER_HPP_
 
+#include <vector>
+
 #include <SDL2/SDL.h>
+#include <glm/glm.hpp>
 
 namespace scene
 {
@@ -41,6 +44,8 @@ public:
 
     void initialize();
     void render(const scene::Scene& scene);
+
+    std::vector<glm::vec3> points;
 };
 
 } /* namespace threading */

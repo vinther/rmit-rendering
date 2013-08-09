@@ -117,17 +117,14 @@ void renderer::Renderer::render(const scene::Scene& scene, RenderResults& result
     }
 
 
-    const auto viewMatrix = glm::mat4_cast(-camera.state.rotation) * glm::translate(glm::mat4(1.0f), -camera.state.position);
-    const auto projMatrix = glm::perspective(settings.fov, settings.width / (float) settings.height, settings.nearClip, settings.farClip);
+    const glm::mat4 viewProjectionMatrix = camera.getViewProjectionMatrix();
 
-    glUniformMatrix4fv(shader.getUniformLocation("view"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
-    glUniformMatrix4fv(shader.getUniformLocation("projection"), 1, GL_FALSE, glm::value_ptr(projMatrix));
+    glUniformMatrix4fv(shader.getUniformLocation("viewProjectionMatrix"), 1, GL_FALSE, glm::value_ptr(viewProjectionMatrix));
 
     glEnableClientState(GL_VERTEX_ARRAY);
 
     RenderState state;
 
-    state.cameraState = camera.state;
     state.modelMatrix = glm::mat4(1.0f);
     state.locations.modelMatrix = shader.getUniformLocation("model");
 

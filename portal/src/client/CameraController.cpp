@@ -7,8 +7,8 @@
 
 #include "client/CameraController.hpp"
 
-#include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp>
+
+
 
 #include "client/Client.hpp"
 #include "scene/Scene.hpp"
@@ -46,7 +46,7 @@ void CameraController::keyDown(SDL_Keycode key, Uint16 mod)
     case SDLK_LCTRL:
         state.moveDown = true; break;
     case SDLK_LSHIFT:
-        state.speedFactor = 16.0f; break;
+        state.speedFactor = 8.0f; break;
     default:
         break;
     }
@@ -71,7 +71,7 @@ void CameraController::keyUp(SDL_Keycode key, Uint16 mod)
     case SDLK_LCTRL:
         state.moveDown = false; break;
     case SDLK_LSHIFT:
-        state.speedFactor = 8.0f; break;
+        state.speedFactor = 4.0f; break;
     default:
         break;
     }
@@ -96,42 +96,35 @@ void CameraController::mouseMove(Uint16 x, Uint16 y, Sint16 xrel, Sint16 yrel)
     UNUSED(x);
     UNUSED(y);
 
-    auto& rotation = client->scene->camera->state.rotation;
-
-    rotation = rotation * (glm::quat(1.0f, glm::vec3(0.0f, xrel * 0.0001f, 0.0f)));
-    rotation = (glm::quat(1.0f, glm::vec3(yrel * 0.0001f, 0.0f, 0.0f))) * rotation;
-    rotation = glm::normalize(rotation);
+    client->scene->camera->rotate(xrel * 0.01f, yrel * 0.01f);
 }
 
 void CameraController::update(Uint32 ms)
 {
-    UNUSED(ms);
-
-    auto& position = client->scene->camera->state.position;
-    const auto& rotation = client->scene->camera->state.rotation;
+    auto& camera = *(client->scene->camera);
 
     if (state.moveForward)
-        position += glm::vec3(0.0f, 0.0f, -state.speedFactor) * rotation;
+        camera.position += camera.forward() * state.speedFactor * (float) ms;
 
     if (state.moveBackward)
-        position += glm::vec3(0.0f, 0.0f, state.speedFactor)  * rotation;
+        camera.position += -camera.forward() * state.speedFactor * (float) ms;
 
     if (state.moveRight)
-        position += glm::vec3(state.speedFactor, 0.0f,  0.0f) * rotation;
+        camera.position += camera.right() * state.speedFactor * (float) ms;
 
     if (state.moveLeft)
-        position += glm::vec3(-state.speedFactor, 0.0f,  0.0f) * rotation;
+        camera.position += -camera.right() * state.speedFactor * (float) ms;
 
     if (state.moveUp)
-        position += glm::vec3(0.0f, state.speedFactor,  0.0f);// * rotation;
+        camera.position += camera.up() * state.speedFactor * (float) ms;
 
     if (state.moveDown)
-        position += glm::vec3(0.0f, -state.speedFactor,  0.0f);// * rotation;
+        camera.position += -camera.up() * state.speedFactor * (float) ms;
 }
 
 CameraController::State::State()
     : moveForward(false), moveBackward(false), moveLeft(false)
     , moveRight(false), moveUp(false), moveDown(false)
-    , speedFactor(8.0f)
+    , speedFactor(4.0f)
 {
 }

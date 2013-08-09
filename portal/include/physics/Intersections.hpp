@@ -15,42 +15,51 @@
 namespace physics
 {
 
+extern "C"
+{
+    int triBoxOverlap(float boxcenter[3], float boxhalfsize[3], float triverts[3][3]);
+}
+
 inline bool rayAABBIntersection(
-        const glm::vec3& position,
+        const glm::vec3& origin,
         const glm::vec3& direction,
         const glm::vec3& aabbMin,
         const glm::vec3& aabbMax,
         float& distance)
 {
-    float tMin = 0.0f;
-    float tMax = std::numeric_limits<float>::max();
+    using glm::max;
+    using glm::min;
 
-    glm::vec3 OBBposition_worldspace(1.0f, 0.0f, 0.0f);
+    // r.dir is unit direction vector of ray
+    glm::vec3 dirfrac = 1.0f / direction;
 
-    glm::vec3 delta = OBBposition_worldspace - position;
+    // lb is the corner of AABB with minimal coordinates - left bottom, rt is maximal corner
+    // r.org is origin of ray
+    float t1 = (aabbMin.x - origin.x) * dirfrac.x;
+    float t2 = (aabbMax.x - origin.x) * dirfrac.x;
+    float t3 = (aabbMin.y - origin.y) * dirfrac.y;
+    float t4 = (aabbMax.y - origin.y) * dirfrac.y;
+    float t5 = (aabbMin.z - origin.z) * dirfrac.z;
+    float t6 = (aabbMax.z - origin.z) * dirfrac.z;
 
-    glm::vec3 xaxis(1.0f, 0.0f, 0.0f);
-    float e = glm::dot(xaxis, delta);
-    float f = glm::dot(direction, xaxis);
+    float tmin = max(max(min(t1, t2), min(t3, t4)), min(t5, t6));
+    float tmax = min(min(max(t1, t2), max(t3, t4)), max(t5, t6));
 
-    // Beware, don't do the division if f is near 0 ! See full source code for details.
-    float t1 = (e+aabbMin.x) / f; // Intersection with the "left" plane
-    float t2 = (e+aabbMax.x) / f; // Intersection with the "right" plane
-
-    if (t1>t2){ // if wrong order
-        float w=t1;t1=t2;t2=w; // swap t1 and t2
+    // if tmax < 0, ray (line) is intersecting AABB, but whole AABB is behind us
+    if (tmax < 0)
+    {
+        distance = tmax;
+        return false;
     }
 
-    // tMax is the nearest "far" intersection (amongst the X,Y and Z planes pairs)
-    if ( t2 < tMax ) tMax = t2;
-    // tMin is the farthest "near" intersection (amongst the X,Y and Z planes pairs)
-    if ( t1 > tMin ) tMin = t1;
-
-    if (tMax < tMin )
+    // if tmin > tmax, ray doesn't intersect AABB
+    if (tmin > tmax)
+    {
+        distance = tmax;
         return false;
+    }
 
-    distance = tMin;
-
+    distance = tmin;
     return true;
 }
 
@@ -62,9 +71,19 @@ inline bool pointAABBIntersection(const glm::vec3& point, const AABB& aabb)
 
 inline bool triangleAABBIntersection(const Triangle& tri, const AABB& aabb)
 {
-    return (pointAABBIntersection(tri.vertices[0], aabb) ||
-            pointAABBIntersection(tri.vertices[1], aabb) ||
-            pointAABBIntersection(tri.vertices[2], aabb));
+    if (pointAABBIntersection(tri.vertices[0], aabb) ||
+        pointAABBIntersection(tri.vertices[1], aabb) ||
+        pointAABBIntersection(tri.vertices[2], aabb))
+    {
+        return true;
+    } else
+    {
+        Triangle triCopy = tri;
+        glm::vec3 boxhalfsize = (aabb.max - aabb.min) * 0.5f;
+        glm::vec3 boxcenter = aabb.min + boxhalfsize;
+
+        return 1 == triBoxOverlap((float*) &boxcenter, (float*) &boxhalfsize, (float (*)[3]) &triCopy);
+    }
 }
 
 }

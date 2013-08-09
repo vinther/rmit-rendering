@@ -30,17 +30,17 @@
 
 #include "threading/ThreadPool.hpp"
 
+#include "physics/Octree.hpp"
+
 #include "Utilities.hpp"
 
 Client::Client(int argc, char** argv)
-    : keyboardHandler()
-    , mouseHandler()
+    : keyboardHandler(), mouseHandler()
     , scene()
     , interface()
     , cameraController()
     , assetManager()
-    , renderer()
-    , debugRenderer()
+    , renderer(), debugRenderer()
     , threadPool()
 {
     glutInit(&argc, argv);
@@ -64,15 +64,14 @@ void Client::initialize(SDL_Window* sdlWindow, SDL_Renderer* sdlRenderer)
     threadPool = std::make_unique<threading::ThreadPool>();
 
     threadPool->settings.numThreads = SDL_GetCPUCount() - 1;
+    threadPool->initialize();
 
     interface->initialize();
     renderer->initialize();
     debugRenderer->initialize();
-    threadPool->initialize();
 
-    scene->camera->state.position = glm::vec3(-14.0f, 1.5f, 0.0f);
-    scene->camera->state.rotation = glm::rotate(scene->camera->state.rotation, 90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-    scene->camera->state.rotation = glm::rotate(scene->camera->state.rotation, 30.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+    scene->camera->position = glm::vec3(-14.0f, 1.5f, 0.0f);
+    scene->camera->rotate(90.0f, 30.0f);
 
     scene->root->model = assetManager->getOrCreate<assets::Model>("models/crytek-sponza/sponza.obj", std::ref(*assetManager));
 
@@ -153,7 +152,7 @@ void Client::prepareFrame()
 //    scene->root->children[1]->transformation =
 //            glm::rotate(scene->root->children[1]->transformation, 1.0f, glm::normalize(glm::vec3(0.0f, 0.0f, 1.0f)));
 
-    if (1)
+    if (0)
     {
         std::vector<threading::Task> tasks;
 
@@ -177,7 +176,9 @@ void Client::finalizeFrame()
 
     debugRenderer->render(*scene);
 
-    interface->data.cameraState = scene->camera->state;
+    interface->data.cameraPosition = scene->camera->position;
+    interface->data.cameraDirection = scene->camera->forward();
+
     interface->data.renderTime = results.renderTime.count();
     interface->display(sdlRenderer);
 
