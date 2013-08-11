@@ -1,0 +1,94 @@
+\hypertarget{Octree_8cpp}{\section{src/physics/\-Octree.cpp File Reference}
+\label{Octree_8cpp}\index{src/physics/\-Octree.\-cpp@{src/physics/\-Octree.\-cpp}}
+}
+{\ttfamily \#include \char`\"{}physics/\-Octree.\-hpp\char`\"{}}\\*
+{\ttfamily \#include $<$assimp/scene.\-h$>$}\\*
+{\ttfamily \#include $<$S\-D\-L2/\-S\-D\-L\-\_\-log.\-h$>$}\\*
+{\ttfamily \#include $<$glm/gtx/intersect.\-hpp$>$}\\*
+{\ttfamily \#include \char`\"{}physics/\-Intersections.\-hpp\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}assets/\-Model.\-hpp\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}scene/\-Scene\-Node.\-hpp\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}Utilities.\-hpp\char`\"{}}\\*
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename Node\-Type $>$ }\\bool \hyperlink{Octree_8cpp_aa1305f1a683016accd9d303fdd4e5598}{insert\-Triangle} (const \hyperlink{structphysics_1_1Triangle}{physics\-::\-Triangle} \&triangle, Node\-Type \&node, unsigned int idx, const std\-::vector$<$ \hyperlink{structphysics_1_1Triangle}{physics\-::\-Triangle} $>$ \&objects)
+\item 
+{\footnotesize template$<$typename Node\-Type $>$ }\\void \hyperlink{Octree_8cpp_a5c83174f45f5b5b8cb5fe9a33722a94d}{insert\-Face} (const ai\-Face \&face, const ai\-Vector3\-D $\ast$vertices, Node\-Type \&root, std\-::vector$<$ \hyperlink{structphysics_1_1Triangle}{physics\-::\-Triangle} $>$ \&objects, unsigned int idx)
+\item 
+{\footnotesize template$<$typename Node\-Type $>$ }\\void \hyperlink{Octree_8cpp_a43c67e3392c1ead128672ff7eda0ddfe}{insert\-Mesh} (const ai\-Mesh \&mesh, Node\-Type \&root, std\-::vector$<$ \hyperlink{structphysics_1_1Triangle}{physics\-::\-Triangle} $>$ \&objects, unsigned int start\-Idx)
+\item 
+{\footnotesize template$<$typename Node\-Type , typename Bucket\-Type $>$ }\\unsigned int \hyperlink{Octree_8cpp_a6c2f4826bde8ce51a328a2a23a1d132a}{insert\-D\-F\-S} (const Node\-Type \&ptr\-Node, const std\-::vector$<$ \hyperlink{structphysics_1_1Triangle}{physics\-::\-Triangle} $>$ \&objects, unsigned int node, std\-::vector$<$ std\-::array$<$ unsigned int, 8 $>$$>$ \&node\-Children, std\-::vector$<$ std\-::array$<$ bool, 8 $>$$>$ \&node\-Child\-Is\-Leaf, std\-::vector$<$ std\-::array$<$ \hyperlink{structphysics_1_1AABB}{physics\-::\-A\-A\-B\-B}, 8 $>$$>$ \&node\-Child\-A\-A\-B\-B, std\-::vector$<$ Bucket\-Type $>$ \&bucket)
+\item 
+{\footnotesize template$<$typename Node\-Type $>$ }\\void \hyperlink{Octree_8cpp_ae41885aba7eed22dc39da952a870be41}{count\-Nodes} (const Node\-Type \&node, unsigned int \&internal\-Nodes, unsigned int \&leaves)
+\item 
+void \hyperlink{Octree_8cpp_a13174c0c2943c6af940e30101bea6721}{get\-Buckets} (unsigned int node, std\-::vector$<$ unsigned int $>$ \&buckets, const \hyperlink{structphysics_1_1Ray}{physics\-::\-Ray} \&ray, const std\-::vector$<$ std\-::array$<$ unsigned int, 8 $>$$>$ \&node\-Children, const std\-::vector$<$ std\-::array$<$ bool, 8 $>$$>$ \&node\-Child\-Is\-Leaf, const std\-::vector$<$ std\-::array$<$ \hyperlink{structphysics_1_1AABB}{physics\-::\-A\-A\-B\-B}, 8 $>$$>$ \&node\-Child\-A\-A\-B\-B)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{Octree_8cpp_ae41885aba7eed22dc39da952a870be41}{\index{Octree.\-cpp@{Octree.\-cpp}!count\-Nodes@{count\-Nodes}}
+\index{count\-Nodes@{count\-Nodes}!Octree.cpp@{Octree.\-cpp}}
+\subsubsection[{count\-Nodes}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename Node\-Type $>$ void count\-Nodes (
+\begin{DoxyParamCaption}
+\item[{const Node\-Type \&}]{node, }
+\item[{unsigned int \&}]{internal\-Nodes, }
+\item[{unsigned int \&}]{leaves}
+\end{DoxyParamCaption}
+)}}\label{Octree_8cpp_ae41885aba7eed22dc39da952a870be41}
+\hypertarget{Octree_8cpp_a13174c0c2943c6af940e30101bea6721}{\index{Octree.\-cpp@{Octree.\-cpp}!get\-Buckets@{get\-Buckets}}
+\index{get\-Buckets@{get\-Buckets}!Octree.cpp@{Octree.\-cpp}}
+\subsubsection[{get\-Buckets}]{\setlength{\rightskip}{0pt plus 5cm}void get\-Buckets (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{node, }
+\item[{std\-::vector$<$ unsigned int $>$ \&}]{buckets, }
+\item[{const {\bf physics\-::\-Ray} \&}]{ray, }
+\item[{const std\-::vector$<$ std\-::array$<$ unsigned int, 8 $>$$>$ \&}]{node\-Children, }
+\item[{const std\-::vector$<$ std\-::array$<$ bool, 8 $>$$>$ \&}]{node\-Child\-Is\-Leaf, }
+\item[{const std\-::vector$<$ std\-::array$<$ {\bf physics\-::\-A\-A\-B\-B}, 8 $>$$>$ \&}]{node\-Child\-A\-A\-B\-B}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{Octree_8cpp_a13174c0c2943c6af940e30101bea6721}
+\hypertarget{Octree_8cpp_a6c2f4826bde8ce51a328a2a23a1d132a}{\index{Octree.\-cpp@{Octree.\-cpp}!insert\-D\-F\-S@{insert\-D\-F\-S}}
+\index{insert\-D\-F\-S@{insert\-D\-F\-S}!Octree.cpp@{Octree.\-cpp}}
+\subsubsection[{insert\-D\-F\-S}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename Node\-Type , typename Bucket\-Type $>$ unsigned int insert\-D\-F\-S (
+\begin{DoxyParamCaption}
+\item[{const Node\-Type \&}]{ptr\-Node, }
+\item[{const std\-::vector$<$ {\bf physics\-::\-Triangle} $>$ \&}]{objects, }
+\item[{unsigned int}]{node, }
+\item[{std\-::vector$<$ std\-::array$<$ unsigned int, 8 $>$$>$ \&}]{node\-Children, }
+\item[{std\-::vector$<$ std\-::array$<$ bool, 8 $>$$>$ \&}]{node\-Child\-Is\-Leaf, }
+\item[{std\-::vector$<$ std\-::array$<$ {\bf physics\-::\-A\-A\-B\-B}, 8 $>$$>$ \&}]{node\-Child\-A\-A\-B\-B, }
+\item[{std\-::vector$<$ Bucket\-Type $>$ \&}]{bucket}
+\end{DoxyParamCaption}
+)}}\label{Octree_8cpp_a6c2f4826bde8ce51a328a2a23a1d132a}
+\hypertarget{Octree_8cpp_a5c83174f45f5b5b8cb5fe9a33722a94d}{\index{Octree.\-cpp@{Octree.\-cpp}!insert\-Face@{insert\-Face}}
+\index{insert\-Face@{insert\-Face}!Octree.cpp@{Octree.\-cpp}}
+\subsubsection[{insert\-Face}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename Node\-Type $>$ void insert\-Face (
+\begin{DoxyParamCaption}
+\item[{const ai\-Face \&}]{face, }
+\item[{const ai\-Vector3\-D $\ast$}]{vertices, }
+\item[{Node\-Type \&}]{root, }
+\item[{std\-::vector$<$ {\bf physics\-::\-Triangle} $>$ \&}]{objects, }
+\item[{unsigned int}]{idx}
+\end{DoxyParamCaption}
+)}}\label{Octree_8cpp_a5c83174f45f5b5b8cb5fe9a33722a94d}
+\hypertarget{Octree_8cpp_a43c67e3392c1ead128672ff7eda0ddfe}{\index{Octree.\-cpp@{Octree.\-cpp}!insert\-Mesh@{insert\-Mesh}}
+\index{insert\-Mesh@{insert\-Mesh}!Octree.cpp@{Octree.\-cpp}}
+\subsubsection[{insert\-Mesh}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename Node\-Type $>$ void insert\-Mesh (
+\begin{DoxyParamCaption}
+\item[{const ai\-Mesh \&}]{mesh, }
+\item[{Node\-Type \&}]{root, }
+\item[{std\-::vector$<$ {\bf physics\-::\-Triangle} $>$ \&}]{objects, }
+\item[{unsigned int}]{start\-Idx}
+\end{DoxyParamCaption}
+)}}\label{Octree_8cpp_a43c67e3392c1ead128672ff7eda0ddfe}
+\hypertarget{Octree_8cpp_aa1305f1a683016accd9d303fdd4e5598}{\index{Octree.\-cpp@{Octree.\-cpp}!insert\-Triangle@{insert\-Triangle}}
+\index{insert\-Triangle@{insert\-Triangle}!Octree.cpp@{Octree.\-cpp}}
+\subsubsection[{insert\-Triangle}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename Node\-Type $>$ bool insert\-Triangle (
+\begin{DoxyParamCaption}
+\item[{const {\bf physics\-::\-Triangle} \&}]{triangle, }
+\item[{Node\-Type \&}]{node, }
+\item[{unsigned int}]{idx, }
+\item[{const std\-::vector$<$ {\bf physics\-::\-Triangle} $>$ \&}]{objects}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{Octree_8cpp_aa1305f1a683016accd9d303fdd4e5598}

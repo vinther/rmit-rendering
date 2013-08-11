@@ -1,0 +1,98 @@
+\hypertarget{classassets_1_1AssetManager}{\section{assets\-:\-:Asset\-Manager Class Reference}
+\label{classassets_1_1AssetManager}\index{assets\-::\-Asset\-Manager@{assets\-::\-Asset\-Manager}}
+}
+
+
+{\ttfamily \#include $<$Asset\-Manager.\-hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classassets_1_1AssetManager_a8b5705260aeff44a6fec0bbb6178050b}{Asset\-Manager} ()
+\item 
+virtual \hyperlink{classassets_1_1AssetManager_a9f6d3724f9eac263999bbbb20b6696e7}{$\sim$\-Asset\-Manager} ()
+\item 
+{\footnotesize template$<$class T $>$ }\\std\-::shared\-\_\-ptr$<$ T $>$ \hyperlink{classassets_1_1AssetManager_af96a7ccb3edec25db7450bec190e63dc}{get} (const std\-::string \&name)
+\item 
+{\footnotesize template$<$class T , typename... Args$>$ }\\std\-::shared\-\_\-ptr$<$ T $>$ \hyperlink{classassets_1_1AssetManager_ab0bd2be0dbec9314072e215276988f74}{create} (const std\-::string \&name, Args...\-args)
+\item 
+{\footnotesize template$<$class T , typename... Args$>$ }\\std\-::shared\-\_\-ptr$<$ T $>$ \hyperlink{classassets_1_1AssetManager_a273c9ca724ac27e88b51042b537fbde4}{get\-Or\-Create} (const std\-::string \&name, Args...\-args)
+\item 
+void \hyperlink{classassets_1_1AssetManager_a097eaa105c31e94bf2197cf28782a59b}{initialize} ()
+\item 
+void \hyperlink{classassets_1_1AssetManager_ae1993b46c62757b98dd73e7cc8551d1a}{report\-Cache\-Contents} () const 
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\-::unique\-\_\-ptr$<$ \hyperlink{classassets_1_1FileWatcher}{File\-Watcher} $>$ \hyperlink{classassets_1_1AssetManager_a77d103eec72f000b81bee460a1f36b7b}{file\-Watcher}
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classassets_1_1AssetManager_a8b5705260aeff44a6fec0bbb6178050b}{\index{assets\-::\-Asset\-Manager@{assets\-::\-Asset\-Manager}!Asset\-Manager@{Asset\-Manager}}
+\index{Asset\-Manager@{Asset\-Manager}!assets::AssetManager@{assets\-::\-Asset\-Manager}}
+\subsubsection[{Asset\-Manager}]{\setlength{\rightskip}{0pt plus 5cm}assets\-::\-Asset\-Manager\-::\-Asset\-Manager (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classassets_1_1AssetManager_a8b5705260aeff44a6fec0bbb6178050b}
+\hypertarget{classassets_1_1AssetManager_a9f6d3724f9eac263999bbbb20b6696e7}{\index{assets\-::\-Asset\-Manager@{assets\-::\-Asset\-Manager}!$\sim$\-Asset\-Manager@{$\sim$\-Asset\-Manager}}
+\index{$\sim$\-Asset\-Manager@{$\sim$\-Asset\-Manager}!assets::AssetManager@{assets\-::\-Asset\-Manager}}
+\subsubsection[{$\sim$\-Asset\-Manager}]{\setlength{\rightskip}{0pt plus 5cm}assets\-::\-Asset\-Manager\-::$\sim$\-Asset\-Manager (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{classassets_1_1AssetManager_a9f6d3724f9eac263999bbbb20b6696e7}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classassets_1_1AssetManager_ab0bd2be0dbec9314072e215276988f74}{\index{assets\-::\-Asset\-Manager@{assets\-::\-Asset\-Manager}!create@{create}}
+\index{create@{create}!assets::AssetManager@{assets\-::\-Asset\-Manager}}
+\subsubsection[{create}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T , typename... Args$>$ std\-::shared\-\_\-ptr$<$ T $>$ assets\-::\-Asset\-Manager\-::create (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{name, }
+\item[{Args...}]{args}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{classassets_1_1AssetManager_ab0bd2be0dbec9314072e215276988f74}
+\hypertarget{classassets_1_1AssetManager_af96a7ccb3edec25db7450bec190e63dc}{\index{assets\-::\-Asset\-Manager@{assets\-::\-Asset\-Manager}!get@{get}}
+\index{get@{get}!assets::AssetManager@{assets\-::\-Asset\-Manager}}
+\subsubsection[{get}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ std\-::shared\-\_\-ptr$<$ T $>$ assets\-::\-Asset\-Manager\-::get (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{name}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{classassets_1_1AssetManager_af96a7ccb3edec25db7450bec190e63dc}
+\hypertarget{classassets_1_1AssetManager_a273c9ca724ac27e88b51042b537fbde4}{\index{assets\-::\-Asset\-Manager@{assets\-::\-Asset\-Manager}!get\-Or\-Create@{get\-Or\-Create}}
+\index{get\-Or\-Create@{get\-Or\-Create}!assets::AssetManager@{assets\-::\-Asset\-Manager}}
+\subsubsection[{get\-Or\-Create}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T , typename... Args$>$ std\-::shared\-\_\-ptr$<$ T $>$ assets\-::\-Asset\-Manager\-::get\-Or\-Create (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{name, }
+\item[{Args...}]{args}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{classassets_1_1AssetManager_a273c9ca724ac27e88b51042b537fbde4}
+\hypertarget{classassets_1_1AssetManager_a097eaa105c31e94bf2197cf28782a59b}{\index{assets\-::\-Asset\-Manager@{assets\-::\-Asset\-Manager}!initialize@{initialize}}
+\index{initialize@{initialize}!assets::AssetManager@{assets\-::\-Asset\-Manager}}
+\subsubsection[{initialize}]{\setlength{\rightskip}{0pt plus 5cm}void assets\-::\-Asset\-Manager\-::initialize (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classassets_1_1AssetManager_a097eaa105c31e94bf2197cf28782a59b}
+\hypertarget{classassets_1_1AssetManager_ae1993b46c62757b98dd73e7cc8551d1a}{\index{assets\-::\-Asset\-Manager@{assets\-::\-Asset\-Manager}!report\-Cache\-Contents@{report\-Cache\-Contents}}
+\index{report\-Cache\-Contents@{report\-Cache\-Contents}!assets::AssetManager@{assets\-::\-Asset\-Manager}}
+\subsubsection[{report\-Cache\-Contents}]{\setlength{\rightskip}{0pt plus 5cm}void assets\-::\-Asset\-Manager\-::report\-Cache\-Contents (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{classassets_1_1AssetManager_ae1993b46c62757b98dd73e7cc8551d1a}
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classassets_1_1AssetManager_a77d103eec72f000b81bee460a1f36b7b}{\index{assets\-::\-Asset\-Manager@{assets\-::\-Asset\-Manager}!file\-Watcher@{file\-Watcher}}
+\index{file\-Watcher@{file\-Watcher}!assets::AssetManager@{assets\-::\-Asset\-Manager}}
+\subsubsection[{file\-Watcher}]{\setlength{\rightskip}{0pt plus 5cm}std\-::unique\-\_\-ptr$<${\bf File\-Watcher}$>$ assets\-::\-Asset\-Manager\-::file\-Watcher}}\label{classassets_1_1AssetManager_a77d103eec72f000b81bee460a1f36b7b}
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+include/assets/\hyperlink{AssetManager_8hpp}{Asset\-Manager.\-hpp}\item 
+src/assets/\hyperlink{AssetManager_8cpp}{Asset\-Manager.\-cpp}\end{DoxyCompactItemize}

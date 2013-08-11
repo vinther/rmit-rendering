@@ -55,9 +55,10 @@ void Client::initialize(SDL_Window* sdlWindow, SDL_Renderer* sdlRenderer)
 
     keyboardHandler = std::make_unique<input::KeyboardHandler>(shared_from_this());
     mouseHandler = std::make_unique<input::MouseHandler>(shared_from_this());
-    scene = std::make_unique<scene::Scene>(shared_from_this());
     interface = std::make_unique<Interface>(shared_from_this());
     cameraController = std::make_unique<CameraController>(shared_from_this());
+
+    scene = std::make_unique<scene::Scene>();
     assetManager = std::make_unique<assets::AssetManager>();
     renderer = std::make_unique<renderer::Renderer>();
     debugRenderer = std::make_unique<renderer::DebugRenderer>();

@@ -1,0 +1,160 @@
+\hypertarget{classClient}{\section{Client Class Reference}
+\label{classClient}\index{Client@{Client}}
+}
+
+
+{\ttfamily \#include $<$Client.\-hpp$>$}
+
+Inheritance diagram for Client\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classClient}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classClient_a131afa9610b6b315e2682ca32d04a436}{Client} (int argc, char $\ast$$\ast$argv)
+\item 
+void \hyperlink{classClient_a15ef4f954f969ee63bdfde3889d1b030}{initialize} (S\-D\-L\-\_\-\-Window $\ast$window, S\-D\-L\-\_\-\-Renderer $\ast$\hyperlink{classClient_a86f232e1c10bf55bb1512814de486c3a}{renderer})
+\item 
+void \hyperlink{classClient_a6fa6f1a47367f50ad7d0f3b6f54c2822}{reshape} (Uint32 width, Uint32 height)
+\item 
+void \hyperlink{classClient_a1f697d07416dc84acaf7a5ad51cb57e6}{prepare\-Frame} ()
+\item 
+void \hyperlink{classClient_a8a83ae709ae5f53c49c9310d20fd2e8f}{finalize\-Frame} ()
+\item 
+void \hyperlink{classClient_a221b46cfcfe9a33529aab1d7e17cfbfd}{event} (S\-D\-L\-\_\-\-Event $\ast$event)
+\item 
+void \hyperlink{classClient_aac06b7c382ef3dcd8fd1304c5dbfa4eb}{display} ()
+\item 
+void \hyperlink{classClient_ab041d37730a80c6af56564c102e073f1}{cleanup} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\-::unique\-\_\-ptr\\*
+$<$ \hyperlink{classinput_1_1KeyboardHandler}{input\-::\-Keyboard\-Handler} $>$ \hyperlink{classClient_ab3555d9bf11fd111bde33977cba15564}{keyboard\-Handler}
+\item 
+std\-::unique\-\_\-ptr\\*
+$<$ \hyperlink{classinput_1_1MouseHandler}{input\-::\-Mouse\-Handler} $>$ \hyperlink{classClient_af554443b807f1ea3f63970efe51a4b65}{mouse\-Handler}
+\item 
+std\-::unique\-\_\-ptr$<$ \hyperlink{classscene_1_1Scene}{scene\-::\-Scene} $>$ \hyperlink{classClient_af8d1678588c945262a77bddf81fe432d}{scene}
+\item 
+std\-::unique\-\_\-ptr$<$ \hyperlink{classInterface}{Interface} $>$ \hyperlink{classClient_af26242132ec324e1d85fec7e1d1e97d3}{interface}
+\item 
+std\-::unique\-\_\-ptr$<$ \hyperlink{classCameraController}{Camera\-Controller} $>$ \hyperlink{classClient_a31467035f96d4630d6787a500f2dce71}{camera\-Controller}
+\item 
+std\-::unique\-\_\-ptr\\*
+$<$ \hyperlink{classassets_1_1AssetManager}{assets\-::\-Asset\-Manager} $>$ \hyperlink{classClient_ae9bbbe2ace139bf7a3d0ff5358e4c222}{asset\-Manager}
+\item 
+std\-::unique\-\_\-ptr\\*
+$<$ \hyperlink{classrenderer_1_1Renderer}{renderer\-::\-Renderer} $>$ \hyperlink{classClient_a86f232e1c10bf55bb1512814de486c3a}{renderer}
+\item 
+std\-::unique\-\_\-ptr\\*
+$<$ \hyperlink{classrenderer_1_1DebugRenderer}{renderer\-::\-Debug\-Renderer} $>$ \hyperlink{classClient_ab189badcd85ba72158b28028888569d4}{debug\-Renderer}
+\item 
+std\-::unique\-\_\-ptr\\*
+$<$ \hyperlink{classthreading_1_1ThreadPool}{threading\-::\-Thread\-Pool} $>$ \hyperlink{classClient_a91d160a7044d37dd6ae7e74044989352}{thread\-Pool}
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classClient_a131afa9610b6b315e2682ca32d04a436}{\index{Client@{Client}!Client@{Client}}
+\index{Client@{Client}!Client@{Client}}
+\subsubsection[{Client}]{\setlength{\rightskip}{0pt plus 5cm}Client\-::\-Client (
+\begin{DoxyParamCaption}
+\item[{int}]{argc, }
+\item[{char $\ast$$\ast$}]{argv}
+\end{DoxyParamCaption}
+)}}\label{classClient_a131afa9610b6b315e2682ca32d04a436}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classClient_ab041d37730a80c6af56564c102e073f1}{\index{Client@{Client}!cleanup@{cleanup}}
+\index{cleanup@{cleanup}!Client@{Client}}
+\subsubsection[{cleanup}]{\setlength{\rightskip}{0pt plus 5cm}void Client\-::cleanup (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classClient_ab041d37730a80c6af56564c102e073f1}
+\hypertarget{classClient_aac06b7c382ef3dcd8fd1304c5dbfa4eb}{\index{Client@{Client}!display@{display}}
+\index{display@{display}!Client@{Client}}
+\subsubsection[{display}]{\setlength{\rightskip}{0pt plus 5cm}void Client\-::display (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classClient_aac06b7c382ef3dcd8fd1304c5dbfa4eb}
+\hypertarget{classClient_a221b46cfcfe9a33529aab1d7e17cfbfd}{\index{Client@{Client}!event@{event}}
+\index{event@{event}!Client@{Client}}
+\subsubsection[{event}]{\setlength{\rightskip}{0pt plus 5cm}void Client\-::event (
+\begin{DoxyParamCaption}
+\item[{S\-D\-L\-\_\-\-Event $\ast$}]{event}
+\end{DoxyParamCaption}
+)}}\label{classClient_a221b46cfcfe9a33529aab1d7e17cfbfd}
+\hypertarget{classClient_a8a83ae709ae5f53c49c9310d20fd2e8f}{\index{Client@{Client}!finalize\-Frame@{finalize\-Frame}}
+\index{finalize\-Frame@{finalize\-Frame}!Client@{Client}}
+\subsubsection[{finalize\-Frame}]{\setlength{\rightskip}{0pt plus 5cm}void Client\-::finalize\-Frame (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classClient_a8a83ae709ae5f53c49c9310d20fd2e8f}
+\hypertarget{classClient_a15ef4f954f969ee63bdfde3889d1b030}{\index{Client@{Client}!initialize@{initialize}}
+\index{initialize@{initialize}!Client@{Client}}
+\subsubsection[{initialize}]{\setlength{\rightskip}{0pt plus 5cm}void Client\-::initialize (
+\begin{DoxyParamCaption}
+\item[{S\-D\-L\-\_\-\-Window $\ast$}]{window, }
+\item[{S\-D\-L\-\_\-\-Renderer $\ast$}]{renderer}
+\end{DoxyParamCaption}
+)}}\label{classClient_a15ef4f954f969ee63bdfde3889d1b030}
+\hypertarget{classClient_a1f697d07416dc84acaf7a5ad51cb57e6}{\index{Client@{Client}!prepare\-Frame@{prepare\-Frame}}
+\index{prepare\-Frame@{prepare\-Frame}!Client@{Client}}
+\subsubsection[{prepare\-Frame}]{\setlength{\rightskip}{0pt plus 5cm}void Client\-::prepare\-Frame (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classClient_a1f697d07416dc84acaf7a5ad51cb57e6}
+\hypertarget{classClient_a6fa6f1a47367f50ad7d0f3b6f54c2822}{\index{Client@{Client}!reshape@{reshape}}
+\index{reshape@{reshape}!Client@{Client}}
+\subsubsection[{reshape}]{\setlength{\rightskip}{0pt plus 5cm}void Client\-::reshape (
+\begin{DoxyParamCaption}
+\item[{Uint32}]{width, }
+\item[{Uint32}]{height}
+\end{DoxyParamCaption}
+)}}\label{classClient_a6fa6f1a47367f50ad7d0f3b6f54c2822}
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classClient_ae9bbbe2ace139bf7a3d0ff5358e4c222}{\index{Client@{Client}!asset\-Manager@{asset\-Manager}}
+\index{asset\-Manager@{asset\-Manager}!Client@{Client}}
+\subsubsection[{asset\-Manager}]{\setlength{\rightskip}{0pt plus 5cm}std\-::unique\-\_\-ptr$<${\bf assets\-::\-Asset\-Manager}$>$ Client\-::asset\-Manager}}\label{classClient_ae9bbbe2ace139bf7a3d0ff5358e4c222}
+\hypertarget{classClient_a31467035f96d4630d6787a500f2dce71}{\index{Client@{Client}!camera\-Controller@{camera\-Controller}}
+\index{camera\-Controller@{camera\-Controller}!Client@{Client}}
+\subsubsection[{camera\-Controller}]{\setlength{\rightskip}{0pt plus 5cm}std\-::unique\-\_\-ptr$<${\bf Camera\-Controller}$>$ Client\-::camera\-Controller}}\label{classClient_a31467035f96d4630d6787a500f2dce71}
+\hypertarget{classClient_ab189badcd85ba72158b28028888569d4}{\index{Client@{Client}!debug\-Renderer@{debug\-Renderer}}
+\index{debug\-Renderer@{debug\-Renderer}!Client@{Client}}
+\subsubsection[{debug\-Renderer}]{\setlength{\rightskip}{0pt plus 5cm}std\-::unique\-\_\-ptr$<${\bf renderer\-::\-Debug\-Renderer}$>$ Client\-::debug\-Renderer}}\label{classClient_ab189badcd85ba72158b28028888569d4}
+\hypertarget{classClient_af26242132ec324e1d85fec7e1d1e97d3}{\index{Client@{Client}!interface@{interface}}
+\index{interface@{interface}!Client@{Client}}
+\subsubsection[{interface}]{\setlength{\rightskip}{0pt plus 5cm}std\-::unique\-\_\-ptr$<${\bf Interface}$>$ Client\-::interface}}\label{classClient_af26242132ec324e1d85fec7e1d1e97d3}
+\hypertarget{classClient_ab3555d9bf11fd111bde33977cba15564}{\index{Client@{Client}!keyboard\-Handler@{keyboard\-Handler}}
+\index{keyboard\-Handler@{keyboard\-Handler}!Client@{Client}}
+\subsubsection[{keyboard\-Handler}]{\setlength{\rightskip}{0pt plus 5cm}std\-::unique\-\_\-ptr$<${\bf input\-::\-Keyboard\-Handler}$>$ Client\-::keyboard\-Handler}}\label{classClient_ab3555d9bf11fd111bde33977cba15564}
+\hypertarget{classClient_af554443b807f1ea3f63970efe51a4b65}{\index{Client@{Client}!mouse\-Handler@{mouse\-Handler}}
+\index{mouse\-Handler@{mouse\-Handler}!Client@{Client}}
+\subsubsection[{mouse\-Handler}]{\setlength{\rightskip}{0pt plus 5cm}std\-::unique\-\_\-ptr$<${\bf input\-::\-Mouse\-Handler}$>$ Client\-::mouse\-Handler}}\label{classClient_af554443b807f1ea3f63970efe51a4b65}
+\hypertarget{classClient_a86f232e1c10bf55bb1512814de486c3a}{\index{Client@{Client}!renderer@{renderer}}
+\index{renderer@{renderer}!Client@{Client}}
+\subsubsection[{renderer}]{\setlength{\rightskip}{0pt plus 5cm}std\-::unique\-\_\-ptr$<${\bf renderer\-::\-Renderer}$>$ Client\-::renderer}}\label{classClient_a86f232e1c10bf55bb1512814de486c3a}
+\hypertarget{classClient_af8d1678588c945262a77bddf81fe432d}{\index{Client@{Client}!scene@{scene}}
+\index{scene@{scene}!Client@{Client}}
+\subsubsection[{scene}]{\setlength{\rightskip}{0pt plus 5cm}std\-::unique\-\_\-ptr$<${\bf scene\-::\-Scene}$>$ Client\-::scene}}\label{classClient_af8d1678588c945262a77bddf81fe432d}
+\hypertarget{classClient_a91d160a7044d37dd6ae7e74044989352}{\index{Client@{Client}!thread\-Pool@{thread\-Pool}}
+\index{thread\-Pool@{thread\-Pool}!Client@{Client}}
+\subsubsection[{thread\-Pool}]{\setlength{\rightskip}{0pt plus 5cm}std\-::unique\-\_\-ptr$<${\bf threading\-::\-Thread\-Pool}$>$ Client\-::thread\-Pool}}\label{classClient_a91d160a7044d37dd6ae7e74044989352}
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+include/client/\hyperlink{Client_8hpp}{Client.\-hpp}\item 
+src/client/\hyperlink{Client_8cpp}{Client.\-cpp}\end{DoxyCompactItemize}

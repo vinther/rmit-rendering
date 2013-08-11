@@ -1,0 +1,9 @@
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/profiling/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/profiling/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/profiling/bin)
+
+set(BUILD_PROFILING_OCTREE OFF CACHE BOOL "Build profiling binary for ocree")
+
+if (${BUILD_PROFILING_OCTREE})
+	add_subdirectory(octree)
+endif ()

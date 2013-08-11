@@ -1,0 +1,21 @@
+\hypertarget{Intersections_8hpp}{\section{include/physics/\-Intersections.hpp File Reference}
+\label{Intersections_8hpp}\index{include/physics/\-Intersections.\-hpp@{include/physics/\-Intersections.\-hpp}}
+}
+{\ttfamily \#include $<$glm/glm.\-hpp$>$}\\*
+{\ttfamily \#include \char`\"{}physics/\-Types.\-hpp\char`\"{}}\\*
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \hyperlink{namespacephysics}{physics}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{namespacephysics_aabbac609b8c26af03dc8e101c9742b05}{physics\-::tri\-Box\-Overlap} (float boxcenter\mbox{[}3\mbox{]}, float boxhalfsize\mbox{[}3\mbox{]}, float triverts\mbox{[}3\mbox{]}\mbox{[}3\mbox{]})
+\item 
+bool \hyperlink{namespacephysics_aae58b7d55c6c5e327bda00f3130e7a8c}{physics\-::ray\-A\-A\-B\-B\-Intersection} (const glm\-::vec3 \&origin, const glm\-::vec3 \&direction, const glm\-::vec3 \&aabb\-Min, const glm\-::vec3 \&aabb\-Max, float \&distance)
+\item 
+bool \hyperlink{namespacephysics_a9088f6fd30a49f806515a0b948cc109a}{physics\-::point\-A\-A\-B\-B\-Intersection} (const glm\-::vec3 \&point, const A\-A\-B\-B \&aabb)
+\item 
+bool \hyperlink{namespacephysics_aca4ebea6205d4a32acf45c9ee0a5ed8f}{physics\-::triangle\-A\-A\-B\-B\-Intersection} (const Triangle \&tri, const A\-A\-B\-B \&aabb)
+\end{DoxyCompactItemize}

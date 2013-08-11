@@ -1,0 +1,131 @@
+\hypertarget{classassets_1_1Material}{\section{assets\-:\-:Material Class Reference}
+\label{classassets_1_1Material}\index{assets\-::\-Material@{assets\-::\-Material}}
+}
+
+
+{\ttfamily \#include $<$Material.\-hpp$>$}
+
+Inheritance diagram for assets\-:\-:Material\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classassets_1_1Material}
+\end{center}
+\end{figure}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structassets_1_1Material_1_1MaterialInfo}{Material\-Info}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classassets_1_1Material_a4dc8016296adc30a7b98350bdab680de}{Material} (const std\-::string \&\hyperlink{classassets_1_1Asset_a57fe90e1aa9281f2dd59041dffcc74b4}{name})
+\item 
+virtual \hyperlink{classassets_1_1Material_af56b51e9bf248285908d10fab99b8af6}{$\sim$\-Material} ()
+\item 
+bool \hyperlink{classassets_1_1Material_a1cdbb1a9cb013ac126c2fc880a36a694}{load\-From\-Disk} (const std\-::string \&base\-Path, const ai\-Material \&material, \hyperlink{classassets_1_1AssetManager}{Asset\-Manager} \&asset\-Manager)
+\item 
+size\-\_\-t \hyperlink{classassets_1_1Material_a3aef13c20019d025b6df9d3032041e69}{report\-Size} () const 
+\item 
+void \hyperlink{classassets_1_1Material_a311d20ba149f65238fa225b75b5c1a88}{reload} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+struct \\*
+\hyperlink{structassets_1_1Material_1_1MaterialInfo}{assets\-::\-Material\-::\-Material\-Info} \hyperlink{classassets_1_1Material_aadf4a85a9c84a212bf70a66863c9ce25}{material\-Info}
+\item 
+bool \hyperlink{classassets_1_1Material_a0319520a8574e4425d3f33545f3fe8cd}{translucent}
+\item 
+std\-::shared\-\_\-ptr$<$ \hyperlink{classassets_1_1Texture}{assets\-::\-Texture} $>$ \hyperlink{classassets_1_1Material_a3519d812c3b52faa51e8ee105581a080}{tex\-Ambient}
+\item 
+std\-::shared\-\_\-ptr$<$ \hyperlink{classassets_1_1Texture}{assets\-::\-Texture} $>$ \hyperlink{classassets_1_1Material_ab415308f35aa92ba6cfeaf384a3e03eb}{tex\-Diffuse}
+\item 
+std\-::shared\-\_\-ptr$<$ \hyperlink{classassets_1_1Texture}{assets\-::\-Texture} $>$ \hyperlink{classassets_1_1Material_ab0357e94a23e480b11ba859a122d5395}{tex\-Specular}
+\item 
+std\-::shared\-\_\-ptr$<$ \hyperlink{classassets_1_1Texture}{assets\-::\-Texture} $>$ \hyperlink{classassets_1_1Material_a0e17989592b905f9d12d1353ec34f9e2}{tex\-Normal}
+\item 
+std\-::shared\-\_\-ptr$<$ \hyperlink{classassets_1_1Texture}{assets\-::\-Texture} $>$ \hyperlink{classassets_1_1Material_ad8681142b15d5a60a519f7ca903d415b}{tex\-Bump}
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classassets_1_1Material_a4dc8016296adc30a7b98350bdab680de}{\index{assets\-::\-Material@{assets\-::\-Material}!Material@{Material}}
+\index{Material@{Material}!assets::Material@{assets\-::\-Material}}
+\subsubsection[{Material}]{\setlength{\rightskip}{0pt plus 5cm}assets\-::\-Material\-::\-Material (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{name}
+\end{DoxyParamCaption}
+)}}\label{classassets_1_1Material_a4dc8016296adc30a7b98350bdab680de}
+\hypertarget{classassets_1_1Material_af56b51e9bf248285908d10fab99b8af6}{\index{assets\-::\-Material@{assets\-::\-Material}!$\sim$\-Material@{$\sim$\-Material}}
+\index{$\sim$\-Material@{$\sim$\-Material}!assets::Material@{assets\-::\-Material}}
+\subsubsection[{$\sim$\-Material}]{\setlength{\rightskip}{0pt plus 5cm}assets\-::\-Material\-::$\sim$\-Material (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{classassets_1_1Material_af56b51e9bf248285908d10fab99b8af6}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classassets_1_1Material_a1cdbb1a9cb013ac126c2fc880a36a694}{\index{assets\-::\-Material@{assets\-::\-Material}!load\-From\-Disk@{load\-From\-Disk}}
+\index{load\-From\-Disk@{load\-From\-Disk}!assets::Material@{assets\-::\-Material}}
+\subsubsection[{load\-From\-Disk}]{\setlength{\rightskip}{0pt plus 5cm}bool assets\-::\-Material\-::load\-From\-Disk (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{base\-Path, }
+\item[{const ai\-Material \&}]{material, }
+\item[{{\bf Asset\-Manager} \&}]{asset\-Manager}
+\end{DoxyParamCaption}
+)}}\label{classassets_1_1Material_a1cdbb1a9cb013ac126c2fc880a36a694}
+\hypertarget{classassets_1_1Material_a311d20ba149f65238fa225b75b5c1a88}{\index{assets\-::\-Material@{assets\-::\-Material}!reload@{reload}}
+\index{reload@{reload}!assets::Material@{assets\-::\-Material}}
+\subsubsection[{reload}]{\setlength{\rightskip}{0pt plus 5cm}void assets\-::\-Material\-::reload (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{classassets_1_1Material_a311d20ba149f65238fa225b75b5c1a88}
+
+
+Implements \hyperlink{classassets_1_1Asset_a109902837e61161e6f488ad9a47cd377}{assets\-::\-Asset}.
+
+\hypertarget{classassets_1_1Material_a3aef13c20019d025b6df9d3032041e69}{\index{assets\-::\-Material@{assets\-::\-Material}!report\-Size@{report\-Size}}
+\index{report\-Size@{report\-Size}!assets::Material@{assets\-::\-Material}}
+\subsubsection[{report\-Size}]{\setlength{\rightskip}{0pt plus 5cm}size\-\_\-t assets\-::\-Material\-::report\-Size (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [virtual]}}}\label{classassets_1_1Material_a3aef13c20019d025b6df9d3032041e69}
+
+
+Implements \hyperlink{classassets_1_1Asset_a43d029b59109ff2952206969d503c25f}{assets\-::\-Asset}.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classassets_1_1Material_aadf4a85a9c84a212bf70a66863c9ce25}{\index{assets\-::\-Material@{assets\-::\-Material}!material\-Info@{material\-Info}}
+\index{material\-Info@{material\-Info}!assets::Material@{assets\-::\-Material}}
+\subsubsection[{material\-Info}]{\setlength{\rightskip}{0pt plus 5cm}struct {\bf assets\-::\-Material\-::\-Material\-Info}  assets\-::\-Material\-::material\-Info}}\label{classassets_1_1Material_aadf4a85a9c84a212bf70a66863c9ce25}
+\hypertarget{classassets_1_1Material_a3519d812c3b52faa51e8ee105581a080}{\index{assets\-::\-Material@{assets\-::\-Material}!tex\-Ambient@{tex\-Ambient}}
+\index{tex\-Ambient@{tex\-Ambient}!assets::Material@{assets\-::\-Material}}
+\subsubsection[{tex\-Ambient}]{\setlength{\rightskip}{0pt plus 5cm}std\-::shared\-\_\-ptr$<${\bf assets\-::\-Texture}$>$ assets\-::\-Material\-::tex\-Ambient}}\label{classassets_1_1Material_a3519d812c3b52faa51e8ee105581a080}
+\hypertarget{classassets_1_1Material_ad8681142b15d5a60a519f7ca903d415b}{\index{assets\-::\-Material@{assets\-::\-Material}!tex\-Bump@{tex\-Bump}}
+\index{tex\-Bump@{tex\-Bump}!assets::Material@{assets\-::\-Material}}
+\subsubsection[{tex\-Bump}]{\setlength{\rightskip}{0pt plus 5cm}std\-::shared\-\_\-ptr$<${\bf assets\-::\-Texture}$>$ assets\-::\-Material\-::tex\-Bump}}\label{classassets_1_1Material_ad8681142b15d5a60a519f7ca903d415b}
+\hypertarget{classassets_1_1Material_ab415308f35aa92ba6cfeaf384a3e03eb}{\index{assets\-::\-Material@{assets\-::\-Material}!tex\-Diffuse@{tex\-Diffuse}}
+\index{tex\-Diffuse@{tex\-Diffuse}!assets::Material@{assets\-::\-Material}}
+\subsubsection[{tex\-Diffuse}]{\setlength{\rightskip}{0pt plus 5cm}std\-::shared\-\_\-ptr$<${\bf assets\-::\-Texture}$>$ assets\-::\-Material\-::tex\-Diffuse}}\label{classassets_1_1Material_ab415308f35aa92ba6cfeaf384a3e03eb}
+\hypertarget{classassets_1_1Material_a0e17989592b905f9d12d1353ec34f9e2}{\index{assets\-::\-Material@{assets\-::\-Material}!tex\-Normal@{tex\-Normal}}
+\index{tex\-Normal@{tex\-Normal}!assets::Material@{assets\-::\-Material}}
+\subsubsection[{tex\-Normal}]{\setlength{\rightskip}{0pt plus 5cm}std\-::shared\-\_\-ptr$<${\bf assets\-::\-Texture}$>$ assets\-::\-Material\-::tex\-Normal}}\label{classassets_1_1Material_a0e17989592b905f9d12d1353ec34f9e2}
+\hypertarget{classassets_1_1Material_ab0357e94a23e480b11ba859a122d5395}{\index{assets\-::\-Material@{assets\-::\-Material}!tex\-Specular@{tex\-Specular}}
+\index{tex\-Specular@{tex\-Specular}!assets::Material@{assets\-::\-Material}}
+\subsubsection[{tex\-Specular}]{\setlength{\rightskip}{0pt plus 5cm}std\-::shared\-\_\-ptr$<${\bf assets\-::\-Texture}$>$ assets\-::\-Material\-::tex\-Specular}}\label{classassets_1_1Material_ab0357e94a23e480b11ba859a122d5395}
+\hypertarget{classassets_1_1Material_a0319520a8574e4425d3f33545f3fe8cd}{\index{assets\-::\-Material@{assets\-::\-Material}!translucent@{translucent}}
+\index{translucent@{translucent}!assets::Material@{assets\-::\-Material}}
+\subsubsection[{translucent}]{\setlength{\rightskip}{0pt plus 5cm}bool assets\-::\-Material\-::translucent}}\label{classassets_1_1Material_a0319520a8574e4425d3f33545f3fe8cd}
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+include/assets/\hyperlink{Material_8hpp}{Material.\-hpp}\item 
+src/assets/\hyperlink{Material_8cpp}{Material.\-cpp}\end{DoxyCompactItemize}

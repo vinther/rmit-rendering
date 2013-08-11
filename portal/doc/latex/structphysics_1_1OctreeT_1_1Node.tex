@@ -1,0 +1,62 @@
+\hypertarget{structphysics_1_1OctreeT_1_1Node}{\section{physics\-:\-:Octree\-T$<$ bucket\-Size $>$\-:\-:Node Struct Reference}
+\label{structphysics_1_1OctreeT_1_1Node}\index{physics\-::\-Octree\-T$<$ bucket\-Size $>$\-::\-Node@{physics\-::\-Octree\-T$<$ bucket\-Size $>$\-::\-Node}}
+}
+
+
+{\ttfamily \#include $<$Octree.\-hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{structphysics_1_1OctreeT_1_1Node_a567044370b67e3586354d5502b7e5913}{Node} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\-::array$<$ std\-::unique\-\_\-ptr\\*
+$<$ \hyperlink{structphysics_1_1OctreeT_1_1Node}{Node} $>$, 8 $>$ \hyperlink{structphysics_1_1OctreeT_1_1Node_ae36b0966ac5fce06093003d8b6350d74}{children}
+\item 
+std\-::vector$<$ unsigned int $>$ \hyperlink{structphysics_1_1OctreeT_1_1Node_a840c88e6152af0423b988c3f83365180}{bucket}
+\item 
+\hyperlink{structphysics_1_1AABB}{A\-A\-B\-B} \hyperlink{structphysics_1_1OctreeT_1_1Node_a196e782e59a6c25f4127da0a6e8d2500}{aabb}
+\item 
+bool \hyperlink{structphysics_1_1OctreeT_1_1Node_a69a0bf4b2fabbd8cdabc4a9510ce9978}{is\-Leaf}
+\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static const unsigned int \hyperlink{structphysics_1_1OctreeT_1_1Node_a004aad237ee1e8a63ef1b3ae7c9862b9}{node\-Bucket\-Size} = bucket\-Size
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{structphysics_1_1OctreeT_1_1Node_a567044370b67e3586354d5502b7e5913}{\index{physics\-::\-Octree\-T\-::\-Node@{physics\-::\-Octree\-T\-::\-Node}!Node@{Node}}
+\index{Node@{Node}!physics::OctreeT::Node@{physics\-::\-Octree\-T\-::\-Node}}
+\subsubsection[{Node}]{\setlength{\rightskip}{0pt plus 5cm}template$<$unsigned int bucket\-Size$>$ {\bf physics\-::\-Octree\-T}$<$ bucket\-Size $>$\-::Node\-::\-Node (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{structphysics_1_1OctreeT_1_1Node_a567044370b67e3586354d5502b7e5913}
+
+
+\subsection{Member Data Documentation}
+\hypertarget{structphysics_1_1OctreeT_1_1Node_a196e782e59a6c25f4127da0a6e8d2500}{\index{physics\-::\-Octree\-T\-::\-Node@{physics\-::\-Octree\-T\-::\-Node}!aabb@{aabb}}
+\index{aabb@{aabb}!physics::OctreeT::Node@{physics\-::\-Octree\-T\-::\-Node}}
+\subsubsection[{aabb}]{\setlength{\rightskip}{0pt plus 5cm}template$<$unsigned int bucket\-Size$>$ {\bf A\-A\-B\-B} {\bf physics\-::\-Octree\-T}$<$ bucket\-Size $>$\-::Node\-::aabb}}\label{structphysics_1_1OctreeT_1_1Node_a196e782e59a6c25f4127da0a6e8d2500}
+\hypertarget{structphysics_1_1OctreeT_1_1Node_a840c88e6152af0423b988c3f83365180}{\index{physics\-::\-Octree\-T\-::\-Node@{physics\-::\-Octree\-T\-::\-Node}!bucket@{bucket}}
+\index{bucket@{bucket}!physics::OctreeT::Node@{physics\-::\-Octree\-T\-::\-Node}}
+\subsubsection[{bucket}]{\setlength{\rightskip}{0pt plus 5cm}template$<$unsigned int bucket\-Size$>$ std\-::vector$<$unsigned int$>$ {\bf physics\-::\-Octree\-T}$<$ bucket\-Size $>$\-::Node\-::bucket}}\label{structphysics_1_1OctreeT_1_1Node_a840c88e6152af0423b988c3f83365180}
+\hypertarget{structphysics_1_1OctreeT_1_1Node_ae36b0966ac5fce06093003d8b6350d74}{\index{physics\-::\-Octree\-T\-::\-Node@{physics\-::\-Octree\-T\-::\-Node}!children@{children}}
+\index{children@{children}!physics::OctreeT::Node@{physics\-::\-Octree\-T\-::\-Node}}
+\subsubsection[{children}]{\setlength{\rightskip}{0pt plus 5cm}template$<$unsigned int bucket\-Size$>$ std\-::array$<$std\-::unique\-\_\-ptr$<${\bf Node}$>$, 8$>$ {\bf physics\-::\-Octree\-T}$<$ bucket\-Size $>$\-::Node\-::children}}\label{structphysics_1_1OctreeT_1_1Node_ae36b0966ac5fce06093003d8b6350d74}
+\hypertarget{structphysics_1_1OctreeT_1_1Node_a69a0bf4b2fabbd8cdabc4a9510ce9978}{\index{physics\-::\-Octree\-T\-::\-Node@{physics\-::\-Octree\-T\-::\-Node}!is\-Leaf@{is\-Leaf}}
+\index{is\-Leaf@{is\-Leaf}!physics::OctreeT::Node@{physics\-::\-Octree\-T\-::\-Node}}
+\subsubsection[{is\-Leaf}]{\setlength{\rightskip}{0pt plus 5cm}template$<$unsigned int bucket\-Size$>$ bool {\bf physics\-::\-Octree\-T}$<$ bucket\-Size $>$\-::Node\-::is\-Leaf}}\label{structphysics_1_1OctreeT_1_1Node_a69a0bf4b2fabbd8cdabc4a9510ce9978}
+\hypertarget{structphysics_1_1OctreeT_1_1Node_a004aad237ee1e8a63ef1b3ae7c9862b9}{\index{physics\-::\-Octree\-T\-::\-Node@{physics\-::\-Octree\-T\-::\-Node}!node\-Bucket\-Size@{node\-Bucket\-Size}}
+\index{node\-Bucket\-Size@{node\-Bucket\-Size}!physics::OctreeT::Node@{physics\-::\-Octree\-T\-::\-Node}}
+\subsubsection[{node\-Bucket\-Size}]{\setlength{\rightskip}{0pt plus 5cm}template$<$unsigned int bucket\-Size$>$ const unsigned int {\bf physics\-::\-Octree\-T}$<$ bucket\-Size $>$\-::Node\-::node\-Bucket\-Size = bucket\-Size\hspace{0.3cm}{\ttfamily [static]}}}\label{structphysics_1_1OctreeT_1_1Node_a004aad237ee1e8a63ef1b3ae7c9862b9}
+
+
+The documentation for this struct was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+include/physics/\hyperlink{Octree_8hpp}{Octree.\-hpp}\end{DoxyCompactItemize}

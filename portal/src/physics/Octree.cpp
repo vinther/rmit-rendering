@@ -7,6 +7,9 @@
 
 #include "physics/Octree.hpp"
 
+#include <queue>
+#include <stack>
+
 #include <assimp/scene.h>
 #include <SDL2/SDL_log.h>
 #include <glm/gtx/intersect.hpp>
@@ -166,8 +169,74 @@ void physics::OctreeT<bucketSize>::createFromScene(const scene::SceneNode& scene
 
     optimize();
 
+    aabbMin = min;
+    aabbMax = max;
+
     root.reset();
     objects.empty();
+}
+
+template <typename NodeType>
+unsigned int insertBFS(
+        NodeType& root,
+        const std::vector<physics::Triangle>& objects,
+
+        unsigned int node,
+
+        std::vector<std::array<unsigned int, 8>>& nodeChildren,
+        std::vector<std::array<bool, 8>>& nodeChildIsLeaf,
+        std::vector<std::array<physics::AABB, 8>>& nodeChildAABB,
+
+        std::vector<physics::Triangle>& buckets,
+        std::vector<unsigned int>& bucketSizes
+        )
+{
+    std::queue<std::tuple<unsigned int, unsigned int, typename NodeType::element_type *>> q;
+
+    for (unsigned int i = 0; i < 8 ; ++i)
+    {
+        nodeChildIsLeaf[node][i] = root->children[i]->isLeaf;
+        nodeChildAABB[node][i] = root->children[i]->aabb;
+
+        q.push(std::make_tuple(0, i, root->children[i].get()));
+    }
+
+    node = 0;
+    unsigned int parent, childIdx;
+    typename NodeType::element_type * ptrNode;
+    while (!q.empty())
+    {
+        ++node;
+
+        std::tie(parent, childIdx, ptrNode) = q.front();
+        q.pop();
+
+        nodeChildren[parent][childIdx] = node;
+
+        for (unsigned int i = 0; i < 8; ++i)
+        {
+            nodeChildIsLeaf[node][i] = ptrNode->children[i]->isLeaf;
+            nodeChildAABB[node][i] = ptrNode->children[i]->aabb;
+
+            if (nodeChildIsLeaf[node][i])
+            {
+                unsigned int bucketSize = ptrNode->children[i]->bucket.size();
+
+                nodeChildren[node][i] = buckets.size();
+                bucketSizes[nodeChildren[node][i]] = bucketSize;
+
+                buckets.reserve(nodeChildren[node][i] + bucketSize);
+
+                for (unsigned int j = 0; j < bucketSize; ++j)
+                    buckets[nodeChildren[node][i] + j] = objects[ptrNode->children[i]->bucket[j]];
+            } else
+            {
+                q.push(std::make_tuple(node, i, ptrNode->children[i].get()));
+            }
+        }
+    }
+
+    return node;
 }
 
 template <typename NodeType, typename BucketType>
@@ -182,6 +251,8 @@ unsigned int insertDFS(
         std::vector<std::array<physics::AABB, 8>>& nodeChildAABB,
         std::vector<BucketType>& bucket)
 {
+
+
     for (unsigned int i = 0; i < 8; ++i)
     {
         nodeChildIsLeaf[node][i] = ptrNode->children[i]->isLeaf;
@@ -231,28 +302,43 @@ void countNodes(const NodeType& node, unsigned int& internalNodes, unsigned int&
 }
 
 inline void getBuckets(
-        unsigned int node,
-        std::vector<unsigned int>& buckets,
+        std::vector<std::pair<unsigned int, unsigned int>>& buckets,
 
         const physics::Ray& ray,
         const std::vector<std::array<unsigned int, 8>>& nodeChildren,
         const std::vector<std::array<bool, 8>>& nodeChildIsLeaf,
-        const std::vector<std::array<physics::AABB, 8>>& nodeChildAABB)
-{
-    float dist = 0.0f;
+        const std::vector<std::array<physics::AABB, 8>>& nodeChildAABB,
 
-    for (unsigned int i = 0; i < 8; ++i)
+        const std::vector<unsigned int>& bucketSizes)
+{
+    //const glm::vec3 directionRec = 1.0f / ray.direction;
+    std::vector<unsigned int> q;
+    q.push_back(0);
+
+    float d = 0.0f;
+
+    while (!q.empty())
     {
-        if (physics::rayAABBIntersection(ray.origin, ray.direction, nodeChildAABB[node][i].min, nodeChildAABB[node][i].max, dist))
+        unsigned int node = q[q.size() - 1]; q.pop_back();
+
+        for (unsigned int i = 0; i < 8; ++i)
         {
-            if (nodeChildIsLeaf[node][i]) {
-                buckets.push_back(nodeChildren.at(node).at(i));
-            } else {
-                getBuckets(nodeChildren[node][i], buckets, ray, nodeChildren, nodeChildIsLeaf, nodeChildAABB);
+            if (physics::rayAABBIntersection(
+                    ray.origin, ray.direction,
+                    nodeChildAABB[node][i].min,
+                    nodeChildAABB[node][i].max, d))
+            {
+                if (nodeChildIsLeaf[node][i]) {
+                    buckets.push_back(
+                            std::make_pair(
+                                    nodeChildren[node][i],
+                                    bucketSizes[nodeChildren[node][i]]));
+                } else {
+                    q.push_back(nodeChildren[node][i]);
+                }
             }
         }
     }
-
 }
 
 template<unsigned int bucketSize>
@@ -265,21 +351,23 @@ bool physics::OctreeT<bucketSize>::trace(const Ray& ray, IntersectionDetails& re
 
     bucketBuffer.clear();
 
-    getBuckets(nodeRoot, bucketBuffer, ray, nodeChildren, nodeChildIsLeaf, nodeChildAABB);
+    getBuckets(bucketBuffer, ray, nodeChildren, nodeChildIsLeaf, nodeChildAABB, bucketSizes);
+
+    assert(bucketBuffer.size() > 0);
 
     for (unsigned int i = 0; i < bucketBuffer.size(); ++i)
     {
-        const auto& bucket = buckets[bucketBuffer[i]];
-        const auto numTriangles = bucket.first;
-        const auto& triangles = bucket.second;
-
         glm::vec3 intersectResult;
-        for (unsigned int j = 0; j < numTriangles; ++j)
+        for (unsigned int j = 0; j < bucketBuffer[i].second; ++j)
         {
+            const Triangle& tri = buckets[bucketBuffer[i].first + j];
+
+            SDL_Log("%f %f %f", tri.vertices[0].x, tri.vertices[0].y, tri.vertices[0].z);
+
             if (glm::intersectLineTriangle(
                     ray.origin,
                     ray.direction,
-                    triangles[j].vertices[0], triangles[j].vertices[1], triangles[j].vertices[2],
+                    tri.vertices[0], tri.vertices[1], tri.vertices[2],
                     intersectResult))
             {
                 intersection = true;
@@ -290,8 +378,8 @@ bool physics::OctreeT<bucketSize>::trace(const Ray& ray, IntersectionDetails& re
                     shortestDist = dist;
                     closestResult = intersectResult;
 
-                    v0 = triangles[j].vertices[0];
-                    v1 = triangles[j].vertices[1];
+                    v0 = tri.vertices[0];
+                    v1 = tri.vertices[1];
                 }
             }
         }
@@ -314,6 +402,7 @@ void physics::OctreeT<bucketSize>::optimize()
     nodeChildIsLeaf.clear();
     nodeChildAABB.clear();
     buckets.clear();
+    bucketSizes.clear();
 
     unsigned int internalNodes = 0, leaves = 0;
     countNodes(root, internalNodes, leaves);
@@ -321,11 +410,11 @@ void physics::OctreeT<bucketSize>::optimize()
     nodeChildren.resize(internalNodes);
     nodeChildIsLeaf.resize(internalNodes);
     nodeChildAABB.resize(internalNodes);
-    buckets.reserve(leaves);
+    bucketSizes.resize(internalNodes);
 
     nodeRoot = 0;
 
-    insertDFS(root, objects, 0, nodeChildren, nodeChildIsLeaf, nodeChildAABB, buckets);
+    insertBFS(root, objects, nodeRoot, nodeChildren, nodeChildIsLeaf, nodeChildAABB, buckets, bucketSizes);
 }
 
 template class physics::OctreeT<32>;

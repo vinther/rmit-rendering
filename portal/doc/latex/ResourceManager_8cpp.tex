@@ -1,0 +1,42 @@
+\hypertarget{ResourceManager_8cpp}{\section{src/renderer/\-Resource\-Manager.cpp File Reference}
+\label{ResourceManager_8cpp}\index{src/renderer/\-Resource\-Manager.\-cpp@{src/renderer/\-Resource\-Manager.\-cpp}}
+}
+{\ttfamily \#include \char`\"{}renderer/\-Resource\-Manager.\-hpp\char`\"{}}\\*
+{\ttfamily \#include $<$stdexcept$>$}\\*
+{\ttfamily \#include $<$array$>$}\\*
+{\ttfamily \#include $<$tuple$>$}\\*
+{\ttfamily \#include $<$G\-L/glew.\-h$>$}\\*
+{\ttfamily \#include $<$G\-L/gl.\-h$>$}\\*
+{\ttfamily \#include $<$assimp/scene.\-h$>$}\\*
+{\ttfamily \#include \char`\"{}scene/\-Scene.\-hpp\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}assets/\-Asset\-Manager.\-hpp\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}assets/\-Model.\-hpp\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}assets/\-Shader.\-hpp\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}assets/\-Texture.\-hpp\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}renderer/\-Buffered\-Model.\-hpp\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}renderer/\-Buffered\-Texture.\-hpp\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}renderer/\-Buffered\-Material.\-hpp\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}renderer/\-Buffered\-Shader.\-hpp\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}Utilities.\-hpp\char`\"{}}\\*
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \hyperlink{namespacerenderer}{renderer}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$class T , class Cache\-Type $>$ }\\T \& \hyperlink{ResourceManager_8cpp_a32a51c8b0fd44adca08245ff73e829ab}{fetch\-From\-Cache} (std\-::shared\-\_\-ptr$<$ const typename T\-::asset\-\_\-type $>$ \&asset, Cache\-Type \&cache, \hyperlink{classrenderer_1_1ResourceManager}{renderer\-::\-Resource\-Manager} \&resource\-Manager)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{ResourceManager_8cpp_a32a51c8b0fd44adca08245ff73e829ab}{\index{Resource\-Manager.\-cpp@{Resource\-Manager.\-cpp}!fetch\-From\-Cache@{fetch\-From\-Cache}}
+\index{fetch\-From\-Cache@{fetch\-From\-Cache}!ResourceManager.cpp@{Resource\-Manager.\-cpp}}
+\subsubsection[{fetch\-From\-Cache}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T , class Cache\-Type $>$ T\& fetch\-From\-Cache (
+\begin{DoxyParamCaption}
+\item[{std\-::shared\-\_\-ptr$<$ const typename T\-::asset\-\_\-type $>$ \&}]{asset, }
+\item[{Cache\-Type \&}]{cache, }
+\item[{{\bf renderer\-::\-Resource\-Manager} \&}]{resource\-Manager}
+\end{DoxyParamCaption}
+)}}\label{ResourceManager_8cpp_a32a51c8b0fd44adca08245ff73e829ab}

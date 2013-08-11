@@ -1,0 +1,119 @@
+\hypertarget{classrenderer_1_1BufferObject}{\section{renderer\-:\-:Buffer\-Object$<$ T $>$ Class Template Reference}
+\label{classrenderer_1_1BufferObject}\index{renderer\-::\-Buffer\-Object$<$ T $>$@{renderer\-::\-Buffer\-Object$<$ T $>$}}
+}
+
+
+{\ttfamily \#include $<$Buffer\-Object.\-hpp$>$}
+
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{classrenderer_1_1BufferObject_a74481806c1554a39dfe43566f6e1ea11}{State} \{ \hyperlink{classrenderer_1_1BufferObject_a74481806c1554a39dfe43566f6e1ea11ae2b1be1545307fdc1cc166c355254ac9}{P\-R\-I\-S\-T\-I\-N\-E} = 0x01, 
+\hyperlink{classrenderer_1_1BufferObject_a74481806c1554a39dfe43566f6e1ea11a3ee8356afc3ba1cd4e52dc6a5aa5caa5}{D\-I\-R\-T\-Y} = 0x02, 
+\hyperlink{classrenderer_1_1BufferObject_a74481806c1554a39dfe43566f6e1ea11a76e09bb137cf1dedef5e5b8509155cba}{R\-E\-A\-D\-Y} = 0x04
+ \}
+\item 
+typedef T \hyperlink{classrenderer_1_1BufferObject_a651cbaff8aa7148d72a9eaf71ad3636e}{asset\-\_\-type}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classrenderer_1_1BufferObject_a3402bdd4e3d5e0a60a7df55dad5b726e}{Buffer\-Object} ()
+\item 
+virtual \hyperlink{classrenderer_1_1BufferObject_a00104dccf47c9f9b33ecfc2faa6a7c90}{$\sim$\-Buffer\-Object} ()
+\item 
+bool \hyperlink{classrenderer_1_1BufferObject_a14e522660f3e93573cc251c1eeb0f66e}{check\-Asset\-Version} ()
+\item 
+virtual void \hyperlink{classrenderer_1_1BufferObject_a8a73309dca661d6bf4785efc3e45db92}{load\-From\-Asset} (std\-::shared\-\_\-ptr$<$ const \hyperlink{classrenderer_1_1BufferObject_a651cbaff8aa7148d72a9eaf71ad3636e}{asset\-\_\-type} $>$ \&\hyperlink{classrenderer_1_1BufferObject_ad747c7e09a4acda6847b6fca9977eed6}{asset}, \hyperlink{classrenderer_1_1ResourceManager}{Resource\-Manager} \&resource\-Manager)=0
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+Uint16 \hyperlink{classrenderer_1_1BufferObject_a2eb925a833a8b046911f48607cb255e7}{state}
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+size\-\_\-t \hyperlink{classrenderer_1_1BufferObject_a8e0f07fa5f1cbf15e3235c478a9f3d42}{current\-Version}
+\item 
+std\-::weak\-\_\-ptr$<$ const T $>$ \hyperlink{classrenderer_1_1BufferObject_ad747c7e09a4acda6847b6fca9977eed6}{asset}
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Typedef Documentation}
+\hypertarget{classrenderer_1_1BufferObject_a651cbaff8aa7148d72a9eaf71ad3636e}{\index{renderer\-::\-Buffer\-Object@{renderer\-::\-Buffer\-Object}!asset\-\_\-type@{asset\-\_\-type}}
+\index{asset\-\_\-type@{asset\-\_\-type}!renderer::BufferObject@{renderer\-::\-Buffer\-Object}}
+\subsubsection[{asset\-\_\-type}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ typedef T {\bf renderer\-::\-Buffer\-Object}$<$ T $>$\-::{\bf asset\-\_\-type}}}\label{classrenderer_1_1BufferObject_a651cbaff8aa7148d72a9eaf71ad3636e}
+
+
+\subsection{Member Enumeration Documentation}
+\hypertarget{classrenderer_1_1BufferObject_a74481806c1554a39dfe43566f6e1ea11}{\index{renderer\-::\-Buffer\-Object@{renderer\-::\-Buffer\-Object}!State@{State}}
+\index{State@{State}!renderer::BufferObject@{renderer\-::\-Buffer\-Object}}
+\subsubsection[{State}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ enum {\bf renderer\-::\-Buffer\-Object\-::\-State}}}\label{classrenderer_1_1BufferObject_a74481806c1554a39dfe43566f6e1ea11}
+\begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{P\-R\-I\-S\-T\-I\-N\-E@{P\-R\-I\-S\-T\-I\-N\-E}!renderer\-::\-Buffer\-Object@{renderer\-::\-Buffer\-Object}}\index{renderer\-::\-Buffer\-Object@{renderer\-::\-Buffer\-Object}!P\-R\-I\-S\-T\-I\-N\-E@{P\-R\-I\-S\-T\-I\-N\-E}}\item[{\em 
+\hypertarget{classrenderer_1_1BufferObject_a74481806c1554a39dfe43566f6e1ea11ae2b1be1545307fdc1cc166c355254ac9}{P\-R\-I\-S\-T\-I\-N\-E}\label{classrenderer_1_1BufferObject_a74481806c1554a39dfe43566f6e1ea11ae2b1be1545307fdc1cc166c355254ac9}
+}]\index{D\-I\-R\-T\-Y@{D\-I\-R\-T\-Y}!renderer\-::\-Buffer\-Object@{renderer\-::\-Buffer\-Object}}\index{renderer\-::\-Buffer\-Object@{renderer\-::\-Buffer\-Object}!D\-I\-R\-T\-Y@{D\-I\-R\-T\-Y}}\item[{\em 
+\hypertarget{classrenderer_1_1BufferObject_a74481806c1554a39dfe43566f6e1ea11a3ee8356afc3ba1cd4e52dc6a5aa5caa5}{D\-I\-R\-T\-Y}\label{classrenderer_1_1BufferObject_a74481806c1554a39dfe43566f6e1ea11a3ee8356afc3ba1cd4e52dc6a5aa5caa5}
+}]\index{R\-E\-A\-D\-Y@{R\-E\-A\-D\-Y}!renderer\-::\-Buffer\-Object@{renderer\-::\-Buffer\-Object}}\index{renderer\-::\-Buffer\-Object@{renderer\-::\-Buffer\-Object}!R\-E\-A\-D\-Y@{R\-E\-A\-D\-Y}}\item[{\em 
+\hypertarget{classrenderer_1_1BufferObject_a74481806c1554a39dfe43566f6e1ea11a76e09bb137cf1dedef5e5b8509155cba}{R\-E\-A\-D\-Y}\label{classrenderer_1_1BufferObject_a74481806c1554a39dfe43566f6e1ea11a76e09bb137cf1dedef5e5b8509155cba}
+}]\end{description}
+\end{Desc}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classrenderer_1_1BufferObject_a3402bdd4e3d5e0a60a7df55dad5b726e}{\index{renderer\-::\-Buffer\-Object@{renderer\-::\-Buffer\-Object}!Buffer\-Object@{Buffer\-Object}}
+\index{Buffer\-Object@{Buffer\-Object}!renderer::BufferObject@{renderer\-::\-Buffer\-Object}}
+\subsubsection[{Buffer\-Object}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ {\bf renderer\-::\-Buffer\-Object}$<$ T $>$\-::{\bf Buffer\-Object} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{classrenderer_1_1BufferObject_a3402bdd4e3d5e0a60a7df55dad5b726e}
+\hypertarget{classrenderer_1_1BufferObject_a00104dccf47c9f9b33ecfc2faa6a7c90}{\index{renderer\-::\-Buffer\-Object@{renderer\-::\-Buffer\-Object}!$\sim$\-Buffer\-Object@{$\sim$\-Buffer\-Object}}
+\index{$\sim$\-Buffer\-Object@{$\sim$\-Buffer\-Object}!renderer::BufferObject@{renderer\-::\-Buffer\-Object}}
+\subsubsection[{$\sim$\-Buffer\-Object}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ virtual {\bf renderer\-::\-Buffer\-Object}$<$ T $>$\-::$\sim${\bf Buffer\-Object} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}}\label{classrenderer_1_1BufferObject_a00104dccf47c9f9b33ecfc2faa6a7c90}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classrenderer_1_1BufferObject_a14e522660f3e93573cc251c1eeb0f66e}{\index{renderer\-::\-Buffer\-Object@{renderer\-::\-Buffer\-Object}!check\-Asset\-Version@{check\-Asset\-Version}}
+\index{check\-Asset\-Version@{check\-Asset\-Version}!renderer::BufferObject@{renderer\-::\-Buffer\-Object}}
+\subsubsection[{check\-Asset\-Version}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ bool {\bf renderer\-::\-Buffer\-Object}$<$ T $>$\-::check\-Asset\-Version (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{classrenderer_1_1BufferObject_a14e522660f3e93573cc251c1eeb0f66e}
+\hypertarget{classrenderer_1_1BufferObject_a8a73309dca661d6bf4785efc3e45db92}{\index{renderer\-::\-Buffer\-Object@{renderer\-::\-Buffer\-Object}!load\-From\-Asset@{load\-From\-Asset}}
+\index{load\-From\-Asset@{load\-From\-Asset}!renderer::BufferObject@{renderer\-::\-Buffer\-Object}}
+\subsubsection[{load\-From\-Asset}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ virtual void {\bf renderer\-::\-Buffer\-Object}$<$ T $>$\-::load\-From\-Asset (
+\begin{DoxyParamCaption}
+\item[{std\-::shared\-\_\-ptr$<$ const {\bf asset\-\_\-type} $>$ \&}]{asset, }
+\item[{{\bf Resource\-Manager} \&}]{resource\-Manager}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classrenderer_1_1BufferObject_a8a73309dca661d6bf4785efc3e45db92}
+
+
+Implemented in \hyperlink{classrenderer_1_1BufferedModel_a69f6312a15672cd18481c554ece47a86}{renderer\-::\-Buffered\-Model}, \hyperlink{classrenderer_1_1BufferedMaterial_a2b570e7e70635ea5d6b687a06ccc27d2}{renderer\-::\-Buffered\-Material}, \hyperlink{classrenderer_1_1BufferedShader_ab853033ff4e5d4c9cce95b7703d1017b}{renderer\-::\-Buffered\-Shader}, and \hyperlink{classrenderer_1_1BufferedTexture_a4bb8bcd23f843db0e47aec771b9e4a7a}{renderer\-::\-Buffered\-Texture}.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classrenderer_1_1BufferObject_ad747c7e09a4acda6847b6fca9977eed6}{\index{renderer\-::\-Buffer\-Object@{renderer\-::\-Buffer\-Object}!asset@{asset}}
+\index{asset@{asset}!renderer::BufferObject@{renderer\-::\-Buffer\-Object}}
+\subsubsection[{asset}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ std\-::weak\-\_\-ptr$<$const T$>$ {\bf renderer\-::\-Buffer\-Object}$<$ T $>$\-::asset\hspace{0.3cm}{\ttfamily [protected]}}}\label{classrenderer_1_1BufferObject_ad747c7e09a4acda6847b6fca9977eed6}
+\hypertarget{classrenderer_1_1BufferObject_a8e0f07fa5f1cbf15e3235c478a9f3d42}{\index{renderer\-::\-Buffer\-Object@{renderer\-::\-Buffer\-Object}!current\-Version@{current\-Version}}
+\index{current\-Version@{current\-Version}!renderer::BufferObject@{renderer\-::\-Buffer\-Object}}
+\subsubsection[{current\-Version}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ size\-\_\-t {\bf renderer\-::\-Buffer\-Object}$<$ T $>$\-::current\-Version\hspace{0.3cm}{\ttfamily [protected]}}}\label{classrenderer_1_1BufferObject_a8e0f07fa5f1cbf15e3235c478a9f3d42}
+\hypertarget{classrenderer_1_1BufferObject_a2eb925a833a8b046911f48607cb255e7}{\index{renderer\-::\-Buffer\-Object@{renderer\-::\-Buffer\-Object}!state@{state}}
+\index{state@{state}!renderer::BufferObject@{renderer\-::\-Buffer\-Object}}
+\subsubsection[{state}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ Uint16 {\bf renderer\-::\-Buffer\-Object}$<$ T $>$\-::state}}\label{classrenderer_1_1BufferObject_a2eb925a833a8b046911f48607cb255e7}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+include/renderer/\hyperlink{BufferObject_8hpp}{Buffer\-Object.\-hpp}\end{DoxyCompactItemize}

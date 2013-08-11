@@ -1,0 +1,117 @@
+\hypertarget{structrenderer_1_1BufferedModel_1_1MeshInfo}{\section{renderer\-:\-:Buffered\-Model\-:\-:Mesh\-Info Struct Reference}
+\label{structrenderer_1_1BufferedModel_1_1MeshInfo}\index{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}}
+}
+
+
+{\ttfamily \#include $<$Buffered\-Model.\-hpp$>$}
+
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{structrenderer_1_1BufferedModel_1_1MeshInfo_ae21111fafd86318119b109567aa3e045}{Buffer\-Indices} \{ \\*
+\hyperlink{structrenderer_1_1BufferedModel_1_1MeshInfo_ae21111fafd86318119b109567aa3e045a38c666d664c417e6e2c5f6c24f383d9f}{B\-U\-F\-F\-E\-R\-\_\-\-V\-B\-O} = 0, 
+\hyperlink{structrenderer_1_1BufferedModel_1_1MeshInfo_ae21111fafd86318119b109567aa3e045af01865b4d93ad75e3aa7a5d06c3293d4}{B\-U\-F\-F\-E\-R\-\_\-\-N\-O\-R\-M\-A\-L\-S}, 
+\hyperlink{structrenderer_1_1BufferedModel_1_1MeshInfo_ae21111fafd86318119b109567aa3e045a0aed1961b5cad93156f434426f4d00ec}{B\-U\-F\-F\-E\-R\-\_\-\-T\-A\-N\-G\-E\-N\-T\-S}, 
+\hyperlink{structrenderer_1_1BufferedModel_1_1MeshInfo_ae21111fafd86318119b109567aa3e045ad034f51cd5206f7b1b6bda5dea2745f2}{B\-U\-F\-F\-E\-R\-\_\-\-T\-E\-X\-C\-O\-O\-R\-D\-S}, 
+\\*
+\hyperlink{structrenderer_1_1BufferedModel_1_1MeshInfo_ae21111fafd86318119b109567aa3e045aa89de91d1693360e6a9f4d6cf300cbe8}{B\-U\-F\-F\-E\-R\-\_\-\-I\-B\-O}, 
+\hyperlink{structrenderer_1_1BufferedModel_1_1MeshInfo_ae21111fafd86318119b109567aa3e045a3c8fb6009b562aaf230fa5b7b2016a2d}{B\-U\-F\-F\-E\-R\-\_\-\-L\-A\-S\-T\-\_\-\-I\-N\-D\-E\-X}
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{structrenderer_1_1BufferedModel_1_1MeshInfo_a4c4e27fb170cd67c9a023e7c039388da}{Mesh\-Info} ()
+\item 
+\hyperlink{structrenderer_1_1BufferedModel_1_1MeshInfo_ad114c1e8ca93d671d9cde58f14ac92b1}{Mesh\-Info} (\hyperlink{structrenderer_1_1BufferedModel_1_1MeshInfo}{Mesh\-Info} \&\&other)
+\item 
+\hyperlink{structrenderer_1_1BufferedModel_1_1MeshInfo}{Mesh\-Info} \& \hyperlink{structrenderer_1_1BufferedModel_1_1MeshInfo_a85c0622b28f04d412dca3e6127179dbe}{operator=} (\hyperlink{structrenderer_1_1BufferedModel_1_1MeshInfo}{Mesh\-Info} \&\&other)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\-::array$<$ \hyperlink{Shader_8hpp_aa311c7f0d6ec4f1a33f9235c3651b86b}{G\-Luint}, \\*
+Buffer\-Indices\-::\-B\-U\-F\-F\-E\-R\-\_\-\-L\-A\-S\-T\-\_\-\-I\-N\-D\-E\-X $>$ \hyperlink{structrenderer_1_1BufferedModel_1_1MeshInfo_a9b601e962fe9f0cb4b57517fb7a468ae}{buffers}
+\item 
+size\-\_\-t \hyperlink{structrenderer_1_1BufferedModel_1_1MeshInfo_a063d231567cb1d5e5f2960f538a0eabb}{material\-Hash}
+\item 
+\hyperlink{Shader_8hpp_aa311c7f0d6ec4f1a33f9235c3651b86b}{G\-Luint} \hyperlink{structrenderer_1_1BufferedModel_1_1MeshInfo_a4bda08976af2f4d2e9c06f0aab773b01}{vao}
+\item 
+unsigned int \hyperlink{structrenderer_1_1BufferedModel_1_1MeshInfo_ac6add8731c532c5ac5c1b26fc16130c5}{num\-Vertices}
+\item 
+unsigned int \hyperlink{structrenderer_1_1BufferedModel_1_1MeshInfo_afbb21a00c2a1d49f15fcd5bc42f81bab}{num\-Faces}
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Enumeration Documentation}
+\hypertarget{structrenderer_1_1BufferedModel_1_1MeshInfo_ae21111fafd86318119b109567aa3e045}{\index{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}!Buffer\-Indices@{Buffer\-Indices}}
+\index{Buffer\-Indices@{Buffer\-Indices}!renderer::BufferedModel::MeshInfo@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}}
+\subsubsection[{Buffer\-Indices}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf renderer\-::\-Buffered\-Model\-::\-Mesh\-Info\-::\-Buffer\-Indices}}}\label{structrenderer_1_1BufferedModel_1_1MeshInfo_ae21111fafd86318119b109567aa3e045}
+\begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{B\-U\-F\-F\-E\-R\-\_\-\-V\-B\-O@{B\-U\-F\-F\-E\-R\-\_\-\-V\-B\-O}!renderer\-::\-Buffered\-Model\-::\-Mesh\-Info@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}}\index{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}!B\-U\-F\-F\-E\-R\-\_\-\-V\-B\-O@{B\-U\-F\-F\-E\-R\-\_\-\-V\-B\-O}}\item[{\em 
+\hypertarget{structrenderer_1_1BufferedModel_1_1MeshInfo_ae21111fafd86318119b109567aa3e045a38c666d664c417e6e2c5f6c24f383d9f}{B\-U\-F\-F\-E\-R\-\_\-\-V\-B\-O}\label{structrenderer_1_1BufferedModel_1_1MeshInfo_ae21111fafd86318119b109567aa3e045a38c666d664c417e6e2c5f6c24f383d9f}
+}]\index{B\-U\-F\-F\-E\-R\-\_\-\-N\-O\-R\-M\-A\-L\-S@{B\-U\-F\-F\-E\-R\-\_\-\-N\-O\-R\-M\-A\-L\-S}!renderer\-::\-Buffered\-Model\-::\-Mesh\-Info@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}}\index{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}!B\-U\-F\-F\-E\-R\-\_\-\-N\-O\-R\-M\-A\-L\-S@{B\-U\-F\-F\-E\-R\-\_\-\-N\-O\-R\-M\-A\-L\-S}}\item[{\em 
+\hypertarget{structrenderer_1_1BufferedModel_1_1MeshInfo_ae21111fafd86318119b109567aa3e045af01865b4d93ad75e3aa7a5d06c3293d4}{B\-U\-F\-F\-E\-R\-\_\-\-N\-O\-R\-M\-A\-L\-S}\label{structrenderer_1_1BufferedModel_1_1MeshInfo_ae21111fafd86318119b109567aa3e045af01865b4d93ad75e3aa7a5d06c3293d4}
+}]\index{B\-U\-F\-F\-E\-R\-\_\-\-T\-A\-N\-G\-E\-N\-T\-S@{B\-U\-F\-F\-E\-R\-\_\-\-T\-A\-N\-G\-E\-N\-T\-S}!renderer\-::\-Buffered\-Model\-::\-Mesh\-Info@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}}\index{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}!B\-U\-F\-F\-E\-R\-\_\-\-T\-A\-N\-G\-E\-N\-T\-S@{B\-U\-F\-F\-E\-R\-\_\-\-T\-A\-N\-G\-E\-N\-T\-S}}\item[{\em 
+\hypertarget{structrenderer_1_1BufferedModel_1_1MeshInfo_ae21111fafd86318119b109567aa3e045a0aed1961b5cad93156f434426f4d00ec}{B\-U\-F\-F\-E\-R\-\_\-\-T\-A\-N\-G\-E\-N\-T\-S}\label{structrenderer_1_1BufferedModel_1_1MeshInfo_ae21111fafd86318119b109567aa3e045a0aed1961b5cad93156f434426f4d00ec}
+}]\index{B\-U\-F\-F\-E\-R\-\_\-\-T\-E\-X\-C\-O\-O\-R\-D\-S@{B\-U\-F\-F\-E\-R\-\_\-\-T\-E\-X\-C\-O\-O\-R\-D\-S}!renderer\-::\-Buffered\-Model\-::\-Mesh\-Info@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}}\index{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}!B\-U\-F\-F\-E\-R\-\_\-\-T\-E\-X\-C\-O\-O\-R\-D\-S@{B\-U\-F\-F\-E\-R\-\_\-\-T\-E\-X\-C\-O\-O\-R\-D\-S}}\item[{\em 
+\hypertarget{structrenderer_1_1BufferedModel_1_1MeshInfo_ae21111fafd86318119b109567aa3e045ad034f51cd5206f7b1b6bda5dea2745f2}{B\-U\-F\-F\-E\-R\-\_\-\-T\-E\-X\-C\-O\-O\-R\-D\-S}\label{structrenderer_1_1BufferedModel_1_1MeshInfo_ae21111fafd86318119b109567aa3e045ad034f51cd5206f7b1b6bda5dea2745f2}
+}]\index{B\-U\-F\-F\-E\-R\-\_\-\-I\-B\-O@{B\-U\-F\-F\-E\-R\-\_\-\-I\-B\-O}!renderer\-::\-Buffered\-Model\-::\-Mesh\-Info@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}}\index{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}!B\-U\-F\-F\-E\-R\-\_\-\-I\-B\-O@{B\-U\-F\-F\-E\-R\-\_\-\-I\-B\-O}}\item[{\em 
+\hypertarget{structrenderer_1_1BufferedModel_1_1MeshInfo_ae21111fafd86318119b109567aa3e045aa89de91d1693360e6a9f4d6cf300cbe8}{B\-U\-F\-F\-E\-R\-\_\-\-I\-B\-O}\label{structrenderer_1_1BufferedModel_1_1MeshInfo_ae21111fafd86318119b109567aa3e045aa89de91d1693360e6a9f4d6cf300cbe8}
+}]\index{B\-U\-F\-F\-E\-R\-\_\-\-L\-A\-S\-T\-\_\-\-I\-N\-D\-E\-X@{B\-U\-F\-F\-E\-R\-\_\-\-L\-A\-S\-T\-\_\-\-I\-N\-D\-E\-X}!renderer\-::\-Buffered\-Model\-::\-Mesh\-Info@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}}\index{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}!B\-U\-F\-F\-E\-R\-\_\-\-L\-A\-S\-T\-\_\-\-I\-N\-D\-E\-X@{B\-U\-F\-F\-E\-R\-\_\-\-L\-A\-S\-T\-\_\-\-I\-N\-D\-E\-X}}\item[{\em 
+\hypertarget{structrenderer_1_1BufferedModel_1_1MeshInfo_ae21111fafd86318119b109567aa3e045a3c8fb6009b562aaf230fa5b7b2016a2d}{B\-U\-F\-F\-E\-R\-\_\-\-L\-A\-S\-T\-\_\-\-I\-N\-D\-E\-X}\label{structrenderer_1_1BufferedModel_1_1MeshInfo_ae21111fafd86318119b109567aa3e045a3c8fb6009b562aaf230fa5b7b2016a2d}
+}]\end{description}
+\end{Desc}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{structrenderer_1_1BufferedModel_1_1MeshInfo_a4c4e27fb170cd67c9a023e7c039388da}{\index{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}!Mesh\-Info@{Mesh\-Info}}
+\index{Mesh\-Info@{Mesh\-Info}!renderer::BufferedModel::MeshInfo@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}}
+\subsubsection[{Mesh\-Info}]{\setlength{\rightskip}{0pt plus 5cm}renderer\-::\-Buffered\-Model\-::\-Mesh\-Info\-::\-Mesh\-Info (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{structrenderer_1_1BufferedModel_1_1MeshInfo_a4c4e27fb170cd67c9a023e7c039388da}
+\hypertarget{structrenderer_1_1BufferedModel_1_1MeshInfo_ad114c1e8ca93d671d9cde58f14ac92b1}{\index{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}!Mesh\-Info@{Mesh\-Info}}
+\index{Mesh\-Info@{Mesh\-Info}!renderer::BufferedModel::MeshInfo@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}}
+\subsubsection[{Mesh\-Info}]{\setlength{\rightskip}{0pt plus 5cm}renderer\-::\-Buffered\-Model\-::\-Mesh\-Info\-::\-Mesh\-Info (
+\begin{DoxyParamCaption}
+\item[{{\bf Mesh\-Info} \&\&}]{other}
+\end{DoxyParamCaption}
+)}}\label{structrenderer_1_1BufferedModel_1_1MeshInfo_ad114c1e8ca93d671d9cde58f14ac92b1}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{structrenderer_1_1BufferedModel_1_1MeshInfo_a85c0622b28f04d412dca3e6127179dbe}{\index{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}!operator=@{operator=}}
+\index{operator=@{operator=}!renderer::BufferedModel::MeshInfo@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}}
+\subsubsection[{operator=}]{\setlength{\rightskip}{0pt plus 5cm}{\bf renderer\-::\-Buffered\-Model\-::\-Mesh\-Info} \& renderer\-::\-Buffered\-Model\-::\-Mesh\-Info\-::operator= (
+\begin{DoxyParamCaption}
+\item[{{\bf Mesh\-Info} \&\&}]{other}
+\end{DoxyParamCaption}
+)}}\label{structrenderer_1_1BufferedModel_1_1MeshInfo_a85c0622b28f04d412dca3e6127179dbe}
+
+
+\subsection{Member Data Documentation}
+\hypertarget{structrenderer_1_1BufferedModel_1_1MeshInfo_a9b601e962fe9f0cb4b57517fb7a468ae}{\index{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}!buffers@{buffers}}
+\index{buffers@{buffers}!renderer::BufferedModel::MeshInfo@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}}
+\subsubsection[{buffers}]{\setlength{\rightskip}{0pt plus 5cm}std\-::array$<${\bf G\-Luint}, Buffer\-Indices\-::\-B\-U\-F\-F\-E\-R\-\_\-\-L\-A\-S\-T\-\_\-\-I\-N\-D\-E\-X$>$ renderer\-::\-Buffered\-Model\-::\-Mesh\-Info\-::buffers}}\label{structrenderer_1_1BufferedModel_1_1MeshInfo_a9b601e962fe9f0cb4b57517fb7a468ae}
+\hypertarget{structrenderer_1_1BufferedModel_1_1MeshInfo_a063d231567cb1d5e5f2960f538a0eabb}{\index{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}!material\-Hash@{material\-Hash}}
+\index{material\-Hash@{material\-Hash}!renderer::BufferedModel::MeshInfo@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}}
+\subsubsection[{material\-Hash}]{\setlength{\rightskip}{0pt plus 5cm}size\-\_\-t renderer\-::\-Buffered\-Model\-::\-Mesh\-Info\-::material\-Hash}}\label{structrenderer_1_1BufferedModel_1_1MeshInfo_a063d231567cb1d5e5f2960f538a0eabb}
+\hypertarget{structrenderer_1_1BufferedModel_1_1MeshInfo_afbb21a00c2a1d49f15fcd5bc42f81bab}{\index{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}!num\-Faces@{num\-Faces}}
+\index{num\-Faces@{num\-Faces}!renderer::BufferedModel::MeshInfo@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}}
+\subsubsection[{num\-Faces}]{\setlength{\rightskip}{0pt plus 5cm}unsigned int renderer\-::\-Buffered\-Model\-::\-Mesh\-Info\-::num\-Faces}}\label{structrenderer_1_1BufferedModel_1_1MeshInfo_afbb21a00c2a1d49f15fcd5bc42f81bab}
+\hypertarget{structrenderer_1_1BufferedModel_1_1MeshInfo_ac6add8731c532c5ac5c1b26fc16130c5}{\index{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}!num\-Vertices@{num\-Vertices}}
+\index{num\-Vertices@{num\-Vertices}!renderer::BufferedModel::MeshInfo@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}}
+\subsubsection[{num\-Vertices}]{\setlength{\rightskip}{0pt plus 5cm}unsigned int renderer\-::\-Buffered\-Model\-::\-Mesh\-Info\-::num\-Vertices}}\label{structrenderer_1_1BufferedModel_1_1MeshInfo_ac6add8731c532c5ac5c1b26fc16130c5}
+\hypertarget{structrenderer_1_1BufferedModel_1_1MeshInfo_a4bda08976af2f4d2e9c06f0aab773b01}{\index{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}!vao@{vao}}
+\index{vao@{vao}!renderer::BufferedModel::MeshInfo@{renderer\-::\-Buffered\-Model\-::\-Mesh\-Info}}
+\subsubsection[{vao}]{\setlength{\rightskip}{0pt plus 5cm}{\bf G\-Luint} renderer\-::\-Buffered\-Model\-::\-Mesh\-Info\-::vao}}\label{structrenderer_1_1BufferedModel_1_1MeshInfo_a4bda08976af2f4d2e9c06f0aab773b01}
+
+
+The documentation for this struct was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+include/renderer/\hyperlink{BufferedModel_8hpp}{Buffered\-Model.\-hpp}\item 
+src/renderer/\hyperlink{BufferedModel_8cpp}{Buffered\-Model.\-cpp}\end{DoxyCompactItemize}

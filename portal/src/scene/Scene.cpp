@@ -11,9 +11,6 @@
 
 #include "client/Client.hpp"
 
-#include "scene/Camera.hpp"
-#include "scene/SceneNode.hpp"
-
 #include "assets/AssetManager.hpp"
 #include "assets/Model.hpp"
 #include "assets/Texture.hpp"
@@ -24,11 +21,10 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-scene::Scene::Scene(std::shared_ptr<Client> client)
+scene::Scene::Scene()
     : camera(std::make_unique<Camera>())
     , root(std::make_unique<SceneNode>())
     , intersectionTree(std::make_unique<physics::Octree >())
-    , client(client)
 {
 }
 

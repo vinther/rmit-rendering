@@ -1,0 +1,158 @@
+\hypertarget{classassets_1_1Asset}{\section{assets\-:\-:Asset Class Reference}
+\label{classassets_1_1Asset}\index{assets\-::\-Asset@{assets\-::\-Asset}}
+}
+
+
+{\ttfamily \#include $<$Asset.\-hpp$>$}
+
+Inheritance diagram for assets\-:\-:Asset\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classassets_1_1Asset}
+\end{center}
+\end{figure}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{classassets_1_1Asset_ac3e27d6385fb4a6a961ec6425501bcf2}{Type} \{ \\*
+\hyperlink{classassets_1_1Asset_ac3e27d6385fb4a6a961ec6425501bcf2a6c754bd37f1a8962208f9eece227e87f}{T\-Y\-P\-E\-\_\-\-N\-O\-N\-E} = 0, 
+\hyperlink{classassets_1_1Asset_ac3e27d6385fb4a6a961ec6425501bcf2a50df1c757a446e6229b94df30891666b}{T\-Y\-P\-E\-\_\-\-M\-O\-D\-E\-L}, 
+\hyperlink{classassets_1_1Asset_ac3e27d6385fb4a6a961ec6425501bcf2a32134a199c4e09cac6a7a0c5b6d63ada}{T\-Y\-P\-E\-\_\-\-S\-H\-A\-D\-E\-R}, 
+\hyperlink{classassets_1_1Asset_ac3e27d6385fb4a6a961ec6425501bcf2ae3002f8a4834d4532184d18651fffa7a}{T\-Y\-P\-E\-\_\-\-S\-O\-U\-N\-D}, 
+\\*
+\hyperlink{classassets_1_1Asset_ac3e27d6385fb4a6a961ec6425501bcf2a4a17a0ac4a2772ca384471ceb97c4d8e}{T\-Y\-P\-E\-\_\-\-T\-E\-X\-T\-U\-R\-E}, 
+\hyperlink{classassets_1_1Asset_ac3e27d6385fb4a6a961ec6425501bcf2a99a420bf63efabb0941af4b8a6e6c48c}{T\-Y\-P\-E\-\_\-\-M\-A\-T\-E\-R\-I\-A\-L}, 
+\hyperlink{classassets_1_1Asset_ac3e27d6385fb4a6a961ec6425501bcf2ad56e60623d816ce033eff0a209fd28cf}{T\-Y\-P\-E\-\_\-\-F\-O\-N\-T}, 
+\hyperlink{classassets_1_1Asset_ac3e27d6385fb4a6a961ec6425501bcf2a8768c613bcc647dc2aaab84b82dab3d9}{T\-Y\-P\-E\-\_\-\-C\-U\-S\-T\-O\-M} =255
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual \hyperlink{classassets_1_1Asset_af63a77194b5b67c3fb43d1e19b3f10df}{$\sim$\-Asset} ()
+\item 
+virtual void \hyperlink{classassets_1_1Asset_a109902837e61161e6f488ad9a47cd377}{reload} ()=0
+\item 
+virtual size\-\_\-t \hyperlink{classassets_1_1Asset_a43d029b59109ff2952206969d503c25f}{report\-Size} () const =0
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\-::string \hyperlink{classassets_1_1Asset_a57fe90e1aa9281f2dd59041dffcc74b4}{name}
+\item 
+size\-\_\-t \hyperlink{classassets_1_1Asset_a875aa61338fbbb28da407e389dd7a559}{hash}
+\item 
+\hyperlink{classassets_1_1Asset_ac3e27d6385fb4a6a961ec6425501bcf2}{Type} \hyperlink{classassets_1_1Asset_a80a9f5f4cab8e41e4b9cf69f5eb2986a}{type}
+\item 
+std\-::vector$<$ std\-::string $>$ \hyperlink{classassets_1_1Asset_a54524a00f5e43b916763a4d8bf15b157}{files}
+\item 
+size\-\_\-t \hyperlink{classassets_1_1Asset_a631640043afcf9327d3cf20a8356a687}{version}
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classassets_1_1Asset_ad454ebaf0bd95df795111efa1b867e17}{Asset} (const std\-::string \&\hyperlink{classassets_1_1Asset_a57fe90e1aa9281f2dd59041dffcc74b4}{name}, \hyperlink{classassets_1_1Asset_ac3e27d6385fb4a6a961ec6425501bcf2}{Type} \hyperlink{classassets_1_1Asset_a80a9f5f4cab8e41e4b9cf69f5eb2986a}{type})
+\item 
+std\-::string \hyperlink{classassets_1_1Asset_aa6d45f3de78c266c17882630eb9414a9}{get\-String\-From\-File} (const std\-::string \&path) const 
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Enumeration Documentation}
+\hypertarget{classassets_1_1Asset_ac3e27d6385fb4a6a961ec6425501bcf2}{\index{assets\-::\-Asset@{assets\-::\-Asset}!Type@{Type}}
+\index{Type@{Type}!assets::Asset@{assets\-::\-Asset}}
+\subsubsection[{Type}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf assets\-::\-Asset\-::\-Type}}}\label{classassets_1_1Asset_ac3e27d6385fb4a6a961ec6425501bcf2}
+\begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{T\-Y\-P\-E\-\_\-\-N\-O\-N\-E@{T\-Y\-P\-E\-\_\-\-N\-O\-N\-E}!assets\-::\-Asset@{assets\-::\-Asset}}\index{assets\-::\-Asset@{assets\-::\-Asset}!T\-Y\-P\-E\-\_\-\-N\-O\-N\-E@{T\-Y\-P\-E\-\_\-\-N\-O\-N\-E}}\item[{\em 
+\hypertarget{classassets_1_1Asset_ac3e27d6385fb4a6a961ec6425501bcf2a6c754bd37f1a8962208f9eece227e87f}{T\-Y\-P\-E\-\_\-\-N\-O\-N\-E}\label{classassets_1_1Asset_ac3e27d6385fb4a6a961ec6425501bcf2a6c754bd37f1a8962208f9eece227e87f}
+}]\index{T\-Y\-P\-E\-\_\-\-M\-O\-D\-E\-L@{T\-Y\-P\-E\-\_\-\-M\-O\-D\-E\-L}!assets\-::\-Asset@{assets\-::\-Asset}}\index{assets\-::\-Asset@{assets\-::\-Asset}!T\-Y\-P\-E\-\_\-\-M\-O\-D\-E\-L@{T\-Y\-P\-E\-\_\-\-M\-O\-D\-E\-L}}\item[{\em 
+\hypertarget{classassets_1_1Asset_ac3e27d6385fb4a6a961ec6425501bcf2a50df1c757a446e6229b94df30891666b}{T\-Y\-P\-E\-\_\-\-M\-O\-D\-E\-L}\label{classassets_1_1Asset_ac3e27d6385fb4a6a961ec6425501bcf2a50df1c757a446e6229b94df30891666b}
+}]\index{T\-Y\-P\-E\-\_\-\-S\-H\-A\-D\-E\-R@{T\-Y\-P\-E\-\_\-\-S\-H\-A\-D\-E\-R}!assets\-::\-Asset@{assets\-::\-Asset}}\index{assets\-::\-Asset@{assets\-::\-Asset}!T\-Y\-P\-E\-\_\-\-S\-H\-A\-D\-E\-R@{T\-Y\-P\-E\-\_\-\-S\-H\-A\-D\-E\-R}}\item[{\em 
+\hypertarget{classassets_1_1Asset_ac3e27d6385fb4a6a961ec6425501bcf2a32134a199c4e09cac6a7a0c5b6d63ada}{T\-Y\-P\-E\-\_\-\-S\-H\-A\-D\-E\-R}\label{classassets_1_1Asset_ac3e27d6385fb4a6a961ec6425501bcf2a32134a199c4e09cac6a7a0c5b6d63ada}
+}]\index{T\-Y\-P\-E\-\_\-\-S\-O\-U\-N\-D@{T\-Y\-P\-E\-\_\-\-S\-O\-U\-N\-D}!assets\-::\-Asset@{assets\-::\-Asset}}\index{assets\-::\-Asset@{assets\-::\-Asset}!T\-Y\-P\-E\-\_\-\-S\-O\-U\-N\-D@{T\-Y\-P\-E\-\_\-\-S\-O\-U\-N\-D}}\item[{\em 
+\hypertarget{classassets_1_1Asset_ac3e27d6385fb4a6a961ec6425501bcf2ae3002f8a4834d4532184d18651fffa7a}{T\-Y\-P\-E\-\_\-\-S\-O\-U\-N\-D}\label{classassets_1_1Asset_ac3e27d6385fb4a6a961ec6425501bcf2ae3002f8a4834d4532184d18651fffa7a}
+}]\index{T\-Y\-P\-E\-\_\-\-T\-E\-X\-T\-U\-R\-E@{T\-Y\-P\-E\-\_\-\-T\-E\-X\-T\-U\-R\-E}!assets\-::\-Asset@{assets\-::\-Asset}}\index{assets\-::\-Asset@{assets\-::\-Asset}!T\-Y\-P\-E\-\_\-\-T\-E\-X\-T\-U\-R\-E@{T\-Y\-P\-E\-\_\-\-T\-E\-X\-T\-U\-R\-E}}\item[{\em 
+\hypertarget{classassets_1_1Asset_ac3e27d6385fb4a6a961ec6425501bcf2a4a17a0ac4a2772ca384471ceb97c4d8e}{T\-Y\-P\-E\-\_\-\-T\-E\-X\-T\-U\-R\-E}\label{classassets_1_1Asset_ac3e27d6385fb4a6a961ec6425501bcf2a4a17a0ac4a2772ca384471ceb97c4d8e}
+}]\index{T\-Y\-P\-E\-\_\-\-M\-A\-T\-E\-R\-I\-A\-L@{T\-Y\-P\-E\-\_\-\-M\-A\-T\-E\-R\-I\-A\-L}!assets\-::\-Asset@{assets\-::\-Asset}}\index{assets\-::\-Asset@{assets\-::\-Asset}!T\-Y\-P\-E\-\_\-\-M\-A\-T\-E\-R\-I\-A\-L@{T\-Y\-P\-E\-\_\-\-M\-A\-T\-E\-R\-I\-A\-L}}\item[{\em 
+\hypertarget{classassets_1_1Asset_ac3e27d6385fb4a6a961ec6425501bcf2a99a420bf63efabb0941af4b8a6e6c48c}{T\-Y\-P\-E\-\_\-\-M\-A\-T\-E\-R\-I\-A\-L}\label{classassets_1_1Asset_ac3e27d6385fb4a6a961ec6425501bcf2a99a420bf63efabb0941af4b8a6e6c48c}
+}]\index{T\-Y\-P\-E\-\_\-\-F\-O\-N\-T@{T\-Y\-P\-E\-\_\-\-F\-O\-N\-T}!assets\-::\-Asset@{assets\-::\-Asset}}\index{assets\-::\-Asset@{assets\-::\-Asset}!T\-Y\-P\-E\-\_\-\-F\-O\-N\-T@{T\-Y\-P\-E\-\_\-\-F\-O\-N\-T}}\item[{\em 
+\hypertarget{classassets_1_1Asset_ac3e27d6385fb4a6a961ec6425501bcf2ad56e60623d816ce033eff0a209fd28cf}{T\-Y\-P\-E\-\_\-\-F\-O\-N\-T}\label{classassets_1_1Asset_ac3e27d6385fb4a6a961ec6425501bcf2ad56e60623d816ce033eff0a209fd28cf}
+}]\index{T\-Y\-P\-E\-\_\-\-C\-U\-S\-T\-O\-M@{T\-Y\-P\-E\-\_\-\-C\-U\-S\-T\-O\-M}!assets\-::\-Asset@{assets\-::\-Asset}}\index{assets\-::\-Asset@{assets\-::\-Asset}!T\-Y\-P\-E\-\_\-\-C\-U\-S\-T\-O\-M@{T\-Y\-P\-E\-\_\-\-C\-U\-S\-T\-O\-M}}\item[{\em 
+\hypertarget{classassets_1_1Asset_ac3e27d6385fb4a6a961ec6425501bcf2a8768c613bcc647dc2aaab84b82dab3d9}{T\-Y\-P\-E\-\_\-\-C\-U\-S\-T\-O\-M}\label{classassets_1_1Asset_ac3e27d6385fb4a6a961ec6425501bcf2a8768c613bcc647dc2aaab84b82dab3d9}
+}]\end{description}
+\end{Desc}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classassets_1_1Asset_af63a77194b5b67c3fb43d1e19b3f10df}{\index{assets\-::\-Asset@{assets\-::\-Asset}!$\sim$\-Asset@{$\sim$\-Asset}}
+\index{$\sim$\-Asset@{$\sim$\-Asset}!assets::Asset@{assets\-::\-Asset}}
+\subsubsection[{$\sim$\-Asset}]{\setlength{\rightskip}{0pt plus 5cm}assets\-::\-Asset\-::$\sim$\-Asset (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{classassets_1_1Asset_af63a77194b5b67c3fb43d1e19b3f10df}
+\hypertarget{classassets_1_1Asset_ad454ebaf0bd95df795111efa1b867e17}{\index{assets\-::\-Asset@{assets\-::\-Asset}!Asset@{Asset}}
+\index{Asset@{Asset}!assets::Asset@{assets\-::\-Asset}}
+\subsubsection[{Asset}]{\setlength{\rightskip}{0pt plus 5cm}assets\-::\-Asset\-::\-Asset (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{name, }
+\item[{{\bf Type}}]{type}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}}\label{classassets_1_1Asset_ad454ebaf0bd95df795111efa1b867e17}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classassets_1_1Asset_aa6d45f3de78c266c17882630eb9414a9}{\index{assets\-::\-Asset@{assets\-::\-Asset}!get\-String\-From\-File@{get\-String\-From\-File}}
+\index{get\-String\-From\-File@{get\-String\-From\-File}!assets::Asset@{assets\-::\-Asset}}
+\subsubsection[{get\-String\-From\-File}]{\setlength{\rightskip}{0pt plus 5cm}std\-::string assets\-::\-Asset\-::get\-String\-From\-File (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{path}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [protected]}}}\label{classassets_1_1Asset_aa6d45f3de78c266c17882630eb9414a9}
+\hypertarget{classassets_1_1Asset_a109902837e61161e6f488ad9a47cd377}{\index{assets\-::\-Asset@{assets\-::\-Asset}!reload@{reload}}
+\index{reload@{reload}!assets::Asset@{assets\-::\-Asset}}
+\subsubsection[{reload}]{\setlength{\rightskip}{0pt plus 5cm}virtual void assets\-::\-Asset\-::reload (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classassets_1_1Asset_a109902837e61161e6f488ad9a47cd377}
+
+
+Implemented in \hyperlink{classassets_1_1Material_a311d20ba149f65238fa225b75b5c1a88}{assets\-::\-Material}, \hyperlink{classassets_1_1Model_ab5119fd6469968fbee397213e467d174}{assets\-::\-Model}, \hyperlink{classassets_1_1Shader_a17cc6b2e8252178735ad16bae5c8bf9b}{assets\-::\-Shader}, \hyperlink{classassets_1_1Font_a6be8d267aaa24657f8c23e3bfd7b85e9}{assets\-::\-Font}, and \hyperlink{classassets_1_1Texture_a41a2dc207c9e32a059814b910bd23d22}{assets\-::\-Texture}.
+
+\hypertarget{classassets_1_1Asset_a43d029b59109ff2952206969d503c25f}{\index{assets\-::\-Asset@{assets\-::\-Asset}!report\-Size@{report\-Size}}
+\index{report\-Size@{report\-Size}!assets::Asset@{assets\-::\-Asset}}
+\subsubsection[{report\-Size}]{\setlength{\rightskip}{0pt plus 5cm}virtual size\-\_\-t assets\-::\-Asset\-::report\-Size (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classassets_1_1Asset_a43d029b59109ff2952206969d503c25f}
+
+
+Implemented in \hyperlink{classassets_1_1Material_a3aef13c20019d025b6df9d3032041e69}{assets\-::\-Material}, \hyperlink{classassets_1_1Model_af553ea8e73bfb59cb391f2d4176df8df}{assets\-::\-Model}, \hyperlink{classassets_1_1Shader_aa5d97004f3eb6185354c706afa85a10d}{assets\-::\-Shader}, \hyperlink{classassets_1_1Texture_a90ca4bef41960b8c260822d4486a0094}{assets\-::\-Texture}, and \hyperlink{classassets_1_1Font_ad844684d9e1fd08f9e77325b2ce71239}{assets\-::\-Font}.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classassets_1_1Asset_a54524a00f5e43b916763a4d8bf15b157}{\index{assets\-::\-Asset@{assets\-::\-Asset}!files@{files}}
+\index{files@{files}!assets::Asset@{assets\-::\-Asset}}
+\subsubsection[{files}]{\setlength{\rightskip}{0pt plus 5cm}std\-::vector$<$std\-::string$>$ assets\-::\-Asset\-::files}}\label{classassets_1_1Asset_a54524a00f5e43b916763a4d8bf15b157}
+\hypertarget{classassets_1_1Asset_a875aa61338fbbb28da407e389dd7a559}{\index{assets\-::\-Asset@{assets\-::\-Asset}!hash@{hash}}
+\index{hash@{hash}!assets::Asset@{assets\-::\-Asset}}
+\subsubsection[{hash}]{\setlength{\rightskip}{0pt plus 5cm}size\-\_\-t assets\-::\-Asset\-::hash}}\label{classassets_1_1Asset_a875aa61338fbbb28da407e389dd7a559}
+\hypertarget{classassets_1_1Asset_a57fe90e1aa9281f2dd59041dffcc74b4}{\index{assets\-::\-Asset@{assets\-::\-Asset}!name@{name}}
+\index{name@{name}!assets::Asset@{assets\-::\-Asset}}
+\subsubsection[{name}]{\setlength{\rightskip}{0pt plus 5cm}std\-::string assets\-::\-Asset\-::name}}\label{classassets_1_1Asset_a57fe90e1aa9281f2dd59041dffcc74b4}
+\hypertarget{classassets_1_1Asset_a80a9f5f4cab8e41e4b9cf69f5eb2986a}{\index{assets\-::\-Asset@{assets\-::\-Asset}!type@{type}}
+\index{type@{type}!assets::Asset@{assets\-::\-Asset}}
+\subsubsection[{type}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Type} assets\-::\-Asset\-::type}}\label{classassets_1_1Asset_a80a9f5f4cab8e41e4b9cf69f5eb2986a}
+\hypertarget{classassets_1_1Asset_a631640043afcf9327d3cf20a8356a687}{\index{assets\-::\-Asset@{assets\-::\-Asset}!version@{version}}
+\index{version@{version}!assets::Asset@{assets\-::\-Asset}}
+\subsubsection[{version}]{\setlength{\rightskip}{0pt plus 5cm}size\-\_\-t assets\-::\-Asset\-::version}}\label{classassets_1_1Asset_a631640043afcf9327d3cf20a8356a687}
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+include/assets/\hyperlink{Asset_8hpp}{Asset.\-hpp}\item 
+src/assets/\hyperlink{Asset_8cpp}{Asset.\-cpp}\end{DoxyCompactItemize}

@@ -66,12 +66,17 @@ public:
     std::vector<std::array<unsigned int, 8>> nodeChildren;
     std::vector<std::array<bool, 8>> nodeChildIsLeaf;
     std::vector<std::array<AABB, 8>> nodeChildAABB;
-    std::vector<std::pair<unsigned int, std::array<Triangle, bucketSize>>> buckets;
+    std::vector<unsigned int> bucketSizes;
+    std::vector<Triangle> buckets;
+
+
+    glm::vec3 aabbMin;
+    glm::vec3 aabbMax;
 
     void optimize();
 
 private:
-    std::vector<unsigned int> bucketBuffer;
+    std::vector<std::pair<unsigned int, unsigned int>> bucketBuffer;
 };
 
 typedef OctreeT<32> Octree;

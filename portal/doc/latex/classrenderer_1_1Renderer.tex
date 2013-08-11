@@ -1,0 +1,89 @@
+\hypertarget{classrenderer_1_1Renderer}{\section{renderer\-:\-:Renderer Class Reference}
+\label{classrenderer_1_1Renderer}\index{renderer\-::\-Renderer@{renderer\-::\-Renderer}}
+}
+
+
+{\ttfamily \#include $<$Renderer.\-hpp$>$}
+
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structrenderer_1_1Renderer_1_1RenderResults}{Render\-Results}
+\item 
+struct \hyperlink{structrenderer_1_1Renderer_1_1RenderState}{Render\-State}
+\item 
+struct \hyperlink{structrenderer_1_1Renderer_1_1Settings}{Settings}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classrenderer_1_1Renderer_a07e4a2a3199e730df7eb1065159450cf}{Renderer} ()
+\item 
+virtual \hyperlink{classrenderer_1_1Renderer_a7a0e3c64074ff83ddf92b326508f29dd}{$\sim$\-Renderer} ()
+\item 
+void \hyperlink{classrenderer_1_1Renderer_aa0451a324f44861a8e11fc4d4c13006a}{initialize} ()
+\item 
+void \hyperlink{classrenderer_1_1Renderer_a1ed08a8d1b263f01798cae8c8e917701}{render} (const \hyperlink{classscene_1_1Scene}{scene\-::\-Scene} \&scene, \hyperlink{structrenderer_1_1Renderer_1_1RenderResults}{Render\-Results} \&results)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structrenderer_1_1Renderer_1_1Settings}{renderer\-::\-Renderer\-::\-Settings} \hyperlink{classrenderer_1_1Renderer_aaec552b957bd97685f9a3d860966cbf4}{settings}
+\item 
+std\-::unique\-\_\-ptr$<$ \hyperlink{classrenderer_1_1ResourceManager}{Resource\-Manager} $>$ \hyperlink{classrenderer_1_1Renderer_a34f886fb0da17d81d76b35f7719e836b}{resource\-Manager}
+\item 
+size\-\_\-t \hyperlink{classrenderer_1_1Renderer_a8e020b5c6fb6e8b217a2732bc601e167}{shader\-Hash}
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classrenderer_1_1Renderer_a07e4a2a3199e730df7eb1065159450cf}{\index{renderer\-::\-Renderer@{renderer\-::\-Renderer}!Renderer@{Renderer}}
+\index{Renderer@{Renderer}!renderer::Renderer@{renderer\-::\-Renderer}}
+\subsubsection[{Renderer}]{\setlength{\rightskip}{0pt plus 5cm}renderer\-::\-Renderer\-::\-Renderer (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classrenderer_1_1Renderer_a07e4a2a3199e730df7eb1065159450cf}
+\hypertarget{classrenderer_1_1Renderer_a7a0e3c64074ff83ddf92b326508f29dd}{\index{renderer\-::\-Renderer@{renderer\-::\-Renderer}!$\sim$\-Renderer@{$\sim$\-Renderer}}
+\index{$\sim$\-Renderer@{$\sim$\-Renderer}!renderer::Renderer@{renderer\-::\-Renderer}}
+\subsubsection[{$\sim$\-Renderer}]{\setlength{\rightskip}{0pt plus 5cm}renderer\-::\-Renderer\-::$\sim$\-Renderer (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{classrenderer_1_1Renderer_a7a0e3c64074ff83ddf92b326508f29dd}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classrenderer_1_1Renderer_aa0451a324f44861a8e11fc4d4c13006a}{\index{renderer\-::\-Renderer@{renderer\-::\-Renderer}!initialize@{initialize}}
+\index{initialize@{initialize}!renderer::Renderer@{renderer\-::\-Renderer}}
+\subsubsection[{initialize}]{\setlength{\rightskip}{0pt plus 5cm}void renderer\-::\-Renderer\-::initialize (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classrenderer_1_1Renderer_aa0451a324f44861a8e11fc4d4c13006a}
+\hypertarget{classrenderer_1_1Renderer_a1ed08a8d1b263f01798cae8c8e917701}{\index{renderer\-::\-Renderer@{renderer\-::\-Renderer}!render@{render}}
+\index{render@{render}!renderer::Renderer@{renderer\-::\-Renderer}}
+\subsubsection[{render}]{\setlength{\rightskip}{0pt plus 5cm}void renderer\-::\-Renderer\-::render (
+\begin{DoxyParamCaption}
+\item[{const {\bf scene\-::\-Scene} \&}]{scene, }
+\item[{{\bf Render\-Results} \&}]{results}
+\end{DoxyParamCaption}
+)}}\label{classrenderer_1_1Renderer_a1ed08a8d1b263f01798cae8c8e917701}
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classrenderer_1_1Renderer_a34f886fb0da17d81d76b35f7719e836b}{\index{renderer\-::\-Renderer@{renderer\-::\-Renderer}!resource\-Manager@{resource\-Manager}}
+\index{resource\-Manager@{resource\-Manager}!renderer::Renderer@{renderer\-::\-Renderer}}
+\subsubsection[{resource\-Manager}]{\setlength{\rightskip}{0pt plus 5cm}std\-::unique\-\_\-ptr$<${\bf Resource\-Manager}$>$ renderer\-::\-Renderer\-::resource\-Manager}}\label{classrenderer_1_1Renderer_a34f886fb0da17d81d76b35f7719e836b}
+\hypertarget{classrenderer_1_1Renderer_aaec552b957bd97685f9a3d860966cbf4}{\index{renderer\-::\-Renderer@{renderer\-::\-Renderer}!settings@{settings}}
+\index{settings@{settings}!renderer::Renderer@{renderer\-::\-Renderer}}
+\subsubsection[{settings}]{\setlength{\rightskip}{0pt plus 5cm}struct {\bf renderer\-::\-Renderer\-::\-Settings}  renderer\-::\-Renderer\-::settings}}\label{classrenderer_1_1Renderer_aaec552b957bd97685f9a3d860966cbf4}
+\hypertarget{classrenderer_1_1Renderer_a8e020b5c6fb6e8b217a2732bc601e167}{\index{renderer\-::\-Renderer@{renderer\-::\-Renderer}!shader\-Hash@{shader\-Hash}}
+\index{shader\-Hash@{shader\-Hash}!renderer::Renderer@{renderer\-::\-Renderer}}
+\subsubsection[{shader\-Hash}]{\setlength{\rightskip}{0pt plus 5cm}size\-\_\-t renderer\-::\-Renderer\-::shader\-Hash}}\label{classrenderer_1_1Renderer_a8e020b5c6fb6e8b217a2732bc601e167}
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+include/renderer/\hyperlink{Renderer_8hpp}{Renderer.\-hpp}\item 
+src/renderer/\hyperlink{Renderer_8cpp}{Renderer.\-cpp}\end{DoxyCompactItemize}

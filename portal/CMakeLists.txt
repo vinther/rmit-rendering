@@ -12,6 +12,11 @@ find_package(SDL2_ttf REQUIRED)
 find_package(JPEG REQUIRED)
 find_package(Assimp REQUIRED)
 
+include_directories(${GLM_INCLUDE_DIRS})
+include_directories(${ASSIMP_INCLUDE_DIR})
+include_directories(${SDL2_INCLUDE_DIR})
+include_directories(${SDL2IMAGE_INCLUDE_DIR})
+
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
@@ -25,25 +30,40 @@ set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
 
 # Compiler-specific C++11 activation.
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
-    execute_process(
-        COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
-    #if (NOT (GCC_VERSION VERSION_GREATER 4.7 OR GCC_VERSION VERSION_EQUAL 4.7))
-    #    message(FATAL_ERROR "${PROJECT_NAME} requires g++ 4.7 or greater.")
-    #endif ()
+	execute_process(
+		COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
+	if (NOT(GCC_VERSION VERSION_GREATER 4.6 OR GCC_VERSION VERSION_EQUAL 4.6))
+	   message(FATAL_ERROR "${PROJECT_NAME} requires g++ 4.6 or greater.")
+	endif ()
 elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
 else ()
-    message(FATAL_ERROR "Your C++ compiler does not support C++11.")
+	message(FATAL_ERROR "Your C++ compiler does not support C++11.")
 endif ()
 
-include_directories(${GLM_INCLUDE_DIRS})
-include_directories(${ASSIMP_INCLUDE_DIR})
-include_directories(${SDL2_INCLUDE_DIR})
-include_directories(${SDL2IMAGE_INCLUDE_DIR})
+
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-file(GLOB_RECURSE PORTAL_SOURCES src/*.cpp src/*.c)
+file(GLOB_RECURSE CLIENT_SOURCES src/*/*.c src/*/*.cpp src/*/*.cxx)
 
-add_executable (portal ${PORTAL_SOURCES})
+add_library (client ${CLIENT_SOURCES})
 
-target_link_libraries(portal ${SDL2_LIBRARY} ${SDL2IMAGE_LIBRARY} ${SDL2TTF_LIBRARY} ${JPEG_LIBRARY} ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARIES} ${ASSIMP_LIBRARIES})
+target_link_libraries(
+	client 
+	${SDL2_LIBRARY} 
+	${SDL2IMAGE_LIBRARY} 
+	${SDL2TTF_LIBRARY} 
+	${JPEG_LIBRARY} 
+	${OPENGL_LIBRARIES} 
+	${GLUT_LIBRARY} 
+	${GLEW_LIBRARIES} 
+	${ASSIMP_LIBRARIES})
+	
+	
+file(GLOB_RECURSE PORTAL_SOURCES src/Portal.cpp)	
+
+add_executable (portal src/Portal.cpp)
+
+target_link_libraries(portal client)
+
+add_subdirectory(profiling)

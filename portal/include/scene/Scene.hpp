@@ -10,20 +10,18 @@
 
 #include <memory>
 
-class Client;
-
 #include "physics/Octree.hpp"
+
+#include "scene/Camera.hpp"
+#include "scene/SceneNode.hpp"
 
 namespace scene
 {
 
-class Camera;
-class SceneNode;
-
 class Scene
 {
 public:
-    Scene(std::shared_ptr<Client> client);
+    Scene();
     virtual ~Scene();
 
     void initialize();
@@ -31,8 +29,6 @@ public:
     std::unique_ptr<Camera> camera;
     std::unique_ptr<SceneNode> root;
     std::unique_ptr<physics::Octree > intersectionTree;
-private:
-    std::shared_ptr<Client> client;
 };
 
 }
