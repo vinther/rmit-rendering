@@ -31,6 +31,12 @@ struct AABB
     glm::vec3 min, max;
 };
 
+struct IntersectionPoint
+{
+    glm::vec3 normal;
+    glm::vec3 position;
+};
+
 }
 
 #endif /* PHYSICS_TYPES_HPP_ */

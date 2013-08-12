@@ -77,64 +77,64 @@ int main(int argc, char** argv)
     if (!model->loadFromDisk())
         throw runtime_error("Error loading model from disk!");
 
+	const auto rootMin = scene->intersectionTree->aabb.min;
+	const auto rootMax = scene->intersectionTree->aabb.max;
+
+	const unsigned int sampleSize = 1 << 4;
+
+	std::random_device rd;
+	std::mt19937_64 gen(rd());
+
+	std::uniform_real_distribution<> X1(rootMin.x, rootMax.x);
+	std::uniform_real_distribution<> X2(rootMin.y, rootMax.y);
+	std::uniform_real_distribution<> X3(rootMin.z, rootMax.z);
+
+	std::uniform_real_distribution<> Y1(0.0f, 2.0f * M_PI);
+	std::uniform_real_distribution<> Y2(0.0f, M_PI);
+
+	std::vector<physics::Ray> rays;
+
+	rays.resize(sampleSize);
+
+	for (unsigned long long i = 0; i < sampleSize; ++i)
+	{
+		const float theta = Y1(gen);
+		const float phi = Y2(gen);
+
+		const float u = std::cos(phi);
+		const float sq = std::sqrt(1 - u * u);
+
+		rays[i].origin = glm::vec3(X1(gen), X2(gen), X3(gen));
+		rays[i].direction = glm::normalize(glm::vec3(sq * std::cos(theta), sq * std::sin(theta), u));
+	}
+
     scene->root->model = std::move(model);
     scene->initialize();
 
-    const auto rootMin = scene->intersectionTree->aabbMin;
-    const auto rootMax = scene->intersectionTree->aabbMax;
-
-    const unsigned int sampleSize = 1 << 22;
-    //const unsigned int sampleSize = 1 << 10;
-
-    std::random_device rd;
-    std::mt19937_64 gen(rd());
-
-    std::uniform_real_distribution<> X1(rootMin.x, rootMax.x);
-    std::uniform_real_distribution<> X2(rootMin.y, rootMax.y);
-    std::uniform_real_distribution<> X3(rootMin.z, rootMax.z);
-
-    std::uniform_real_distribution<> Y1(0.0f, 2.0f * M_PI);
-    std::uniform_real_distribution<> Y2(0.0f, M_PI);
-
-    std::vector<physics::Ray> rays;
-
-    rays.resize(sampleSize);
-
-    for (unsigned long long i = 0; i < sampleSize; ++i)
+    for (auto bs: {16, 32, 64, 128, 256, 512, 1024, 2048})
     {
-        const float theta = Y1(gen);
-        const float phi = Y2(gen);
+		scene->intersectionTree->createFromScene(*(scene->root), bs);
 
-        const float u = std::cos(phi);
-        const float sq = std::sqrt(1 - u * u);
+		auto& tree = *(scene->intersectionTree);
 
-        rays[i].origin = glm::vec3(X1(gen), X2(gen), X3(gen));
-        rays[i].direction = glm::normalize(glm::vec3(sq * std::cos(theta), sq * std::sin(theta), u));
+		unsigned int hits = 0;
+
+		const auto start = std::chrono::high_resolution_clock::now();
+
+		physics::IntersectionPoint result;
+		for (unsigned long long i = 0; i < sampleSize; ++i)
+		{
+			hits += tree.trace(rays[i], result) ? 1 : 0;
+		}
+
+		const auto end = std::chrono::high_resolution_clock::now();
+
+		std::cout <<
+				sampleSize << " traces completed in: " <<
+				std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() <<
+				" miliseconds. Hits: " << hits << ". Bucket size: " << bs << std::endl;
+
     }
-
-    auto& tree = *(scene->intersectionTree);
-
-    unsigned int hits = 0;
-
-    const auto start = std::chrono::high_resolution_clock::now();
-
-    physics::Octree::IntersectionDetails result;
-    for (unsigned long long i = 0; i < sampleSize; ++i)
-    {
-        result.intersection = false;
-
-        tree.trace(rays[i], result);
-
-        hits += result.intersection ? 1 : 0;
-    }
-
-    const auto end = std::chrono::high_resolution_clock::now();
-
-    std::cout <<
-            sampleSize << " traces completed in: " <<
-            std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() <<
-            " miliseconds. Hits: " << hits << std::endl;
-
     std::cout << "Success" << std::endl;
 
     return 0;

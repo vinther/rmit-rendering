@@ -28,7 +28,7 @@ public:
 
     std::unique_ptr<Camera> camera;
     std::unique_ptr<SceneNode> root;
-    std::unique_ptr<physics::Octree > intersectionTree;
+    std::unique_ptr<physics::Octree> intersectionTree;
 };
 
 }

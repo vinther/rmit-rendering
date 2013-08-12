@@ -24,65 +24,50 @@ class SceneNode;
 namespace physics
 {
 
-template <unsigned int bucketSize>
-class OctreeT
+namespace detail
 {
-public:
-    OctreeT();
-    ~OctreeT();
-
-    struct Node
-    {
-        const static unsigned int nodeBucketSize = bucketSize;
-
-        Node()
-            : isLeaf(true)
-        {}
-
-        std::array<std::unique_ptr<Node>, 8> children;
-        std::vector<unsigned int> bucket;
-
-        AABB aabb;
-
-        bool isLeaf;
-    };
-
-    std::unique_ptr<Node> root;
-    std::vector<Triangle> objects;
-
-    void createFromScene(const scene::SceneNode& sceneRoot);
-
-    struct IntersectionDetails
-    {
-        glm::vec3 normal;
-        glm::vec3 position;
-        bool intersection;
-    };
-
-    bool trace(const Ray& ray, IntersectionDetails& result);
-
-    unsigned int nodeRoot;
-
-    std::vector<std::array<unsigned int, 8>> nodeChildren;
-    std::vector<std::array<bool, 8>> nodeChildIsLeaf;
-    std::vector<std::array<AABB, 8>> nodeChildAABB;
-    std::vector<unsigned int> bucketSizes;
-    std::vector<Triangle> buckets;
-
-
-    glm::vec3 aabbMin;
-    glm::vec3 aabbMax;
-
-    void optimize();
-
-private:
-    std::vector<std::pair<unsigned int, unsigned int>> bucketBuffer;
+struct BucketDescriptor
+{
+	unsigned int offset;
+	unsigned int size;
 };
 
-typedef OctreeT<32> Octree;
+struct BFSLayoutPolicy;
+struct DFSLayoutPolicy;
+struct VEBLayoutPolicy;
+
+typedef BFSLayoutPolicy DefaultLayoutPolicy;
 
 }
 
+class Octree
+{
+public:
+    Octree();
+    ~Octree();
 
+    template <class MemoryLayoutPolicy = detail::DefaultLayoutPolicy>
+    void createFromScene(const scene::SceneNode& sceneRoot, unsigned int bucketSize = 256);
+
+    bool trace(const Ray& ray, IntersectionPoint& result);
+
+    AABB aabb;
+
+    unsigned int nodeRoot;
+
+    struct Data
+    {
+        std::vector<std::array<unsigned int, 8>> children;
+        std::vector<std::array<bool, 8>> leaves;
+        std::vector<std::array<AABB, 8>> aabbs;
+
+        std::vector<detail::BucketDescriptor> descriptors;
+        std::vector<Triangle> objects;
+    } data;
+private:
+    std::vector<detail::BucketDescriptor> bucketDescriptorBuffer;
+};
+
+}
 
 #endif /* OCTREE_HPP_ */

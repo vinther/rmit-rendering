@@ -44,15 +44,15 @@ void input::MouseHandler::mouseDown(Uint8 button, Uint16 x, Uint16 y)
 {
     client->cameraController->mouseDown(button, x, y);
 
-    physics::Octree::IntersectionDetails intersectionResult;
-    client->scene->intersectionTree->trace(
+    physics::IntersectionPoint intersectionResult;
+    bool hit = client->scene->intersectionTree->trace(
             physics::Ray{
                 client->scene->camera->position,
                 client->scene->camera->forward()},
             intersectionResult
     );
 
-    if (intersectionResult.intersection)
+    if (hit)
     {
         client->debugRenderer->points.push_back(intersectionResult.position);
     }

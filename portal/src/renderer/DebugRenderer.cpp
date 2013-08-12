@@ -45,7 +45,7 @@ void renderIntersectionTree(
     UNUSED(depth);
     UNUSED(settings);
 
-    for (const auto& aabbs: tree.nodeChildAABB)
+    for (const auto& aabbs: tree.data.aabbs)
     {
         for (const auto& aabb: aabbs)
         {

@@ -35,5 +35,5 @@ scene::Scene::~Scene()
 
 void scene::Scene::initialize()
 {
-    intersectionTree->createFromScene(*root);
+
 }

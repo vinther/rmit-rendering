@@ -203,7 +203,6 @@ void Client::event(SDL_Event* event)
         } else
         {
             keyboardHandler->event(event->key);
-            SDL_Log("key pressed %c:", event->key.keysym.sym );
         }
         break;
     case SDL_KEYUP:

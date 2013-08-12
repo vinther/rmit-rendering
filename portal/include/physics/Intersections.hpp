@@ -73,34 +73,13 @@ inline bool rayAABBIntersectionOpt(
     using glm::max;
     using glm::min;
 
-    // r.dir is unit direction vector of ray
-    glm::vec3 dirfrac = directionReciproc;
+    const glm::vec3 V1 = (aabbMin - origin) * directionReciproc;
+    const glm::vec3 V2 = (aabbMax - origin) * directionReciproc;
 
-    // lb is the corner of AABB with minimal coordinates - left bottom, rt is maximal corner
-    // r.org is origin of ray
-    float t1 = (aabbMin.x - origin.x) * dirfrac.x;
-    float t2 = (aabbMax.x - origin.x) * dirfrac.x;
-    float t3 = (aabbMin.y - origin.y) * dirfrac.y;
-    float t4 = (aabbMax.y - origin.y) * dirfrac.y;
-    float t5 = (aabbMin.z - origin.z) * dirfrac.z;
-    float t6 = (aabbMax.z - origin.z) * dirfrac.z;
+    const float tmin = max(max(min(V1.x, V2.x), min(V1.y, V2.y)), min(V1.z, V2.z));
+    const float tmax = min(min(max(V1.x, V2.x), max(V1.y, V2.y)), max(V1.z, V2.z));
 
-    float tmin = max(max(min(t1, t2), min(t3, t4)), min(t5, t6));
-    float tmax = min(min(max(t1, t2), max(t3, t4)), max(t5, t6));
-
-    // if tmax < 0, ray (line) is intersecting AABB, but whole AABB is behind us
-    if (tmax < 0)
-    {
-        return false;
-    }
-
-    // if tmin > tmax, ray doesn't intersect AABB
-    if (tmin > tmax)
-    {
-        return false;
-    }
-
-    return true;
+    return (tmin <= tmax && tmax >= 0);
 }
 
 inline bool pointAABBIntersection(const glm::vec3& point, const AABB& aabb)
