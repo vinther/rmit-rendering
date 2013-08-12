@@ -1,5 +1,8 @@
 bin/*
 build/*
 doc/*
+
+/.settings
+
 /.project
 /.cproject
