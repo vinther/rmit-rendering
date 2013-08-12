@@ -8,7 +8,9 @@
 #include "threading/Task.hpp"
 
 threading::Task::Task()
-    : Task([](){})
+    : f([](){})
+    , priority(Priority::PRIOTIRY_MID)
+    , flags(Flags::SYNCHRONIZE_FRAME)
 {
 }
 

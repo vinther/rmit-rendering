@@ -24,8 +24,8 @@ public:
     {
         PRIOTIRY_LOW = 0x1,
         PRIOTIRY_MID = 0x2,
-        PRIOTIRY_HIGH = 0x4,
-    } priority = Priority::PRIOTIRY_MID;
+        PRIOTIRY_HIGH = 0x4
+    } priority;
 
     enum Flags
     {
@@ -39,7 +39,7 @@ public:
         REENTRANT = 0x4,
 
         ALL_FLAGS = ~0x0
-    } flags = Flags::SYNCHRONIZE_FRAME;
+    } flags;
 
     Task();
     Task(function_type f, Priority = Priority::PRIOTIRY_MID, Flags = Flags::SYNCHRONIZE_FRAME);
