@@ -161,7 +161,7 @@ void Client::prepareFrame()
 
         for (unsigned int i = 0; i < 100; ++i)
         {
-            tasks.emplace_back([=](){ for(unsigned int i = 0; i < 1000000; ++i); });
+            tasks.emplace_back([=](){ for(unsigned int i = 0; i < 100000; ++i); });
         }
 
         threadPool->enqueue(tasks);
