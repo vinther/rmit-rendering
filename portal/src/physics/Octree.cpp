@@ -79,7 +79,6 @@ bool physics::Octree::trace(const Ray& ray, IntersectionPoint& result)
 {
     float shortestDist = std::numeric_limits<float>::max();
 
-
     bool intersection = false;
 
     glm::simdVec4 v0, v1;
@@ -104,12 +103,12 @@ bool physics::Octree::trace(const Ray& ray, IntersectionPoint& result)
             glm::simdVec4 intersectResult;
             if (lineTriangleIntersection(
                     o, d,
-                    tri.vertices[0u], tri.vertices[1u], tri.vertices[2u],
+                    tri[0], tri[1], tri[2],
                     intersectResult))
             {
                 intersection = true;
 
-                const float dist = glm::length(intersectResult * glm::simdVec4(1.0f, 0.0f, 0.0f, 0.0f));
+                const float dist = intersectResult.x;
                 if (dist < shortestDist)
                 {
                     shortestDist = dist;
@@ -122,10 +121,10 @@ bool physics::Octree::trace(const Ray& ray, IntersectionPoint& result)
         }
     }
 
-	result.position = ray.origin + ray.direction * glm::vec4_cast(closestResult).x;
+	result.position = ray.origin + ray.direction * (glm::vec4_cast(closestResult).x);
 	result.normal = glm::vec3(glm::vec4_cast(glm::cross(v0, v1)));
 
-//	SDL_Log("Avg.: %f", (float) sumBufferSize / bucketDescriptorBuffer.size());
+	SDL_Log("Avg.: %f %f %f", result.position.x, result.position.y, result.position.z);
 
     return intersection;
 }

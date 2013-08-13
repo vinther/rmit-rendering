@@ -67,9 +67,24 @@ inline bool rayAABBIntersection(
 
 const float inf = std::numeric_limits<float>::infinity();
 
-#define storess(ss,mem)     _mm_store_ss((float * const)(mem),(ss)
+#ifdef __GNUC__
+    #define _MM_ALIGN16 __attribute__ ((aligned (16)))
+#endif
+
+static const float _MM_ALIGN16
+    ps_cst_plus_inf[4]  = {  inf,  inf,  inf,  inf },
+    ps_cst_minus_inf[4] = { -inf, -inf, -inf, -inf };
+
+#define loadps(mem)     _mm_load_ps((const float * const)(mem))
+#define storess(ss,mem)     _mm_store_ss((float * const)(mem),(ss))
+#define minss           _mm_min_ss
+#define maxss           _mm_max_ss
+#define minps           _mm_min_ps
+#define maxps           _mm_max_ps
+#define mulps           _mm_mul_ps
+#define subps           _mm_sub_ps
 #define rotatelps(ps)       _mm_shuffle_ps((ps),(ps), 0x39) // a,b,c,d -> b,c,d,a
-#define muxhps(low,high)    _mm_movehl_ps((low),(high))
+#define muxhps(low,high)    _mm_movehl_ps((low),(high)) // low{a,b,c,d}|high{e,f,g,h
 
 inline bool rayAABBIntersectionOpt(
         const glm::simdVec4& origin,
@@ -78,37 +93,49 @@ inline bool rayAABBIntersectionOpt(
         const glm::simdVec4& aabbMax
 )
 {
-    using glm::max;
-    using glm::min;
+    // you may already have those values hanging around somewhere
+    const __m128
+        plus_inf    = loadps(ps_cst_plus_inf),
+        minus_inf   = loadps(ps_cst_minus_inf);
 
-    const glm::simdVec4 plusInf = glm::simdVec4(inf, inf, inf, inf);
-    const glm::simdVec4 minInf = glm::simdVec4(-inf, -inf, -inf, -inf);
+    // use whatever's apropriate to load.
+    const __m128
+        box_min = loadps(&aabbMin),
+        box_max = loadps(&aabbMax),
+        pos = loadps(&origin),
+        inv_dir = loadps(&directionReciproc);
 
-    const glm::simdVec4 l1 = (aabbMin - origin) * directionReciproc;
-    const glm::simdVec4 l2 = (aabbMax - origin) * directionReciproc;
+    // use a div if inverted directions aren't available
+    const __m128 l1 = mulps(subps(box_min, pos), inv_dir);
+    const __m128 l2 = mulps(subps(box_max, pos), inv_dir);
 
-    const glm::simdVec4 fl1a = l1 - plusInf;
-    const glm::simdVec4 fl2a = l2 - plusInf;
+    // the order we use for those min/max is vital to filter out
+    // NaNs that happens when an inv_dir is +/- inf and
+    // (box_min - pos) is 0. inf * 0 = NaN
+    const __m128 filtered_l1a = minps(l1, plus_inf);
+    const __m128 filtered_l2a = minps(l2, plus_inf);
 
-    const glm::simdVec4 fl1b = l1 + minInf;
-    const glm::simdVec4 fl2b = l2 + minInf;
+    const __m128 filtered_l1b = maxps(l1, minus_inf);
+    const __m128 filtered_l2b = maxps(l2, minus_inf);
 
-    glm::simdVec4 lmax = glm::max(fl1a, fl2a);
-    glm::simdVec4 lmin = glm::min(fl1b, fl2b);
+    // now that we're back on our feet, test those slabs.
+    __m128 lmax = maxps(filtered_l1a, filtered_l2a);
+    __m128 lmin = minps(filtered_l1b, filtered_l2b);
 
-    const glm::simdVec4 lmax0(rotatelps(lmax.Data));
-    const glm::simdVec4 lmin0(rotatelps(lmin.Data));
-    lmax = _mm_min_ss(lmax.Data, lmax0.Data);
-    lmin = _mm_max_ss(lmin.Data, lmin0.Data);
+    // unfold back. try to hide the latency of the shufps & co.
+    const __m128 lmax0 = rotatelps(lmax);
+    const __m128 lmin0 = rotatelps(lmin);
+    lmax = minss(lmax, lmax0);
+    lmin = maxss(lmin, lmin0);
 
-    const glm::simdVec4 lmax1(muxhps(lmax.Data,lmax.Data));
-    const glm::simdVec4 lmin1(muxhps(lmin.Data,lmin.Data));
-    lmax = _mm_min_ss(lmax.Data, lmax1.Data);
-    lmin = _mm_max_ss(lmin.Data, lmin1.Data);
+    const __m128 lmax1 = muxhps(lmax,lmax);
+    const __m128 lmin1 = muxhps(lmin,lmin);
+    lmax = minss(lmax, lmax1);
+    lmin = maxss(lmin, lmin1);
 
-    const bool ret = _mm_comige_ss(lmax.Data, _mm_setzero_ps()) & _mm_comige_ss(lmax.Data,lmin.Data);
+    const bool ret = _mm_comige_ss(lmax, _mm_setzero_ps()) & _mm_comige_ss(lmax,lmin);
 
-    return ret;
+    return  ret;
 }
 
 inline bool pointAABBIntersection(const glm::vec3& point, const AABB& aabb)
@@ -153,19 +180,21 @@ inline bool lineTriangleIntersection
 
     if (det > -Epsilon && det < Epsilon)
         return false;
-
     float inv_det = 1.0f / det;
 
     glm::simdVec4 tvec = orig - vert0;
+
+    position.y = glm::dot(tvec, pvec) * inv_det;
+    if (position.y < 0.0f || position.y > 1.0f)
+        return false;
+
     glm::simdVec4 qvec = glm::cross(tvec, edge1);
 
-    position = glm::simdVec4(glm::dot(edge2, qvec) * inv_det, glm::dot(tvec, pvec) * inv_det, glm::dot(dir, qvec) * inv_det, 0.0f);
-
-    if (position.y < 0.0f || position.y > 0.0f)
-        return false;
-
+    position.z = glm::dot(dir, qvec) * inv_det;
     if (position.z < 0.0f || position.y + position.z > 1.0f)
         return false;
+
+    position.x = glm::dot(edge2, qvec) * inv_det;
 
     return true;
 }

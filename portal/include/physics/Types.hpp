@@ -22,7 +22,7 @@ namespace physics
 template <typename T>
 struct TriangleT
 {
-    T& operator[](unsigned int idx)
+    const T& operator[](int idx) const
     { return vertices[idx]; }
 
     std::array<T, 3> vertices;

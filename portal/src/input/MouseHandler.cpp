@@ -60,6 +60,7 @@ void input::MouseHandler::mouseDown(Uint8 button, Uint16 x, Uint16 y)
 
     if (hit)
     {
+        SDL_Log("Hit!");
         client->debugRenderer->lines.push_back({ray.origin, result.position});
     }
 }
