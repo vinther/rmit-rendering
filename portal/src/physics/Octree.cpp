@@ -23,6 +23,7 @@
 #include "Utilities.hpp"
 
 physics::Octree::Octree()
+    : nodeRoot(0)
 {
 }
 
@@ -57,19 +58,17 @@ inline void getDescriptors(
 
         for (unsigned int i = 0; i < 8; ++i)
         {
-            if (physics::rayAABBIntersectionOpt(
-                    ray.origin, directionRec,
-                    data.aabbs[node][i].min,
-                    data.aabbs[node][i].max))
+            if (data.children[node][i] &&
+                    physics::rayAABBIntersectionOpt(
+                            ray.origin, directionRec,
+                            data.aabbs[node][i].min,
+                            data.aabbs[node][i].max))
             {
-            	if (data.children[node][i])
-            	{
-                    if (data.leaves[node][i]) {
-                    	descriptors.push_back(data.descriptors[data.children[node][i]]);
-                    } else {
-                        q.push_back(data.children[node][i]);
-                    }
-            	}
+                if (data.leaves[node][i]) {
+                    descriptors.push_back(data.descriptors[data.children[node][i]]);
+                } else {
+                    q.push_back(data.children[node][i]);
+                }
             }
         }
     }
@@ -125,5 +124,10 @@ bool physics::Octree::trace(const Ray& ray, IntersectionPoint& result)
 }
 
 #include "physics/detail/BFSLayoutPolicy.hpp"
+#include "physics/detail/DFSLayoutPolicy.hpp"
 
-template void physics::Octree::createFromScene<physics::detail::BFSLayoutPolicy>(const scene::SceneNode&, unsigned int);
+namespace physics
+{
+template void Octree::createFromScene<detail::BFSLayoutPolicy>(const scene::SceneNode&, unsigned int);
+template void Octree::createFromScene<detail::DFSLayoutPolicy>(const scene::SceneNode&, unsigned int);
+}

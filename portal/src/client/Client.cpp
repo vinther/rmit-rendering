@@ -7,6 +7,8 @@
 
 #include "client/Client.hpp"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "input/KeyboardHandler.hpp"
 #include "input/MouseHandler.hpp"
 
@@ -32,6 +34,7 @@
 
 #include "physics/Octree.hpp"
 
+#include "Config.hpp"
 #include "Utilities.hpp"
 
 Client::Client(int argc, char** argv)
@@ -42,6 +45,13 @@ Client::Client(int argc, char** argv)
     , assetManager()
     , renderer(), debugRenderer()
     , threadPool()
+
+    , sdlWindow(nullptr), sdlRenderer(nullptr)
+    , timeFrameBegin(), timeFrameEnd()
+    , frameCount(0)
+    , timeFrameFPS()
+    , frameCountFPS(0)
+
 {
     glutInit(&argc, argv);
 }
@@ -75,24 +85,13 @@ void Client::initialize(SDL_Window* sdlWindow, SDL_Renderer* sdlRenderer)
     scene->camera->rotate(90.0f, 30.0f);
 
     scene->root->model = assetManager->getOrCreate<assets::Model>("models/crytek-sponza/sponza.obj", std::ref(*assetManager));
+    scene->intersectionTree->createFromScene(*(scene->root));
 
-    //root->model = assetManager->getOrCreate<assets::Model>("models/capsule/capsule.obj", std::ref(*assetManager));
-    //root->model = assetManager->getOrCreate<Model>("models/dabrovic-sponza/sponza.obj");
-    //root->model = assetManager->getOrCreate<assets::Model>("models/portal/Portal Gun.obj", std::ref(*assetManager));
-    //assetManager->getOrCreate<Texture>("dims", "models/capsule/capsule.png");
-    //assetManager->getOrCreate<Texture>("dims", "models/portal/textures/portalgun_col.jpg");
+    auto child = std::make_unique<scene::SceneNode>();
+    child->model = assetManager->getOrCreate<assets::Model>("models/shuttle.obj", std::ref(*assetManager));
+    child->transformation = glm::translate(child->transformation, glm::vec3(0.0f, 0.0f, -50.0f));
 
-//    auto child = std::make_unique<SceneNode>();
-//    child->model = assetManager->getOrCreate<Model>("models/shuttle.obj");
-//    child->transformation = glm::translate(child->transformation, glm::vec3(0.0f, 0.0f, -50.0f));
-//
-//    root->children.push_back(std::move(child));
-//
-//    child = std::make_unique<SceneNode>();
-//    child->model = assetManager->getOrCreate<Model>("models/shuttle.obj");
-//    child->transformation = glm::translate(child->transformation, glm::vec3(0.0f, 0.0f, 50.0f));
-//
-//    root->children.push_back(std::move(child));
+    //scene->root->children.push_back(std::move(child));
 
     auto shader = assetManager->create<assets::Shader>("shaders/default", "shaders/default.vert", "shaders/default.frag");
 
@@ -131,6 +130,8 @@ void Client::prepareFrame()
     const auto msSinceLastFrame = std::chrono::duration_cast<std::chrono::milliseconds>(now - timeFrameEnd).count();
     const auto msSinceLastFPS = std::chrono::duration_cast<std::chrono::milliseconds>((now - timeFrameFPS)).count();
 
+    UNUSED(msSinceLastFrame);
+
     if (msSinceLastFPS > 1000)
     {
         const unsigned int framesPerSecond = (frameCountFPS * 1000) / (msSinceLastFPS);
@@ -141,7 +142,7 @@ void Client::prepareFrame()
         interface->data.fps = framesPerSecond;
     }
 
-    cameraController->update(msSinceLastFrame);
+    cameraController->update(std::chrono::duration_cast<std::chrono::microseconds>(now - timeFrameEnd).count());
     assetManager->fileWatcher->update();
 
 //    scene->root->transformation =

@@ -32,6 +32,7 @@
 
 renderer::Renderer::Renderer()
     : resourceManager(std::make_unique<ResourceManager>())
+    , shaderHash(0)
 {
     // TODO Auto-generated constructor stub
 

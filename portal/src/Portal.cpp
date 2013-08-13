@@ -83,8 +83,8 @@ int main(int argc, char **argv)
 
     glContext = SDL_GL_CreateContext(window);
 
-    SDL_ShowCursor(0);
-    SDL_SetWindowGrab(window, SDL_TRUE);
+    SDL_ShowCursor(1);
+    SDL_SetWindowGrab(window, SDL_FALSE);
 
     SDL_Log("Platform: %s", SDL_GetPlatform());
     SDL_Log("CPU cores: %d", SDL_GetCPUCount());
@@ -142,7 +142,6 @@ int main(int argc, char **argv)
         // Ugly hack to simulate mouse grabbing
         if (windowFocus)
             SDL_WarpMouseInWindow(window, windowWidth / 2, windowHeight / 2);
-
 
         client->prepareFrame();
         SDL_Delay(10);

@@ -41,8 +41,26 @@ else ()
 	message(FATAL_ERROR "Your C++ compiler does not support C++11.")
 endif ()
 
+MACRO (TODAY RESULT)
+    IF (WIN32)
+        EXECUTE_PROCESS(COMMAND "cmd" " /C date /T" OUTPUT_VARIABLE ${RESULT})
+        string(REGEX REPLACE "(..)/(..)/..(..).*" "\\1/\\2/\\3" ${RESULT} ${${RESULT}})
+    ELSEIF(UNIX)
+        EXECUTE_PROCESS(COMMAND "date" "+%d/%m/%Y" OUTPUT_VARIABLE ${RESULT})
+        string(REGEX REPLACE "(..)/(..)/..(..).*" "\\1/\\2/\\3" ${RESULT} ${${RESULT}})
+    ELSE (WIN32)
+        MESSAGE(SEND_ERROR "date not implemented")
+        SET(${RESULT} 000000)
+    ENDIF (WIN32)
+ENDMACRO (TODAY) 
+
+TODAY(RESULT)
+message(STATUS "Compilation date = ${RESULT}")
+
+
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
+configure_file(${PROJECT_SOURCE_DIR}/include/Config.cmake.hpp ${PROJECT_SOURCE_DIR}/include/Config.hpp)
 
 file(GLOB_RECURSE CLIENT_SOURCES src/*/*.c src/*/*.cpp src/*/*.cxx)
 

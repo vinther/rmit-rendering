@@ -45,7 +45,8 @@ void assets::FileWatcher::update()
     {
         inotify_event *event = (inotify_event*) (inotifyBuffer.data() + i);
 
-        if (event->mask & IN_MODIFY && (reloadedWatchDescriptors.find(event->wd) == reloadedWatchDescriptors.cend()))
+        if ((event->mask & IN_MODIFY) &&
+                (reloadedWatchDescriptors.find(event->wd) == reloadedWatchDescriptors.cend()))
         {
             std::get<1>(inotifyWatchDescriptors[event->wd])->reload();
 

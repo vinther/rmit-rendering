@@ -18,7 +18,8 @@
 #include "Utilities.hpp"
 
 renderer::BufferedShader::BufferedShader()
-    : program(0)
+    : modelMatrix(0), viewMatrix(0), projectionMatrix(0)
+    , program(0)
 {
 
 }

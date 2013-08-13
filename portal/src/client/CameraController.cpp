@@ -7,9 +7,6 @@
 
 #include "client/CameraController.hpp"
 
-
-
-
 #include "client/Client.hpp"
 #include "scene/Scene.hpp"
 #include "scene/Camera.hpp"
@@ -99,27 +96,29 @@ void CameraController::mouseMove(Uint16 x, Uint16 y, Sint16 xrel, Sint16 yrel)
     client->scene->camera->rotate(xrel * 0.01f, yrel * 0.01f);
 }
 
-void CameraController::update(Uint32 ms)
+void CameraController::update(Uint32 microseconds)
 {
     auto& camera = *(client->scene->camera);
 
+    const float f = (float) microseconds * 0.1f;
+
     if (state.moveForward)
-        camera.position += camera.forward() * state.speedFactor * (float) ms;
+        camera.position += camera.forward() * state.speedFactor * f;
 
     if (state.moveBackward)
-        camera.position += -camera.forward() * state.speedFactor * (float) ms;
+        camera.position += -camera.forward() * state.speedFactor * f;
 
     if (state.moveRight)
-        camera.position += camera.right() * state.speedFactor * (float) ms;
+        camera.position += camera.right() * state.speedFactor * f;
 
     if (state.moveLeft)
-        camera.position += -camera.right() * state.speedFactor * (float) ms;
+        camera.position += -camera.right() * state.speedFactor * f;
 
     if (state.moveUp)
-        camera.position += camera.up() * state.speedFactor * (float) ms;
+        camera.position += camera.up() * state.speedFactor * f;
 
     if (state.moveDown)
-        camera.position += -camera.up() * state.speedFactor * (float) ms;
+        camera.position += -camera.up() * state.speedFactor * f;
 }
 
 CameraController::State::State()
