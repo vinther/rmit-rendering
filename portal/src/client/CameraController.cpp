@@ -43,7 +43,7 @@ void CameraController::keyDown(SDL_Keycode key, Uint16 mod)
     case SDLK_LCTRL:
         state.moveDown = true; break;
     case SDLK_LSHIFT:
-        state.speedFactor = 8.0f; break;
+        state.moveSpeed = 2.0f; break;
     default:
         break;
     }
@@ -68,7 +68,7 @@ void CameraController::keyUp(SDL_Keycode key, Uint16 mod)
     case SDLK_LCTRL:
         state.moveDown = false; break;
     case SDLK_LSHIFT:
-        state.speedFactor = 4.0f; break;
+        state.moveSpeed = 1.0f; break;
     default:
         break;
     }
@@ -100,30 +100,30 @@ void CameraController::update(Uint32 microseconds)
 {
     auto& camera = *(client->scene->camera);
 
-    const float f = (float) microseconds * 0.1f;
+    const float f = (float) microseconds * 0.001f;
 
     if (state.moveForward)
-        camera.position += camera.forward() * state.speedFactor * f;
+        camera.position += camera.forward() * state.moveSpeed * f;
 
     if (state.moveBackward)
-        camera.position += -camera.forward() * state.speedFactor * f;
+        camera.position += -camera.forward() * state.moveSpeed * f;
 
     if (state.moveRight)
-        camera.position += camera.right() * state.speedFactor * f;
+        camera.position += camera.right() * state.moveSpeed * f;
 
     if (state.moveLeft)
-        camera.position += -camera.right() * state.speedFactor * f;
+        camera.position += -camera.right() * state.moveSpeed * f;
 
     if (state.moveUp)
-        camera.position += camera.up() * state.speedFactor * f;
+        camera.position += camera.up() * state.moveSpeed * f;
 
     if (state.moveDown)
-        camera.position += -camera.up() * state.speedFactor * f;
+        camera.position += -camera.up() * state.moveSpeed * f;
 }
 
 CameraController::State::State()
     : moveForward(false), moveBackward(false), moveLeft(false)
     , moveRight(false), moveUp(false), moveDown(false)
-    , speedFactor(4.0f)
+    , moveSpeed(1.0f)
 {
 }

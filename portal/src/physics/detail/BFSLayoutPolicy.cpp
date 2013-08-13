@@ -39,7 +39,8 @@ void physics::detail::BFSLayoutPolicy::layout(
 	for (unsigned int i = 0; i < 8 ; ++i)
 	{
 		data.leaves[nodeIdx][i] = cTree.root->children[i]->isLeaf;
-		data.aabbs[nodeIdx][i] = cTree.root->children[i]->aabb;
+        data.aabbs[nodeIdx][i].min = glm::simdVec4(cTree.root->children[i]->aabb.min, 0.0f);
+        data.aabbs[nodeIdx][i].max = glm::simdVec4(cTree.root->children[i]->aabb.max, 0.0f);
 
 		q.push(std::make_tuple(nodeIdx, i, cTree.root->children[i].get()));
 	}
@@ -56,7 +57,9 @@ void physics::detail::BFSLayoutPolicy::layout(
 		for (unsigned int i = 0; i < 8; ++i)
 		{
 			data.leaves[nodeIdx][i] = nodePtr->children[i]->isLeaf;
-			data.aabbs[nodeIdx][i] = nodePtr->children[i]->aabb;
+
+			data.aabbs[nodeIdx][i].min = glm::simdVec4(nodePtr->children[i]->aabb.min, 0.0f);
+			data.aabbs[nodeIdx][i].max = glm::simdVec4(nodePtr->children[i]->aabb.max, 0.0f);
 
 			if (data.leaves[nodeIdx][i])
 			{
@@ -75,7 +78,11 @@ void physics::detail::BFSLayoutPolicy::layout(
 				data.objects.resize(data.objects.size() + descriptor.size);
 
 				for (unsigned int j = 0; j < descriptor.size; ++j)
-					data.objects[descriptor.offset + j] = cTree.objects[nodePtr->children[i]->bucket[j]];
+				{
+					data.objects[descriptor.offset + j].vertices[0] = glm::simdVec4(cTree.objects[nodePtr->children[i]->bucket[j]].vertices[0], 0.0f);
+					data.objects[descriptor.offset + j].vertices[1] = glm::simdVec4(cTree.objects[nodePtr->children[i]->bucket[j]].vertices[1], 0.0f);
+					data.objects[descriptor.offset + j].vertices[2] = glm::simdVec4(cTree.objects[nodePtr->children[i]->bucket[j]].vertices[2], 0.0f);
+				}
 
 				data.descriptors.push_back(descriptor);
 			} else

@@ -12,24 +12,54 @@
 
 #include <glm/glm.hpp>
 
+#define GLM_SIMD_ENABLE_XYZW_UNION 1
+#include <glm/gtx/simd_vec4.hpp>
+#include <glm/gtx/simd_mat4.hpp>
+
 namespace physics
 {
 
-struct Triangle
+template <typename T>
+struct TriangleT
 {
-    std::array<glm::vec3, 3> vertices;
+    T& operator[](unsigned int idx)
+    { return vertices[idx]; }
+
+    std::array<T, 3> vertices;
 };
 
-struct Ray
+typedef TriangleT<glm::vec3> Triangle;
+typedef TriangleT<glm::simdVec4> SIMDTriangle;
+
+template <typename T>
+struct RayT
 {
-    glm::vec3 origin;
-    glm::vec3 direction;
+    T origin;
+    T direction;
 };
 
-struct AABB
+typedef RayT<glm::vec3> Ray;
+typedef RayT<glm::simdVec4> SIMDRay;
+
+template <typename T>
+struct LineT
 {
-    glm::vec3 min, max;
+    T origin;
+    T end;
 };
+
+typedef LineT<glm::vec3> Line;
+typedef LineT<glm::simdVec4> SIMDLine;
+
+template <typename T>
+struct AABBT
+{
+    T min;
+    T max;
+};
+
+typedef AABBT<glm::vec3> AABB;
+typedef AABBT<glm::simdVec4> SIMDAABB;
 
 struct IntersectionPoint
 {

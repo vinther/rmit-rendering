@@ -13,6 +13,8 @@
 #include <SDL2/SDL.h>
 #include <glm/glm.hpp>
 
+#include "physics/Types.hpp"
+
 namespace scene
 {
 class Scene;
@@ -31,21 +33,17 @@ public:
     {
         Settings()
             : width(640), height(480)
-            , fov(65.0f), nearClip(1.0f), farClip(10000.0f)
-            , enabled(false)
-            , maxTreeDepth(4)
+            , drawBVH(false), drawCrosshair(false), drawRays(false)
         {}
 
         Uint16 width, height;
-        float fov, nearClip, farClip;
-        bool enabled;
-        unsigned int maxTreeDepth;
+        bool drawBVH, drawCrosshair, drawRays;
     } settings;
 
     void initialize();
     void render(const scene::Scene& scene);
 
-    std::vector<glm::vec3> points;
+    std::vector<physics::Line> lines;
 };
 
 } /* namespace threading */

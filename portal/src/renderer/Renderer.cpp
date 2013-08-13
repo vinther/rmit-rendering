@@ -94,15 +94,15 @@ void renderer::Renderer::render(const scene::Scene& scene, RenderResults& result
 
     const auto shader = resourceManager->getByHash<BufferedShader>(shaderHash);
 
-    glUseProgram(shader.program);
+    shader.enable();
 
-    glUniform1i(shader.getUniformLocation("ambientTexSampler"), 0);
-    glUniform1i(shader.getUniformLocation("diffuseTexSampler"), 1);
-    glUniform1i(shader.getUniformLocation("specularTexSampler"), 2);
-    glUniform1i(shader.getUniformLocation("normalTexSampler"), 3);
-    glUniform1i(shader.getUniformLocation("bumpTexSampler"), 4);
-
-    glUniform1f(shader.getUniformLocation("test"), test);
+    shader.setUniform("ambientTexSampler", 0);
+    shader.setUniform("diffuseTexSampler", 1);
+    shader.setUniform("specularTexSampler", 2);
+    shader.setUniform("normalTexSampler", 3);
+    shader.setUniform("bumpTexSampler", 4);
+    shader.setUniform("test", test);
+    shader.setUniform("viewProjectionMatrix", camera.getViewProjectionMatrix());
 
     if (0 == buffer)
     {
@@ -117,11 +117,6 @@ void renderer::Renderer::render(const scene::Scene& scene, RenderResults& result
         glBindBufferBase(GL_UNIFORM_BUFFER, bindingPoint, buffer);
     }
 
-
-    const glm::mat4 viewProjectionMatrix = camera.getViewProjectionMatrix();
-
-    glUniformMatrix4fv(shader.getUniformLocation("viewProjectionMatrix"), 1, GL_FALSE, glm::value_ptr(viewProjectionMatrix));
-
     glEnableClientState(GL_VERTEX_ARRAY);
 
     RenderState state;
@@ -129,18 +124,13 @@ void renderer::Renderer::render(const scene::Scene& scene, RenderResults& result
     state.modelMatrix = glm::mat4(1.0f);
     state.locations.modelMatrix = shader.getUniformLocation("model");
 
-    if (scene.root->model)
-    {
-        renderNode(*(scene.root), state);
-    }
+    renderNode(*(scene.root), state);
 
     glDisableClientState(GL_VERTEX_ARRAY);
 
-    glUseProgram(0);
+    shader.disable();
 
-    const auto timeEnd = high_resolution_clock::now();
-
-    results.renderTime = duration_cast<microseconds>(timeEnd-timeBegin);
+    results.renderTime = duration_cast<microseconds>(high_resolution_clock::now() - timeBegin);
 }
 
 void renderer::Renderer::renderNode(scene::SceneNode& node, RenderState state)
@@ -151,7 +141,10 @@ void renderer::Renderer::renderNode(scene::SceneNode& node, RenderState state)
 
     glUniformMatrix4fv(state.locations.modelMatrix, 1, GL_FALSE, glm::value_ptr(state.modelMatrix));
 
-    renderModel(resourceManager->getByAsset<BufferedModel>(node.model));
+    for (const auto& model: node.models)
+    {
+        renderModel(resourceManager->getByAsset<BufferedModel>(model));
+    }
 
     for (auto& childNodePtr: node.children)
     {

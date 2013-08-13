@@ -18,6 +18,8 @@
 
 #include "threading/ThreadPool.hpp"
 
+#include "Config.hpp"
+
 const int DEFAULT_WIDTH = 800;
 const int DEFAULT_HEIGHT = 600;
 const int DEFAULT_DEPTH = 32;
@@ -83,14 +85,12 @@ int main(int argc, char **argv)
 
     glContext = SDL_GL_CreateContext(window);
 
-    SDL_ShowCursor(1);
+    SDL_ShowCursor(0);
     SDL_SetWindowGrab(window, SDL_FALSE);
 
-    SDL_Log("Platform: %s", SDL_GetPlatform());
-    SDL_Log("CPU cores: %d", SDL_GetCPUCount());
-    SDL_Log("OpenGL version: %s", (char*) glGetString(GL_VERSION));
-    SDL_Log("OpenGL renderer: %s", (char*) glGetString(GL_RENDERER));
-    SDL_Log("Display resolution: %dx%d", displayMode.w, displayMode.h);
+    SDL_Log("Build %d (%s)", config::build::buildNumber(), config::build::type());
+    SDL_Log("Platform: %s (%d logical CPU cores)", SDL_GetPlatform(), SDL_GetCPUCount());
+    SDL_Log("OpenGL: %s (%s)", (char*) glGetString(GL_VERSION), (char*) glGetString(GL_RENDERER));
 
     std::shared_ptr<Client> client = std::make_shared<Client>(argc, argv);
     client->initialize(window, renderer);
@@ -144,10 +144,10 @@ int main(int argc, char **argv)
             SDL_WarpMouseInWindow(window, windowWidth / 2, windowHeight / 2);
 
         client->prepareFrame();
-        SDL_Delay(10);
         client->finalizeFrame();
 
         SDL_GL_SwapWindow(window);
+        SDL_Delay(1);
     }
 
     client->cleanup();

@@ -47,9 +47,10 @@ public:
     ~Octree();
 
     template <class MemoryLayoutPolicy = detail::DefaultLayoutPolicy>
-    void createFromScene(const scene::SceneNode& sceneRoot, unsigned int bucketSize = 256);
+    void createFromNode(const scene::SceneNode& node, unsigned int bucketSize = 16);
 
     bool trace(const Ray& ray, IntersectionPoint& result);
+    bool trace(const Ray& ray, const glm::mat4 transformation, IntersectionPoint& result);
 
     AABB aabb;
 
@@ -59,10 +60,10 @@ public:
     {
         std::vector<std::array<unsigned int, 8>> children;
         std::vector<std::array<bool, 8>> leaves;
-        std::vector<std::array<AABB, 8>> aabbs;
+        std::vector<std::array<SIMDAABB, 8>> aabbs;
 
         std::vector<detail::BucketDescriptor> descriptors;
-        std::vector<Triangle> objects;
+        std::vector<SIMDTriangle> objects;
     } data;
 private:
     std::vector<detail::BucketDescriptor> bucketDescriptorBuffer;

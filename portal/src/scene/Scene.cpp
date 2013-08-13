@@ -24,7 +24,6 @@
 scene::Scene::Scene()
     : camera(std::make_unique<Camera>())
     , root(std::make_unique<SceneNode>())
-    , intersectionTree(std::make_unique<physics::Octree >())
 {
 }
 
@@ -35,5 +34,5 @@ scene::Scene::~Scene()
 
 void scene::Scene::initialize()
 {
-
+    root->initialize();
 }

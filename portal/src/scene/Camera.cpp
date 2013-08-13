@@ -39,7 +39,7 @@ glm::mat4 scene::Camera::orientation() const
 }
 
 glm::vec3 scene::Camera::forward() const {
-    return glm::vec3(glm::inverse(orientation()) * glm::vec4(0.0f, 0.0f, -1.0f, 1.0f));
+    return glm::normalize(glm::vec3(glm::inverse(orientation()) * glm::vec4(0.0f, 0.0f, -1.0f, 1.0f)));
 }
 
 glm::vec3 scene::Camera::right() const {

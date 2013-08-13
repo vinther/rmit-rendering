@@ -50,21 +50,18 @@ void input::KeyboardHandler::keydown(SDL_Keycode key, Uint16 mod)
     if ('q' == key)
         client->assetManager->reportCacheContents();
 
-    if ('1' == key)
-        client->debugRenderer->settings.enabled = !client->debugRenderer->settings.enabled;
+    if ('1' == key && (mod & (KMOD_LSHIFT | KMOD_RSHIFT)))
+        client->debugRenderer->settings.drawBVH = !client->debugRenderer->settings.drawBVH;
 
-    if ('j' == key)
-        client->debugRenderer->settings.maxTreeDepth += 1;
+    if ('2' == key && (mod & (KMOD_LSHIFT | KMOD_RSHIFT)))
+        client->debugRenderer->settings.drawRays = !client->debugRenderer->settings.drawRays;
 
-    if ('k' == key)
-    {
-        client->debugRenderer->settings.maxTreeDepth -= 1;
-        client->debugRenderer->settings.maxTreeDepth = glm::max(1u, client->debugRenderer->settings.maxTreeDepth);
-    }
+    if ('3' == key && (mod & (KMOD_LSHIFT | KMOD_RSHIFT)))
+        client->debugRenderer->settings.drawCrosshair = !client->debugRenderer->settings.drawCrosshair;
 
     if ('c' == key)
     {
-        client->debugRenderer->points.clear();
+        client->debugRenderer->lines.clear();
     }
 
     client->cameraController->keyDown(key, mod);

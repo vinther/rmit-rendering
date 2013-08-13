@@ -49,7 +49,7 @@ void main()
     mat4 worldToCameraMatrix = viewProjectionMatrix;
 
     vec3 cameraPosition = -worldToCameraMatrix[3].xyz * mat3(worldToCameraMatrix);
-    vec3 lightPos = vec3(sin(test) * 1000, 200, 0.0);
+    vec3 lightPos = vec3(model * vec4(sin(test) * 1000, 200, 0.0, 0.0));
     
     const vec4 lightColor = vec4(1, 1, 1, 1.0);
     const vec4 globalAmbient = vec4(0.2, 0.2, 0.2, 1.0);

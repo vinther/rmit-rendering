@@ -84,12 +84,11 @@ void Client::initialize(SDL_Window* sdlWindow, SDL_Renderer* sdlRenderer)
     scene->camera->position = glm::vec3(-14.0f, 1.5f, 0.0f);
     scene->camera->rotate(90.0f, 30.0f);
 
-    scene->root->model = assetManager->getOrCreate<assets::Model>("models/crytek-sponza/sponza.obj", std::ref(*assetManager));
-    scene->intersectionTree->createFromScene(*(scene->root));
+    scene->root->models.push_back(assetManager->getOrCreate<assets::Model>("models/crytek-sponza/sponza.obj", std::ref(*assetManager)));
 
-    auto child = std::make_unique<scene::SceneNode>();
-    child->model = assetManager->getOrCreate<assets::Model>("models/shuttle.obj", std::ref(*assetManager));
-    child->transformation = glm::translate(child->transformation, glm::vec3(0.0f, 0.0f, -50.0f));
+//    auto child = std::make_unique<scene::SceneNode>();
+//    child->model = assetManager->getOrCreate<assets::Model>("models/shuttle.obj", std::ref(*assetManager));
+//    child->transformation = glm::translate(child->transformation, glm::vec3(0.0f, 0.0f, -50.0f));
 
     //scene->root->children.push_back(std::move(child));
 
@@ -148,19 +147,21 @@ void Client::prepareFrame()
 //    scene->root->transformation =
 //            glm::rotate(scene->root->transformation, 1.0f, glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f)));
 //
+//    scene->camera->rotate(-1.0f, 0.0f);
+//
 //    scene->root->children[0]->transformation =
 //            glm::rotate(scene->root->children[0]->transformation, 1.0f, glm::normalize(glm::vec3(1.0f, 0.0f, 0.0f)));
 //
 //    scene->root->children[1]->transformation =
 //            glm::rotate(scene->root->children[1]->transformation, 1.0f, glm::normalize(glm::vec3(0.0f, 0.0f, 1.0f)));
 
-    if (0)
+    if (1)
     {
         std::vector<threading::Task> tasks;
 
-        for (unsigned int i = 0; i < 10; ++i)
+        for (unsigned int i = 0; i < 100; ++i)
         {
-            tasks.emplace_back([=](){ for(unsigned int i = 0; i < 100000; ++i); });
+            tasks.emplace_back([=](){ for(unsigned int i = 0; i < 1000000; ++i); });
         }
 
         threadPool->enqueue(tasks);

@@ -9,6 +9,7 @@
 
 #include <GL/glew.h>
 #include <GL/gl.h>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <assimp/scene.h>
 
@@ -101,3 +102,36 @@ GLint renderer::BufferedShader::getUniformLocation(const std::string& name) cons
 {
     return glGetUniformLocation(program, name.c_str());
 }
+
+void renderer::BufferedShader::enable() const
+{
+    glUseProgram(program);
+}
+
+
+void renderer::BufferedShader::disable() const
+{
+    glUseProgram(0);
+}
+
+void renderer::BufferedShader::setUniform(const std::string& name, const glm::mat4& matrix) const
+{
+    const auto location = getUniformLocation(name);
+
+    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+}
+
+void renderer::BufferedShader::setUniform(const std::string& name, GLint value) const
+{
+    const auto location = getUniformLocation(name);
+
+    glUniform1i(location, value);
+}
+
+void renderer::BufferedShader::setUniform(const std::string& name, float value) const
+{
+    const auto location = getUniformLocation(name);
+
+    glUniform1f(location, value);
+}
+

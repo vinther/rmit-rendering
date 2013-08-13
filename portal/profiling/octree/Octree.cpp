@@ -77,8 +77,8 @@ int main(int argc, char** argv)
     if (!model->loadFromDisk())
         throw runtime_error("Error loading model from disk!");
 
-	const auto rootMin = scene->intersectionTree->aabb.min;
-	const auto rootMax = scene->intersectionTree->aabb.max;
+	const auto rootMin = scene->root->bvh->aabb.min;
+	const auto rootMax = scene->root->bvh->aabb.max;
 
 	const unsigned int sampleSize = 1 << 4;
 
@@ -108,14 +108,13 @@ int main(int argc, char** argv)
 		rays[i].direction = glm::normalize(glm::vec3(sq * std::cos(theta), sq * std::sin(theta), u));
 	}
 
-    scene->root->model = std::move(model);
-    scene->initialize();
+    scene->root->models.push_back(std::move(model));
 
     for (auto bs: {16, 32, 64, 128, 256, 512, 1024, 2048})
     {
-		scene->intersectionTree->createFromScene(*(scene->root), bs);
+		scene->root->bvh->createFromNode(*(scene->root), bs);
 
-		auto& tree = *(scene->intersectionTree);
+		auto& bvh = *(scene->root->bvh);
 
 		unsigned int hits = 0;
 
@@ -124,7 +123,7 @@ int main(int argc, char** argv)
 		physics::IntersectionPoint result;
 		for (unsigned long long i = 0; i < sampleSize; ++i)
 		{
-			hits += tree.trace(rays[i], result) ? 1 : 0;
+			hits += bvh.trace(rays[i], result) ? 1 : 0;
 		}
 
 		const auto end = std::chrono::high_resolution_clock::now();

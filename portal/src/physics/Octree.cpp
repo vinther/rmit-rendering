@@ -32,9 +32,9 @@ physics::Octree::~Octree()
 }
 
 template <class MemoryLayoutPolicy>
-void physics::Octree::createFromScene(const scene::SceneNode& sceneRoot, unsigned int bucketSize)
+void physics::Octree::createFromNode(const scene::SceneNode& node, unsigned int bucketSize)
 {
-	detail::ConstructionTree constructionTree(sceneRoot, bucketSize);
+	detail::ConstructionTree constructionTree(node, bucketSize);
 
 	MemoryLayoutPolicy mlp;
 	mlp.layout(constructionTree, data);
@@ -43,12 +43,13 @@ void physics::Octree::createFromScene(const scene::SceneNode& sceneRoot, unsigne
 }
 
 inline void getDescriptors(
-        const physics::Ray& ray,
+        const physics::SIMDRay ray,
         const physics::Octree::Data& data,
 
         std::vector<physics::detail::BucketDescriptor>& descriptors)
 {
-    const glm::vec3 directionRec = 1.0f / ray.direction;
+    const glm::simdVec4 directionRec = 1.0f / ray.direction;
+
     std::vector<unsigned int> q;
     q.push_back(0);
 
@@ -77,13 +78,20 @@ inline void getDescriptors(
 bool physics::Octree::trace(const Ray& ray, IntersectionPoint& result)
 {
     float shortestDist = std::numeric_limits<float>::max();
-    glm::vec3 closestResult;
-    glm::vec3 v0, v1;
+
+
     bool intersection = false;
+
+    glm::simdVec4 v0, v1;
+    glm::simdVec4 closestResult;
+    const glm::simdVec4 o = glm::simdVec4(ray.origin, 0.0f);
+    const glm::simdVec4 d = glm::simdVec4(ray.origin, 1.0f);
 
     bucketDescriptorBuffer.clear();
 
-    getDescriptors(ray, data, bucketDescriptorBuffer);
+    getDescriptors({o, d}, data, bucketDescriptorBuffer);
+
+    SDL_Log("%d", bucketDescriptorBuffer.size());
 
 //    unsigned int sumBufferSize = 0;
     for (unsigned int i = 0; i < bucketDescriptorBuffer.size(); ++i)
@@ -91,18 +99,17 @@ bool physics::Octree::trace(const Ray& ray, IntersectionPoint& result)
 //    	sumBufferSize += bucketDescriptorBuffer[i].size;
         for (unsigned int j = 0; j < bucketDescriptorBuffer[i].size; ++j)
         {
-            const Triangle& tri = data.objects[bucketDescriptorBuffer[i].offset + j];
+            const SIMDTriangle& tri = data.objects[bucketDescriptorBuffer[i].offset + j];
 
-            glm::vec3 intersectResult;
-            if (glm::intersectLineTriangle(
-                    ray.origin,
-                    ray.direction,
-                    tri.vertices[0], tri.vertices[1], tri.vertices[2],
+            glm::simdVec4 intersectResult;
+            if (lineTriangleIntersection(
+                    o, d,
+                    tri.vertices[0u], tri.vertices[1u], tri.vertices[2u],
                     intersectResult))
             {
                 intersection = true;
 
-                const float dist = intersectResult.x;
+                const float dist = glm::length(intersectResult * glm::simdVec4(1.0f, 0.0f, 0.0f, 0.0f));
                 if (dist < shortestDist)
                 {
                     shortestDist = dist;
@@ -115,12 +122,31 @@ bool physics::Octree::trace(const Ray& ray, IntersectionPoint& result)
         }
     }
 
-	result.position = ray.origin + ray.direction * closestResult.x;
-	result.normal = glm::cross(v0, v1);
+	result.position = ray.origin + ray.direction * glm::vec4_cast(closestResult).x;
+	result.normal = glm::vec3(glm::vec4_cast(glm::cross(v0, v1)));
 
 //	SDL_Log("Avg.: %f", (float) sumBufferSize / bucketDescriptorBuffer.size());
 
     return intersection;
+}
+
+bool physics::Octree::trace(const Ray& ray, const glm::mat4 transformation, IntersectionPoint& result)
+{
+    const glm::mat4 invTransformation = glm::inverse(transformation);
+
+    Ray transformedRay;
+
+    transformedRay.origin = glm::vec3(invTransformation * glm::vec4(ray.origin, 0.0f));
+    transformedRay.direction = glm::vec3(invTransformation * glm::vec4(ray.direction, 0.0f));
+
+    IntersectionPoint objectResult;
+
+    bool hit = trace(ray, objectResult);
+
+    result.position = glm::vec3(transformation * glm::vec4(objectResult.position, 0.0f));
+    result.normal = glm::vec3(transformation * glm::vec4(objectResult.normal, 0.0f));
+
+    return hit;
 }
 
 #include "physics/detail/BFSLayoutPolicy.hpp"
@@ -128,6 +154,8 @@ bool physics::Octree::trace(const Ray& ray, IntersectionPoint& result)
 
 namespace physics
 {
-template void Octree::createFromScene<detail::BFSLayoutPolicy>(const scene::SceneNode&, unsigned int);
-template void Octree::createFromScene<detail::DFSLayoutPolicy>(const scene::SceneNode&, unsigned int);
+template void Octree::createFromNode<detail::BFSLayoutPolicy>(const scene::SceneNode&, unsigned int);
+//template void Octree::createFromNode<detail::DFSLayoutPolicy>(const scene::SceneNode&, unsigned int);
 }
+
+

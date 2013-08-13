@@ -22,7 +22,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 
 # Initialize CXXFLAGS.
-set(CMAKE_CXX_FLAGS                "-Wall -W -Werror -Wextra -pedantic -std=gnu++0x")
+set(CMAKE_CXX_FLAGS                "-Wall -W -Werror -Wextra -std=gnu++0x")
 set(CMAKE_CXX_FLAGS_DEBUG          "-O0 -g")
 set(CMAKE_CXX_FLAGS_MINSIZEREL     "-Os -DNDEBUG")
 set(CMAKE_CXX_FLAGS_RELEASE        "-O4 -DNDEBUG")

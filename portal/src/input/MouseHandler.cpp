@@ -7,6 +7,9 @@
 
 #include "input/MouseHandler.hpp"
 
+#include <glm/gtc/swizzle.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "client/Client.hpp"
 #include "client/CameraController.hpp"
 
@@ -40,21 +43,24 @@ void input::MouseHandler::event(const SDL_MouseMotionEvent& event)
     mouseMove(event.x, event.y, event.xrel, event.yrel);
 }
 
+#include <glm/gtx/simd_mat4.hpp>
+#include <glm/gtx/simd_vec4.hpp>
+
 void input::MouseHandler::mouseDown(Uint8 button, Uint16 x, Uint16 y)
 {
     client->cameraController->mouseDown(button, x, y);
 
-    physics::IntersectionPoint intersectionResult;
-    bool hit = client->scene->intersectionTree->trace(
-            physics::Ray{
-                client->scene->camera->position,
-                client->scene->camera->forward()},
-            intersectionResult
-    );
+    physics::Ray ray{
+        client->scene->camera->position,
+        client->scene->camera->forward()
+    };
+
+    physics::IntersectionPoint result;
+    bool hit = client->scene->root->bvh->trace(ray, client->scene->root->transformation, result);
 
     if (hit)
     {
-        client->debugRenderer->points.push_back(intersectionResult.position);
+        client->debugRenderer->lines.push_back({ray.origin, result.position});
     }
 }
 

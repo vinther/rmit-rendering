@@ -8,6 +8,7 @@
 #ifndef BUFFEREDSHADER_HPP_
 #define BUFFEREDSHADER_HPP_
 
+#include <glm/glm.hpp>
 
 #include "renderer/BufferObject.hpp"
 #include "assets/Shader.hpp"
@@ -26,14 +27,19 @@ public:
     BufferedShader();
     ~BufferedShader();
 
-
     GLuint modelMatrix, viewMatrix, projectionMatrix;
-
     GLuint program;
 
     void loadFromAsset(std::shared_ptr<const asset_type>& asset, ResourceManager& resourceManager);
 
     GLint getUniformLocation(const std::string& name) const;
+
+    void setUniform(const std::string& name, const glm::mat4& matrix) const;
+    void setUniform(const std::string& name, GLint value) const;
+    void setUniform(const std::string& name, float value) const;
+
+    void enable() const;
+    void disable() const;
 };
 
 }

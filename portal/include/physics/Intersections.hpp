@@ -12,6 +12,8 @@
 
 #include "physics/Types.hpp"
 
+#include "Utilities.hpp"
+
 namespace physics
 {
 
@@ -63,23 +65,50 @@ inline bool rayAABBIntersection(
     return true;
 }
 
+const float inf = std::numeric_limits<float>::infinity();
+
+#define storess(ss,mem)     _mm_store_ss((float * const)(mem),(ss)
+#define rotatelps(ps)       _mm_shuffle_ps((ps),(ps), 0x39) // a,b,c,d -> b,c,d,a
+#define muxhps(low,high)    _mm_movehl_ps((low),(high))
+
 inline bool rayAABBIntersectionOpt(
-        const glm::vec3& origin,
-        const glm::vec3& directionReciproc,
-        const glm::vec3& aabbMin,
-        const glm::vec3& aabbMax
+        const glm::simdVec4& origin,
+        const glm::simdVec4& directionReciproc,
+        const glm::simdVec4& aabbMin,
+        const glm::simdVec4& aabbMax
 )
 {
     using glm::max;
     using glm::min;
 
-    const glm::vec3 V1 = (aabbMin - origin) * directionReciproc;
-    const glm::vec3 V2 = (aabbMax - origin) * directionReciproc;
+    const glm::simdVec4 plusInf = glm::simdVec4(inf, inf, inf, inf);
+    const glm::simdVec4 minInf = glm::simdVec4(-inf, -inf, -inf, -inf);
 
-    const float tmin = max(max(min(V1.x, V2.x), min(V1.y, V2.y)), min(V1.z, V2.z));
-    const float tmax = min(min(max(V1.x, V2.x), max(V1.y, V2.y)), max(V1.z, V2.z));
+    const glm::simdVec4 l1 = (aabbMin - origin) * directionReciproc;
+    const glm::simdVec4 l2 = (aabbMax - origin) * directionReciproc;
 
-    return (tmin <= tmax && tmax >= 0);
+    const glm::simdVec4 fl1a = l1 - plusInf;
+    const glm::simdVec4 fl2a = l2 - plusInf;
+
+    const glm::simdVec4 fl1b = l1 + minInf;
+    const glm::simdVec4 fl2b = l2 + minInf;
+
+    glm::simdVec4 lmax = glm::max(fl1a, fl2a);
+    glm::simdVec4 lmin = glm::min(fl1b, fl2b);
+
+    const glm::simdVec4 lmax0(rotatelps(lmax.Data));
+    const glm::simdVec4 lmin0(rotatelps(lmin.Data));
+    lmax = _mm_min_ss(lmax.Data, lmax0.Data);
+    lmin = _mm_max_ss(lmin.Data, lmin0.Data);
+
+    const glm::simdVec4 lmax1(muxhps(lmax.Data,lmax.Data));
+    const glm::simdVec4 lmin1(muxhps(lmin.Data,lmin.Data));
+    lmax = _mm_min_ss(lmax.Data, lmax1.Data);
+    lmin = _mm_max_ss(lmin.Data, lmin1.Data);
+
+    const bool ret = _mm_comige_ss(lmax.Data, _mm_setzero_ps()) & _mm_comige_ss(lmax.Data,lmin.Data);
+
+    return ret;
 }
 
 inline bool pointAABBIntersection(const glm::vec3& point, const AABB& aabb)
@@ -103,6 +132,42 @@ inline bool triangleAABBIntersection(const Triangle& tri, const AABB& aabb)
 
         return 1 == triBoxOverlap((float*) &boxcenter, (float*) &boxhalfsize, (float (*)[3]) &triCopy);
     }
+}
+
+
+inline bool lineTriangleIntersection
+(
+    glm::simdVec4 const & orig, glm::simdVec4 const & dir,
+    glm::simdVec4 const & vert0, glm::simdVec4 const & vert1, glm::simdVec4 const & vert2,
+    glm::simdVec4 & position
+)
+{
+    const float Epsilon = std::numeric_limits<float>::epsilon();
+
+    glm::simdVec4 edge1 = vert1 - vert0;
+    glm::simdVec4 edge2 = vert2 - vert0;
+
+    glm::simdVec4 pvec = glm::cross(dir, edge2);
+
+    float det = glm::dot(edge1, pvec);
+
+    if (det > -Epsilon && det < Epsilon)
+        return false;
+
+    float inv_det = 1.0f / det;
+
+    glm::simdVec4 tvec = orig - vert0;
+    glm::simdVec4 qvec = glm::cross(tvec, edge1);
+
+    position = glm::simdVec4(glm::dot(edge2, qvec) * inv_det, glm::dot(tvec, pvec) * inv_det, glm::dot(dir, qvec) * inv_det, 0.0f);
+
+    if (position.y < 0.0f || position.y > 0.0f)
+        return false;
+
+    if (position.z < 0.0f || position.y + position.z > 1.0f)
+        return false;
+
+    return true;
 }
 
 }

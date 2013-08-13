@@ -15,7 +15,7 @@
 
 #include "Utilities.hpp"
 
-physics::detail::ConstructionTree::ConstructionTree(const scene::SceneNode& sceneRoot, unsigned int bucketSize)
+physics::detail::ConstructionTree::ConstructionTree(const scene::SceneNode& node, unsigned int bucketSize)
 	: bucketSize(bucketSize)
 {
     const float limitMin = std::numeric_limits<float>::min();
@@ -25,19 +25,22 @@ physics::detail::ConstructionTree::ConstructionTree(const scene::SceneNode& scen
     glm::vec3 max(limitMin, limitMin, limitMin);
 
     unsigned int totalNumFaces = 0;
-    for (unsigned int i = 0; i < sceneRoot.model->scene->mNumMeshes; ++i)
+    for (const auto& model: node.models)
     {
-        const auto& mesh = *(sceneRoot.model->scene->mMeshes[i]);
-
-        for (unsigned int j = 0; j < mesh.mNumVertices; ++j)
+        for (unsigned int i = 0; i < model->scene->mNumMeshes; ++i)
         {
-            const auto& v = mesh.mVertices[j];
+            const auto& mesh = *(model->scene->mMeshes[i]);
 
-            min = glm::vec3(glm::min(min.x, v.x), glm::min(min.y, v.y), glm::min(min.z, v.z));
-            max = glm::vec3(glm::max(max.x, v.x), glm::max(max.y, v.y), glm::max(max.z, v.z));
+            for (unsigned int j = 0; j < mesh.mNumVertices; ++j)
+            {
+                const auto& v = mesh.mVertices[j];
+
+                min = glm::vec3(glm::min(min.x, v.x), glm::min(min.y, v.y), glm::min(min.z, v.z));
+                max = glm::vec3(glm::max(max.x, v.x), glm::max(max.y, v.y), glm::max(max.z, v.z));
+            }
+
+            totalNumFaces += mesh.mNumFaces;
         }
-
-        totalNumFaces += mesh.mNumFaces;
     }
 
     min = min - glm::vec3(1.0f, 1.0f, 1.0f);
@@ -49,11 +52,14 @@ physics::detail::ConstructionTree::ConstructionTree(const scene::SceneNode& scen
     root->aabb.min = min;
     root->aabb.max = max;
 
-    for (unsigned int i = 0; i < sceneRoot.model->scene->mNumMeshes; ++i)
+    for (const auto& model: node.models)
     {
-        const auto& mesh = *(sceneRoot.model->scene->mMeshes[i]);
+        for (unsigned int i = 0; i < model->scene->mNumMeshes; ++i)
+        {
+            const auto& mesh = *(model->scene->mMeshes[i]);
 
-        insertMesh(mesh);
+            insertMesh(mesh);
+        }
     }
 }
 

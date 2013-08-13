@@ -37,51 +37,48 @@ renderer::DebugRenderer::~DebugRenderer()
     // TODO Auto-generated destructor stub
 }
 
-void renderIntersectionTree(
-        const physics::Octree& tree,
-        unsigned int depth,
+void drawAABBs(
+        const std::array<physics::SIMDAABB, 8>& aabbs,
         const renderer::DebugRenderer::Settings& settings)
 {
-    UNUSED(depth);
     UNUSED(settings);
 
-    for (const auto& aabbs: tree.data.aabbs)
+    glColor3f(1.0f, 0.0f, 1.0f);
+
+    for (const auto& aabb: aabbs)
     {
-        for (const auto& aabb: aabbs)
-        {
-            glBegin(GL_LINE_STRIP);
-            glVertex3f(aabb.min.x, aabb.min.y, aabb.min.z); // v0
-            glVertex3f(aabb.max.x, aabb.min.y, aabb.min.z); // v1
+        glBegin(GL_LINE_STRIP);
+        glVertex3f(aabb.min.x, aabb.min.y, aabb.min.z); // v0
+        glVertex3f(aabb.max.x, aabb.min.y, aabb.min.z); // v1
 
-            glVertex3f(aabb.max.x, aabb.max.y, aabb.min.z); // v2
-            glVertex3f(aabb.min.x, aabb.max.y, aabb.min.z); // v3
+        glVertex3f(aabb.max.x, aabb.max.y, aabb.min.z); // v2
+        glVertex3f(aabb.min.x, aabb.max.y, aabb.min.z); // v3
 
-            glVertex3f(aabb.min.x, aabb.min.y, aabb.min.z); // v0
-            glEnd();
+        glVertex3f(aabb.min.x, aabb.min.y, aabb.min.z); // v0
+        glEnd();
 
-            glBegin(GL_LINE_STRIP);
-            glVertex3f(aabb.min.x, aabb.min.y, aabb.max.z); // v0
-            glVertex3f(aabb.max.x, aabb.min.y, aabb.max.z); // v1
+        glBegin(GL_LINE_STRIP);
+        glVertex3f(aabb.min.x, aabb.min.y, aabb.max.z); // v0
+        glVertex3f(aabb.max.x, aabb.min.y, aabb.max.z); // v1
 
-            glVertex3f(aabb.max.x, aabb.max.y, aabb.max.z); // v2
-            glVertex3f(aabb.min.x, aabb.max.y, aabb.max.z); // v3
+        glVertex3f(aabb.max.x, aabb.max.y, aabb.max.z); // v2
+        glVertex3f(aabb.min.x, aabb.max.y, aabb.max.z); // v3
 
-            glVertex3f(aabb.min.x, aabb.min.y, aabb.max.z); // v0
-            glEnd();
+        glVertex3f(aabb.min.x, aabb.min.y, aabb.max.z); // v0
+        glEnd();
 
-            glBegin(GL_LINES);
-            glVertex3f(aabb.min.x, aabb.min.y, aabb.min.z); // v0
-            glVertex3f(aabb.min.x, aabb.min.y, aabb.max.z); // v0
-            glVertex3f(aabb.max.x, aabb.min.y, aabb.min.z); // v1
-            glVertex3f(aabb.max.x, aabb.min.y, aabb.max.z); // v1
+        glBegin(GL_LINES);
+        glVertex3f(aabb.min.x, aabb.min.y, aabb.min.z); // v0
+        glVertex3f(aabb.min.x, aabb.min.y, aabb.max.z); // v0
+        glVertex3f(aabb.max.x, aabb.min.y, aabb.min.z); // v1
+        glVertex3f(aabb.max.x, aabb.min.y, aabb.max.z); // v1
 
-            glVertex3f(aabb.max.x, aabb.max.y, aabb.min.z); // v2
-            glVertex3f(aabb.max.x, aabb.max.y, aabb.max.z); // v2
-            glVertex3f(aabb.min.x, aabb.max.y, aabb.min.z); // v3
-            glVertex3f(aabb.min.x, aabb.max.y, aabb.max.z); // v3
+        glVertex3f(aabb.max.x, aabb.max.y, aabb.min.z); // v2
+        glVertex3f(aabb.max.x, aabb.max.y, aabb.max.z); // v2
+        glVertex3f(aabb.min.x, aabb.max.y, aabb.min.z); // v3
+        glVertex3f(aabb.min.x, aabb.max.y, aabb.max.z); // v3
 
-            glEnd();
-        }
+        glEnd();
     }
 }
 
@@ -105,15 +102,8 @@ void DebugRenderer::initialize()
 
 void DebugRenderer::render(const scene::Scene& scene)
 {
-    if (!settings.enabled)
-        return;
-
     const auto& camera = *(scene.camera);
     const glm::mat4 viewProjectionMatrix = camera.getViewProjectionMatrix();
-
-    glColor3f(1.0f, 0.0f, 1.0f);
-
-    glLineWidth(10.0f);
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
@@ -123,41 +113,77 @@ void DebugRenderer::render(const scene::Scene& scene)
     glPushMatrix();
     glLoadMatrixf(glm::value_ptr(viewProjectionMatrix));
 
-
-//    const auto pos = camera.position + camera.forward() * 100.0f;
-
-//    glColor3f(0.0f, 1.0f, 0.0f);
-//    glBegin(GL_LINES);
-//        glColor3f(1,0,0);
-//        glVertex3f(0.0f, 200.0f, 0.0f);
-//
-//        glColor3f(0.0f, 1.0f, 0.0f);
-//        glVertex3f(pos.x, pos.y, pos.z);
-//    glEnd();
-
-    glLineWidth(1.0f);
-
-    glColor3f(1.0f, 0.0f, 1.0f);
-    //renderIntersectionTree(*(scene.intersectionTree), 0, settings);
-
-    glLineWidth(10.0f);
-    glPointSize(10.0f);
-    glBegin(GL_LINES);
-    for (const auto& point: points)
+    if (settings.drawBVH)
     {
-        glColor3f(0.0f, 1.0f, 0.0f);
-        glVertex3f(0.0f, 200.0f, 0.0f);
+        glLineWidth(1.0f);
+        glColor3f(1.0f, 0.0f, 1.0f);
 
-        glColor3f(1,0,0);
-        glVertex3f(point.x, point.y, point.z);
+
+        glPushMatrix();
+        glMultMatrixf(glm::value_ptr(scene.root->transformation));
+        for (const auto& aabbs: scene.root->bvh->data.aabbs)
+        {
+            drawAABBs(aabbs, settings);
+        }
+        glPopMatrix();
     }
-    glEnd();
 
+    if (settings.drawRays)
+    {
+        glLineWidth(10.0f);
 
+        glBegin(GL_LINES);
+//        for (const auto& line: lines)
+//        {
+//            glColor3f(0.0f, 1.0f, 0.0f);
+//            glVertex3f(line.origin.x, line.origin.y, line.origin.z);
+//
+//            glColor3f(1.0f, 0.0f, 0.0f);
+//            glVertex3f(line.end.x, line.end.y, line.end.z);
+//        }
+        glEnd();
+    }
+
+    glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
 
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
+
+    if (settings.drawCrosshair)
+    {
+        glDisable(GL_CULL_FACE);
+        glDisable(GL_DEPTH_TEST);
+
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
+        glLoadMatrixf(glm::value_ptr(glm::ortho(0.0f, 1.0f, 0.0f, 1.0f)));
+
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        glLoadIdentity();
+
+        glLineWidth(4.0f);
+        glColor3f(1.0f, 0.0f, 0.0f);
+
+        const glm::vec2 size(.05f, 0.05f);
+        glBegin(GL_LINES);
+            glVertex2f(0.5f - size.x, 0.5f);
+            glVertex2f(0.5f + size.x, 0.5f);
+
+            glVertex2f(0.5f, 0.5f - size.y);
+            glVertex2f(0.5f, 0.5f + size.y);
+        glEnd();
+
+        glMatrixMode(GL_MODELVIEW);
+        glPopMatrix();
+
+        glMatrixMode(GL_PROJECTION);
+        glPopMatrix();
+
+        glEnable(GL_CULL_FACE);
+        glEnable(GL_DEPTH_TEST);
+    }
 }
 
 } /* namespace threading */

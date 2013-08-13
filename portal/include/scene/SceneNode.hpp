@@ -13,6 +13,8 @@
 
 #include <glm/glm.hpp>
 
+#include "physics/Octree.hpp"
+
 namespace assets
 {
 class Model;
@@ -27,10 +29,14 @@ public:
     SceneNode();
     virtual ~SceneNode();
 
-    std::shared_ptr<const assets::Model> model;
+    std::vector<std::shared_ptr<const assets::Model>> models;
+    std::vector<std::unique_ptr<SceneNode>> children;
+
     glm::mat4 transformation;
 
-    std::vector<std::unique_ptr<SceneNode>> children;
+    std::unique_ptr<physics::Octree> bvh;
+
+    void initialize();
 };
 
 }

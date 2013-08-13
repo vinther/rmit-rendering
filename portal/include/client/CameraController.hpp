@@ -39,7 +39,7 @@ public:
         bool moveUp;
         bool moveDown;
 
-        float speedFactor;
+        float moveSpeed;
     } state;
 private:
     std::shared_ptr<Client> client;
