@@ -55,11 +55,11 @@ class Client : public std::enable_shared_from_this<Client>
 public:
 	Client(int argc, char** argv);
 
-	void initialize(SDL_Window* window, SDL_Renderer* renderer);
+	void initialize(SDL_Window* window, SDL_GLContext context);
 	void reshape(Uint32 width, Uint32 height);
 
-	void prepareFrame();
-	void finalizeFrame();
+	void prepareFrame(SDL_Window* window, SDL_GLContext context);
+	void finalizeFrame(SDL_Window* window, SDL_GLContext context);
 
 	void event(SDL_Event* event);
 	void display();
@@ -79,9 +79,6 @@ public:
 	std::unique_ptr<threading::ThreadPool> threadPool;
 
 private:
-	SDL_Window* sdlWindow;
-	SDL_Renderer* sdlRenderer;
-
 	std::chrono::high_resolution_clock::time_point timeFrameBegin;
 	std::chrono::high_resolution_clock::time_point timeFrameEnd;
 

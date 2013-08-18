@@ -45,8 +45,6 @@ Client::Client(int argc, char** argv)
     , assetManager()
     , renderer(), debugRenderer()
     , threadPool()
-
-    , sdlWindow(nullptr), sdlRenderer(nullptr)
     , timeFrameBegin(), timeFrameEnd()
     , frameCount(0)
     , timeFrameFPS()
@@ -56,12 +54,9 @@ Client::Client(int argc, char** argv)
     glutInit(&argc, argv);
 }
 
-void Client::initialize(SDL_Window* sdlWindow, SDL_Renderer* sdlRenderer)
+void Client::initialize(SDL_Window* window, SDL_GLContext context)
 {
     cleanup();
-
-    this->sdlWindow = sdlWindow;
-    this->sdlRenderer = sdlRenderer;
 
     keyboardHandler = std::make_unique<input::KeyboardHandler>(shared_from_this());
     mouseHandler = std::make_unique<input::MouseHandler>(shared_from_this());
@@ -78,7 +73,7 @@ void Client::initialize(SDL_Window* sdlWindow, SDL_Renderer* sdlRenderer)
     threadPool->initialize();
 
     interface->initialize();
-    renderer->initialize();
+    renderer->initialize(window, context);
     debugRenderer->initialize();
 
     scene->camera->position = glm::vec3(-14.0f, 1.5f, 0.0f);
@@ -120,7 +115,7 @@ void Client::reshape(Uint32 width, Uint32 height)
     interface->initialize();
 }
 
-void Client::prepareFrame()
+void Client::prepareFrame(SDL_Window* window, SDL_GLContext context)
 {
     ++frameCount;
     ++frameCountFPS;
@@ -144,6 +139,8 @@ void Client::prepareFrame()
     cameraController->update(std::chrono::duration_cast<std::chrono::microseconds>(now - timeFrameEnd).count());
     assetManager->fileWatcher->update();
 
+    renderer->prepareFrame(*(threadPool), window, context);
+
 //    scene->root->transformation =
 //            glm::rotate(scene->root->transformation, 1.0f, glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f)));
 //
@@ -155,25 +152,28 @@ void Client::prepareFrame()
 //    scene->root->children[1]->transformation =
 //            glm::rotate(scene->root->children[1]->transformation, 1.0f, glm::normalize(glm::vec3(0.0f, 0.0f, 1.0f)));
 
-    if (1)
-    {
-        std::vector<threading::Task> tasks;
-
-        for (unsigned int i = 0; i < 100; ++i)
-        {
-            tasks.emplace_back([=](){ for(unsigned int i = 0; i < 100000; ++i); });
-        }
-
-        threadPool->enqueue(tasks);
-    }
+//    if (1)
+//    {
+//        std::vector<threading::Task> tasks;
+//
+//        for (unsigned int i = 0; i < 100; ++i)
+//        {
+//            tasks.emplace_back([=](){ for(unsigned int i = 0; i < 100000; ++i); });
+//        }
+//
+//        threadPool->enqueue(tasks);
+//    }
 
     threadPool->synchronize(threading::Task::Flags::ALL_FLAGS);
 
     assert(threadPool->getNumTasks() == 0);
 }
 
-void Client::finalizeFrame()
+void Client::finalizeFrame(SDL_Window* window, SDL_GLContext context)
 {
+	UNUSED(window);
+	UNUSED(context);
+
     renderer::Renderer::RenderResults results;
     renderer->render(*scene, results);
 
@@ -183,7 +183,7 @@ void Client::finalizeFrame()
     interface->data.cameraDirection = scene->camera->forward();
 
     interface->data.renderTime = results.renderTime.count();
-    interface->display(sdlRenderer);
+    interface->display(nullptr);
 
     timeFrameEnd = std::chrono::high_resolution_clock::now();
 }

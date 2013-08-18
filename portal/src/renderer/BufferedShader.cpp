@@ -18,8 +18,9 @@
 
 #include "Utilities.hpp"
 
-renderer::BufferedShader::BufferedShader()
-    : modelMatrix(0), viewMatrix(0), projectionMatrix(0)
+renderer::BufferedShader::BufferedShader(std::shared_ptr<const asset_type> asset)
+    : BufferObject(asset)
+	, modelMatrix(0), viewMatrix(0), projectionMatrix(0)
     , program(0)
 {
 
@@ -30,13 +31,22 @@ renderer::BufferedShader::~BufferedShader()
     // TODO Auto-generated destructor stub
 }
 
-void renderer::BufferedShader::loadFromAsset(std::shared_ptr<const asset_type>& asset, ResourceManager& resourceManager)
+void renderer::BufferedShader::loadFromAsset(ResourceManager& resourceManager)
 {
     UNUSED(resourceManager);
-    glDeleteProgram(program);
+
+    GLint oldProgram = program;
 
     GLuint vertShader = glCreateShader(GL_VERTEX_SHADER);
     GLuint fragShader = glCreateShader(GL_FRAGMENT_SHADER);
+
+    GLenum errCode;
+    const GLubyte *errString;
+
+    if ((errCode = glGetError()) != GL_NO_ERROR) {
+        errString = gluErrorString(errCode);
+       fprintf (stderr, "OpenGL Error: %s\n", errString);
+    }
 
     const char *vertShaderSrc = asset->vertShader.c_str();
     const char *fragShaderSrc = asset->fragShader.c_str();
@@ -55,9 +65,6 @@ void renderer::BufferedShader::loadFromAsset(std::shared_ptr<const asset_type>& 
         std::vector<char> vertShaderError(logLength);
         glGetShaderInfoLog(vertShader, logLength, NULL, vertShaderError.data());
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Vertex shader error: %s", vertShaderError.data());
-
-        glDeleteShader(vertShader);
-        glDeleteShader(fragShader);
     }
 
     glShaderSource(fragShader, 1, &fragShaderSrc, NULL);
@@ -71,9 +78,6 @@ void renderer::BufferedShader::loadFromAsset(std::shared_ptr<const asset_type>& 
         std::vector<char> fragShaderError(logLength);
         glGetShaderInfoLog(fragShader, logLength, NULL, fragShaderError.data());
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Fragment shader error: %s", fragShaderError.data());
-
-        glDeleteShader(vertShader);
-        glDeleteShader(fragShader);
     }
 
     program = glCreateProgram();
@@ -89,13 +93,14 @@ void renderer::BufferedShader::loadFromAsset(std::shared_ptr<const asset_type>& 
         std::vector<char> programError( (logLength > 1) ? logLength : 1 );
         glGetProgramInfoLog(program, logLength, NULL, programError.data());
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "GLSL shader link error: %s", programError.data());
-
-        glDeleteShader(vertShader);
-        glDeleteShader(fragShader);
     }
 
     glDeleteShader(vertShader);
     glDeleteShader(fragShader);
+
+    glDeleteProgram(oldProgram);
+
+    currentVersion = asset->version;
 }
 
 GLint renderer::BufferedShader::getUniformLocation(const std::string& name) const
@@ -107,7 +112,6 @@ void renderer::BufferedShader::enable() const
 {
     glUseProgram(program);
 }
-
 
 void renderer::BufferedShader::disable() const
 {

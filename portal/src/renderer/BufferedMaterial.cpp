@@ -18,8 +18,9 @@
 
 #include "Utilities.hpp"
 
-renderer::BufferedMaterial::BufferedMaterial()
-    : texAmbient(0)
+renderer::BufferedMaterial::BufferedMaterial(std::shared_ptr<const asset_type> asset)
+    : BufferObject(asset)
+	, texAmbient(0)
     , texDiffuse(0)
     , texSpecular(0)
     , texNormal(0)
@@ -63,7 +64,7 @@ void renderer::BufferedMaterial::activate(ResourceManager& resourceManager) cons
     }
 }
 
-void renderer::BufferedMaterial::loadFromAsset(std::shared_ptr<const asset_type>& asset, ResourceManager& resourceManager)
+void renderer::BufferedMaterial::loadFromAsset(ResourceManager& resourceManager)
 {
     const auto& material = *(asset);
 

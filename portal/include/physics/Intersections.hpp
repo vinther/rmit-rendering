@@ -166,7 +166,7 @@ inline bool lineTriangleIntersection
 (
     glm::simdVec4 const & orig, glm::simdVec4 const & dir,
     glm::simdVec4 const & vert0, glm::simdVec4 const & vert1, glm::simdVec4 const & vert2,
-    glm::simdVec4 & position
+    float & t
 )
 {
     const float Epsilon = std::numeric_limits<float>::epsilon();
@@ -180,21 +180,22 @@ inline bool lineTriangleIntersection
 
     if (det > -Epsilon && det < Epsilon)
         return false;
+
     float inv_det = 1.0f / det;
 
     glm::simdVec4 tvec = orig - vert0;
 
-    position.y = glm::dot(tvec, pvec) * inv_det;
-    if (position.y < 0.0f || position.y > 1.0f)
+    float u = glm::dot(tvec, pvec) * inv_det;
+    if (u < 0.0f || u > 1.0f)
         return false;
 
     glm::simdVec4 qvec = glm::cross(tvec, edge1);
 
-    position.z = glm::dot(dir, qvec) * inv_det;
-    if (position.z < 0.0f || position.y + position.z > 1.0f)
+    float v = glm::dot(dir, qvec) * inv_det;
+    if (v < 0.0f || u + v > 1.0f)
         return false;
 
-    position.x = glm::dot(edge2, qvec) * inv_det;
+    t = glm::dot(edge2, qvec) * inv_det;
 
     return true;
 }

@@ -48,13 +48,20 @@ T& fetchFromCache(std::shared_ptr<const typename T::asset_type>& asset, CacheTyp
         return *(cache[asset->hash]);
     } else
     {
-        auto newBufferedObject = std::make_unique<T>();
-        newBufferedObject->loadFromAsset(asset, resourceManager);
+        auto newBufferedObject = std::make_unique<T>(asset);
+        newBufferedObject->loadFromAsset(resourceManager);
 
         cache[asset->hash] = std::move(newBufferedObject);
 
         return *(cache[asset->hash]);
     }
+}
+
+void renderer::ResourceManager::updateBuffers()
+{
+	for (const auto& bufferedAsset: bufferedShaders)
+		if (!bufferedAsset.second->checkAssetVersion())
+			bufferedAsset.second->loadFromAsset(*this);
 }
 
 namespace renderer
@@ -113,4 +120,8 @@ const BufferedShader& ResourceManager::getByHash<BufferedShader>(size_t hash)
 }
 
 
+
+
 }
+
+

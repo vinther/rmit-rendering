@@ -16,8 +16,8 @@
 #include "renderer/ResourceManager.hpp"
 #include "Utilities.hpp"
 
-renderer::BufferedTexture::BufferedTexture()
-    : BufferObject()
+renderer::BufferedTexture::BufferedTexture(std::shared_ptr<const asset_type> asset)
+    : BufferObject(asset)
     , tex(0)
 {
 }
@@ -27,7 +27,7 @@ renderer::BufferedTexture::~BufferedTexture()
     glDeleteTextures(1, &tex);
 }
 
-void renderer::BufferedTexture::loadFromAsset(std::shared_ptr<const asset_type>& asset, ResourceManager& resourceManager)
+void renderer::BufferedTexture::loadFromAsset(ResourceManager& resourceManager)
 {
     UNUSED(resourceManager);
 

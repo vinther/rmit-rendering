@@ -93,7 +93,7 @@ int main(int argc, char **argv)
     SDL_Log("OpenGL: %s (%s)", (char*) glGetString(GL_VERSION), (char*) glGetString(GL_RENDERER));
 
     std::shared_ptr<Client> client = std::make_shared<Client>(argc, argv);
-    client->initialize(window, renderer);
+    client->initialize(window, glContext);
     client->reshape(windowWidth, windowHeight);
 
     while (!exitConditions)
@@ -143,8 +143,8 @@ int main(int argc, char **argv)
         if (windowFocus)
             SDL_WarpMouseInWindow(window, windowWidth / 2, windowHeight / 2);
 
-        client->prepareFrame();
-        client->finalizeFrame();
+        client->prepareFrame(window, glContext);
+        client->finalizeFrame(window, glContext);
 
         SDL_GL_SwapWindow(window);
         SDL_Delay(1);

@@ -24,13 +24,13 @@ class ResourceManager;
 class BufferedShader: public BufferObject<assets::Shader>
 {
 public:
-    BufferedShader();
+    BufferedShader(std::shared_ptr<const asset_type> asset);
     ~BufferedShader();
 
     GLuint modelMatrix, viewMatrix, projectionMatrix;
     GLuint program;
 
-    void loadFromAsset(std::shared_ptr<const asset_type>& asset, ResourceManager& resourceManager);
+    void loadFromAsset(ResourceManager& resourceManager);
 
     GLint getUniformLocation(const std::string& name) const;
 

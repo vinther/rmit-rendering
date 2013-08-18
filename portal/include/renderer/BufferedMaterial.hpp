@@ -27,7 +27,7 @@ namespace renderer
 class BufferedMaterial: public BufferObject<assets::Material>
 {
 public:
-    BufferedMaterial();
+    BufferedMaterial(std::shared_ptr<const asset_type> asset);
     virtual ~BufferedMaterial();
 
     struct MaterialInfo
@@ -50,7 +50,7 @@ public:
     bool translucent;
 
     void activate(ResourceManager& resourceManager) const;
-    void loadFromAsset(std::shared_ptr<const asset_type>& asset, ResourceManager& resourceManager);
+    void loadFromAsset(ResourceManager& resourceManager);
 };
 
 }

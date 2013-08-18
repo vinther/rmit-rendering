@@ -21,12 +21,12 @@ class ResourceManager;
 class BufferedTexture: public BufferObject<assets::Texture>
 {
 public:
-    BufferedTexture();
+    BufferedTexture(std::shared_ptr<const asset_type> asset);
     ~BufferedTexture();
 
     GLuint tex;
 
-    void loadFromAsset(std::shared_ptr<const asset_type>& asset, ResourceManager& resourceManager);
+    void loadFromAsset(ResourceManager& resourceManager);
 };
 
 }

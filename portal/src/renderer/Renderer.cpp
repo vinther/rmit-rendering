@@ -28,6 +28,8 @@
 #include "renderer/BufferedMaterial.hpp"
 #include "renderer/BufferedShader.hpp"
 
+#include "threading/ThreadPool.hpp"
+
 #include "Utilities.hpp"
 
 renderer::Renderer::Renderer()
@@ -43,9 +45,11 @@ renderer::Renderer::~Renderer()
     // TODO Auto-generated destructor stub
 }
 
-void renderer::Renderer::initialize()
+void renderer::Renderer::initialize(SDL_Window* window, SDL_GLContext context)
 {
     glewInit();
+
+    SDL_GL_MakeCurrent(window, context);
 
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
@@ -122,9 +126,8 @@ void renderer::Renderer::render(const scene::Scene& scene, RenderResults& result
     RenderState state;
 
     state.modelMatrix = glm::mat4(1.0f);
-    state.locations.modelMatrix = shader.getUniformLocation("model");
 
-    renderNode(*(scene.root), state);
+    renderNode(*(scene.root), state, shader);
 
     glDisableClientState(GL_VERTEX_ARRAY);
 
@@ -133,13 +136,13 @@ void renderer::Renderer::render(const scene::Scene& scene, RenderResults& result
     results.renderTime = duration_cast<microseconds>(high_resolution_clock::now() - timeBegin);
 }
 
-void renderer::Renderer::renderNode(scene::SceneNode& node, RenderState state)
+void renderer::Renderer::renderNode(scene::SceneNode& node, RenderState state, const BufferedShader& shader)
 {
     glPushMatrix();
 
     state.modelMatrix = state.modelMatrix * node.transformation;
 
-    glUniformMatrix4fv(state.locations.modelMatrix, 1, GL_FALSE, glm::value_ptr(state.modelMatrix));
+    shader.setUniform("model", state.modelMatrix);
 
     for (const auto& model: node.models)
     {
@@ -148,7 +151,7 @@ void renderer::Renderer::renderNode(scene::SceneNode& node, RenderState state)
 
     for (auto& childNodePtr: node.children)
     {
-        renderNode(*(childNodePtr), state);
+        renderNode(*(childNodePtr), state, shader);
     }
 
     glPopMatrix();
@@ -182,4 +185,15 @@ void renderer::Renderer::renderModel(const BufferedModel& model)
 
     glBindTexture(GL_TEXTURE_2D, 0);
     glBindVertexArray(0);
+}
+
+void renderer::Renderer::prepareFrame(threading::ThreadPool& threadPool, SDL_Window* window, SDL_GLContext context)
+{
+	UNUSED(threadPool);
+
+	SDL_GL_MakeCurrent(window, context);
+	resourceManager->updateBuffers();
+	glDeleteBuffers(1, &buffer);
+	buffer = 0;
+
 }

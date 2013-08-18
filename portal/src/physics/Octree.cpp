@@ -82,7 +82,6 @@ bool physics::Octree::trace(const Ray& ray, IntersectionPoint& result)
     bool intersection = false;
 
     glm::simdVec4 v0, v1;
-    glm::simdVec4 closestResult;
     const glm::simdVec4 o = glm::simdVec4(ray.origin, 0.0f);
     const glm::simdVec4 d = glm::simdVec4(ray.origin, 1.0f);
 
@@ -92,6 +91,7 @@ bool physics::Octree::trace(const Ray& ray, IntersectionPoint& result)
 
     SDL_Log("%d", bucketDescriptorBuffer.size());
 
+    return false;
 //    unsigned int sumBufferSize = 0;
     for (unsigned int i = 0; i < bucketDescriptorBuffer.size(); ++i)
     {
@@ -100,19 +100,18 @@ bool physics::Octree::trace(const Ray& ray, IntersectionPoint& result)
         {
             const SIMDTriangle& tri = data.objects[bucketDescriptorBuffer[i].offset + j];
 
-            glm::simdVec4 intersectResult;
+            float t;
             if (lineTriangleIntersection(
                     o, d,
                     tri[0], tri[1], tri[2],
-                    intersectResult))
+                    t))
             {
                 intersection = true;
 
-                const float dist = intersectResult.x;
-                if (dist < shortestDist)
+                float dist = 0.0f;
+                if (t < shortestDist)
                 {
                     shortestDist = dist;
-                    closestResult = intersectResult;
 
                     v0 = tri.vertices[0];
                     v1 = tri.vertices[1];
@@ -121,7 +120,7 @@ bool physics::Octree::trace(const Ray& ray, IntersectionPoint& result)
         }
     }
 
-	result.position = ray.origin + ray.direction * (glm::vec4_cast(closestResult).x);
+	result.position = ray.origin + ray.direction * shortestDist;
 	result.normal = glm::vec3(glm::vec4_cast(glm::cross(v0, v1)));
 
 	SDL_Log("Avg.: %f %f %f", result.position.x, result.position.y, result.position.z);

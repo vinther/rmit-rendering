@@ -35,31 +35,28 @@ public:
 
     typedef T asset_type;
 
-    BufferObject()
-        : state(State::PRISTINE)
+    BufferObject(std::shared_ptr<const asset_type> asset)
+        : asset(asset)
         , currentVersion(0)
-     {}
+    	, state(State::PRISTINE)
+     {
+    	currentVersion = asset->version;
+     }
 
     virtual ~BufferObject()
     {}
+
+    std::shared_ptr<const T> asset;
+    size_t currentVersion;
 
     Uint16 state;
 
     bool checkAssetVersion()
     {
-        if (!asset.expired())
-        {
-            const auto& asset = *(asset.lock());
-            return asset.version <= currentVersion;
-        }
-
-        return false;
+        return asset->version <= currentVersion;
     }
 
-    virtual void loadFromAsset(std::shared_ptr<const asset_type>& asset, ResourceManager& resourceManager) = 0;
-protected:
-    size_t currentVersion;
-    std::weak_ptr<const T> asset;
+    virtual void loadFromAsset(ResourceManager& resourceManager) = 0;
 };
 
 }

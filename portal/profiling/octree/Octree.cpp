@@ -77,10 +77,13 @@ int main(int argc, char** argv)
     if (!model->loadFromDisk())
         throw runtime_error("Error loading model from disk!");
 
+    scene->root->models.push_back(std::move(model));
+    scene->initialize();
+
 	const auto rootMin = scene->root->bvh->aabb.min;
 	const auto rootMax = scene->root->bvh->aabb.max;
 
-	const unsigned int sampleSize = 1 << 4;
+	const unsigned int sampleSize = 1 << 18;
 
 	std::random_device rd;
 	std::mt19937_64 gen(rd());
@@ -108,7 +111,7 @@ int main(int argc, char** argv)
 		rays[i].direction = glm::normalize(glm::vec3(sq * std::cos(theta), sq * std::sin(theta), u));
 	}
 
-    scene->root->models.push_back(std::move(model));
+
 
     for (auto bs: {16, 32, 64, 128, 256, 512, 1024, 2048})
     {

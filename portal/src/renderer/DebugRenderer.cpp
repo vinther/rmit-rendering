@@ -45,38 +45,41 @@ void drawAABBs(
 
     glColor3f(1.0f, 0.0f, 1.0f);
 
-    for (const auto& aabb: aabbs)
+    for (const auto& simdaabb: aabbs)
     {
+    	const auto min = glm::vec4_cast(simdaabb.min);
+    	const auto max = glm::vec4_cast(simdaabb.max);
+
         glBegin(GL_LINE_STRIP);
-        glVertex3f(aabb.min.x, aabb.min.y, aabb.min.z); // v0
-        glVertex3f(aabb.max.x, aabb.min.y, aabb.min.z); // v1
+        glVertex3f(min.x, min.y, min.z); // v0
+        glVertex3f(max.x, min.y, min.z); // v1
 
-        glVertex3f(aabb.max.x, aabb.max.y, aabb.min.z); // v2
-        glVertex3f(aabb.min.x, aabb.max.y, aabb.min.z); // v3
+        glVertex3f(max.x, max.y, min.z); // v2
+        glVertex3f(min.x, max.y, min.z); // v3
 
-        glVertex3f(aabb.min.x, aabb.min.y, aabb.min.z); // v0
+        glVertex3f(min.x, min.y, min.z); // v0
         glEnd();
 
         glBegin(GL_LINE_STRIP);
-        glVertex3f(aabb.min.x, aabb.min.y, aabb.max.z); // v0
-        glVertex3f(aabb.max.x, aabb.min.y, aabb.max.z); // v1
+        glVertex3f(min.x, min.y, max.z); // v0
+        glVertex3f(max.x, min.y, max.z); // v1
 
-        glVertex3f(aabb.max.x, aabb.max.y, aabb.max.z); // v2
-        glVertex3f(aabb.min.x, aabb.max.y, aabb.max.z); // v3
+        glVertex3f(max.x, max.y, max.z); // v2
+        glVertex3f(min.x, max.y, max.z); // v3
 
-        glVertex3f(aabb.min.x, aabb.min.y, aabb.max.z); // v0
+        glVertex3f(min.x, min.y, max.z); // v0
         glEnd();
 
         glBegin(GL_LINES);
-        glVertex3f(aabb.min.x, aabb.min.y, aabb.min.z); // v0
-        glVertex3f(aabb.min.x, aabb.min.y, aabb.max.z); // v0
-        glVertex3f(aabb.max.x, aabb.min.y, aabb.min.z); // v1
-        glVertex3f(aabb.max.x, aabb.min.y, aabb.max.z); // v1
+        glVertex3f(min.x, min.y, min.z); // v0
+        glVertex3f(min.x, min.y, max.z); // v0
+        glVertex3f(max.x, min.y, min.z); // v1
+        glVertex3f(max.x, min.y, max.z); // v1
 
-        glVertex3f(aabb.max.x, aabb.max.y, aabb.min.z); // v2
-        glVertex3f(aabb.max.x, aabb.max.y, aabb.max.z); // v2
-        glVertex3f(aabb.min.x, aabb.max.y, aabb.min.z); // v3
-        glVertex3f(aabb.min.x, aabb.max.y, aabb.max.z); // v3
+        glVertex3f(max.x, max.y, min.z); // v2
+        glVertex3f(max.x, max.y, max.z); // v2
+        glVertex3f(min.x, max.y, min.z); // v3
+        glVertex3f(min.x, max.y, max.z); // v3
 
         glEnd();
     }

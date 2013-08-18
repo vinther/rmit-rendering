@@ -104,5 +104,17 @@ void main()
   	// Define the final fragment color
     fragColor = emissive + ambient + diffuse + specular;
     //fragColor = vec4(N, 1.0);
-    fragColor = ambient + diffuse + specular;
+    //fragColor = ambient + diffuse + specular;
+    //fragColor.xyz = vec3(0.0, 0.0, 0.0);
+    
+    float t = mod(test * 1000.0f, 2000.0f);
+    float d = length(vertPosition - cameraPosition);
+    
+    vec3 col;
+    if (t - d > 16.0 && t - d < 128.0)
+    	col = vec3(0.0, 0.5, 0.8) * (1.0 - clamp(log(t-d) / log(128.0), 0.0, 1.0)) * (1.0 - smoothstep(0, 2000.0, d));
+   	else
+   		col = vec3(0.0, 0.0, 0.0);
+    
+    fragColor.xyz += col;
 }	

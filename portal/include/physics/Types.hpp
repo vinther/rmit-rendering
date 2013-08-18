@@ -12,7 +12,6 @@
 
 #include <glm/glm.hpp>
 
-#define GLM_SIMD_ENABLE_XYZW_UNION 1
 #include <glm/gtx/simd_vec4.hpp>
 #include <glm/gtx/simd_mat4.hpp>
 
@@ -23,6 +22,9 @@ template <typename T>
 struct TriangleT
 {
     const T& operator[](int idx) const
+    { return vertices[idx]; }
+
+    T& operator[](int idx)
     { return vertices[idx]; }
 
     std::array<T, 3> vertices;

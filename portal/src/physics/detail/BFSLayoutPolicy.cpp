@@ -79,9 +79,9 @@ void physics::detail::BFSLayoutPolicy::layout(
 
 				for (unsigned int j = 0; j < descriptor.size; ++j)
 				{
-					data.objects[descriptor.offset + j].vertices[0] = glm::simdVec4(cTree.objects[nodePtr->children[i]->bucket[j]].vertices[0], 0.0f);
-					data.objects[descriptor.offset + j].vertices[1] = glm::simdVec4(cTree.objects[nodePtr->children[i]->bucket[j]].vertices[1], 0.0f);
-					data.objects[descriptor.offset + j].vertices[2] = glm::simdVec4(cTree.objects[nodePtr->children[i]->bucket[j]].vertices[2], 0.0f);
+					data.objects[descriptor.offset + j][0] = glm::simdVec4(cTree.objects[nodePtr->children[i]->bucket[j]][0], 0.0f);
+					data.objects[descriptor.offset + j][1] = glm::simdVec4(cTree.objects[nodePtr->children[i]->bucket[j]][1], 0.0f);
+					data.objects[descriptor.offset + j][2] = glm::simdVec4(cTree.objects[nodePtr->children[i]->bucket[j]][2], 0.0f);
 				}
 
 				data.descriptors.push_back(descriptor);

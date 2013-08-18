@@ -28,6 +28,11 @@ namespace assets
 class AssetManager;
 }
 
+namespace threading
+{
+class ThreadPool;
+}
+
 typedef unsigned int GLuint;
 
 namespace renderer
@@ -35,6 +40,7 @@ namespace renderer
 
 class ResourceManager;
 class BufferedModel;
+class BufferedShader;
 
 class Renderer
 {
@@ -67,14 +73,10 @@ public:
     struct RenderState
     {
         glm::mat4 modelMatrix;
-
-        struct
-        {
-            int modelMatrix;
-        } locations;
     };
 
-    void initialize();
+    void initialize(SDL_Window* window, SDL_GLContext context);
+    void prepareFrame(threading::ThreadPool& threadPool, SDL_Window* window, SDL_GLContext context);
     void render(const scene::Scene& scene, RenderResults& results);
 
     std::unique_ptr<ResourceManager> resourceManager;
@@ -82,7 +84,10 @@ public:
     size_t shaderHash;
 private:
     void renderModel(const BufferedModel& model);
-    void renderNode(scene::SceneNode& node, RenderState state);
+    void renderNode(scene::SceneNode& node, RenderState state, const BufferedShader& shader);
+
+    SDL_Window* window;
+    SDL_GLContext context;
 };
 
 }

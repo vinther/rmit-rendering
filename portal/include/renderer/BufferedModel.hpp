@@ -22,7 +22,7 @@ class ResourceManager;
 class BufferedModel: public BufferObject<assets::Model>
 {
 public:
-    BufferedModel();
+    BufferedModel(std::shared_ptr<const asset_type> asset);
 
     struct MeshInfo
     {
@@ -52,7 +52,7 @@ public:
 
     std::vector<MeshInfo> meshes;
 
-    void loadFromAsset(std::shared_ptr<const asset_type>& asset, ResourceManager& resourceManager);
+    void loadFromAsset(ResourceManager& resourceManager);
 };
 
 }

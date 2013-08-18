@@ -36,8 +36,8 @@ struct MeshData
     unsigned int materialId;
 };
 
-renderer::BufferedModel::BufferedModel()
-    : BufferObject()
+renderer::BufferedModel::BufferedModel(std::shared_ptr<const asset_type> asset)
+    : BufferObject(asset)
 {
 }
 
@@ -67,7 +67,7 @@ renderer::BufferedModel::MeshInfo& renderer::BufferedModel::MeshInfo::operator=(
     return *this;
 }
 
-void renderer::BufferedModel::loadFromAsset(std::shared_ptr<const asset_type>& asset, ResourceManager& resourceManager)
+void renderer::BufferedModel::loadFromAsset(ResourceManager& resourceManager)
 {
     if (nullptr == asset->scene)
        throw std::runtime_error("Trying to render scene with NULL scene");

@@ -32,7 +32,9 @@ public:
 
     template <class T>
     const T& getByHash(size_t hash);
-private:
+
+    void updateBuffers();
+
     std::unordered_map<size_t, std::unique_ptr<BufferedModel>> bufferedModels;
     std::unordered_map<size_t, std::unique_ptr<BufferedTexture>> bufferedTextures;
     std::unordered_map<size_t, std::unique_ptr<BufferedMaterial>> bufferedMaterials;
