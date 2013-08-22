@@ -16,10 +16,14 @@
 namespace renderer
 {
 
-class BufferedModel;
-class BufferedTexture;
-class BufferedMaterial;
-class BufferedShader;
+namespace resources
+{
+class Model;
+class Texture;
+class Material;
+class Shader;
+class FrameBuffer;
+}
 
 class ResourceManager
 {
@@ -28,17 +32,17 @@ public:
     virtual ~ResourceManager();
 
     template <class T>
-    const T& getByAsset(std::shared_ptr<const typename T::asset_type> asset);
+    const std::shared_ptr<T> getByAsset(std::shared_ptr<const typename T::asset_type> asset);
 
     template <class T>
-    const T& getByHash(size_t hash);
+    const std::shared_ptr<T> getByHash(size_t hash);
 
-    void updateBuffers();
+    void updateResources();
 
-    std::unordered_map<size_t, std::unique_ptr<BufferedModel>> bufferedModels;
-    std::unordered_map<size_t, std::unique_ptr<BufferedTexture>> bufferedTextures;
-    std::unordered_map<size_t, std::unique_ptr<BufferedMaterial>> bufferedMaterials;
-    std::unordered_map<size_t, std::unique_ptr<BufferedShader>> bufferedShaders;
+    std::unordered_map<size_t, std::shared_ptr<resources::Model>> models;
+    std::unordered_map<size_t, std::shared_ptr<resources::Texture>> textures;
+    std::unordered_map<size_t, std::shared_ptr<resources::Material>> materials;
+    std::unordered_map<size_t, std::shared_ptr<resources::Shader>> shaders;
 };
 
 }

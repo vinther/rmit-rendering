@@ -24,28 +24,21 @@ assets::Texture::~Texture()
 
 bool assets::Texture::loadFromDisk(const std::string& path)
 {
-    std::string lowercasePath(path);
-//    std::transform(lowercasePath.begin(), lowercasePath.end(), lowercasePath.begin(), ::tolower);
+    surface.reset(IMG_Load(("assets/" + path).c_str()));
 
-    const SDL_Surface* image = IMG_Load(("assets/" + lowercasePath).c_str());
-
-    if (image)
+    if (surface)
     {
-        surface.reset(image);
-
-        files.clear();
-        files.push_back(lowercasePath);
-
-        this->path = lowercasePath;
+        assetFilePaths.clear();
+        assetFilePaths.push_back(path);
 
         ++version;
 
+        this->path = path;
+
         return true;
-    } else
-    {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                "Texture could not be loaded: \"%s\"", ("assets/" + lowercasePath).c_str());
     }
+
+	SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Texture could not be loaded: \"%s\"", ("assets/" + path).c_str());
 
     return false;
 }

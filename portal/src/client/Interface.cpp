@@ -91,37 +91,60 @@ void Interface::display(SDL_Renderer* sdlRenderer)
     const unsigned int fontHeight = TTF_FontHeight(font->font);
 
     sstream << "FPS: " << data.fps;
-    writeText(sstream.str(), 20.0f, 1 * fontHeight + 4);
+    writeText(sstream.str(), 24.0f, 1 * fontHeight + 24.0f);
 
     sstream.str("");
     const auto& pos = data.cameraPosition;
     sstream << "Pos: <" << pos.x << ", " << pos.y << ", " << pos.z << ">";
-    writeText(sstream.str(), 20.0f, 2 * fontHeight + 4);
+    writeText(sstream.str(), 24.0f, 2 * fontHeight + 24.0f);
 
     sstream.str("");
     const auto rot = data.cameraDirection;
     sstream << "Rot: <" << rot.x << ", " << rot.y << ", " << rot.z << ">";
-    writeText(sstream.str(), 20.0f, 3 * fontHeight + 4);
+    writeText(sstream.str(), 24.0f, 3 * fontHeight + 24.0f);
 
     sstream.str("");
     sstream << "RenderTime: " << data.renderTime;
-    writeText(sstream.str(), 20.0f, 4 * fontHeight + 4);
+    writeText(sstream.str(), 24.0f, 4 * fontHeight + 24.0f);
 
     if (!tex)
+    {
         glGenTextures(1, &tex);
+    }
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, tex);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface->w, surface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
-    glLoadMatrixf(glm::value_ptr(glm::ortho(0.0f,640.0f, 0.0f, 480.0f)));
+    glLoadMatrixf(glm::value_ptr(glm::ortho(0.0f, (float) settings.width, 0.0f, (float) settings.height)));
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+    glColor4f(0.0f, 0.0f, 0.0f, 0.4f);
+    glm::vec2 boxSize(5 * 64.0, 5 * fontHeight);
+    glm::vec2 boxOffset(16.0f, 16.0f);
+
+    glBegin(GL_QUADS);
+        glVertex3f(boxOffset.x, boxOffset.y, 0);
+        glVertex3f(boxOffset.x + boxSize.x, boxOffset.y, 0);
+        glVertex3f(boxOffset.x + boxSize.x, boxOffset.y + boxSize.y, 0);
+        glVertex3f(boxOffset.x, boxOffset.y + boxSize.y, 0);
+    glEnd();
+
+    glPopMatrix();
+
+    // Draw the text texture
+    glBindTexture(GL_TEXTURE_2D, tex);
 
     glMatrixMode(GL_TEXTURE);
     glLoadIdentity();
@@ -133,7 +156,7 @@ void Interface::display(SDL_Renderer* sdlRenderer)
     glPushMatrix();
     glLoadIdentity();
 
-    glColor3f(1.0f, 1.0f, 1.0f);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
     glBegin(GL_QUADS);
         glTexCoord2f(0, 0); glVertex3f(0, 0, 0);
@@ -146,6 +169,7 @@ void Interface::display(SDL_Renderer* sdlRenderer)
 
     glMatrixMode(GL_TEXTURE);
     glPopMatrix();
+    // End
 
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();

@@ -17,7 +17,6 @@
 namespace assets
 {
 
-
 class Font: public Asset
 {
 public:

@@ -32,11 +32,10 @@ public:
 
     void update();
 
-#ifdef linux
-public:
     void addWatchDescriptor(const std::string& path, std::shared_ptr<Asset> asset);
     void removeWatchDescriptor(const std::string& name);
 
+#ifdef linux
 private:
     int inotifyFileDescriptor;
     std::array<char, 1024 * sizeof(inotify_event)> inotifyBuffer;

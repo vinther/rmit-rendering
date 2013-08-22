@@ -12,12 +12,12 @@
 scene::Camera::Camera()
     : position(glm::vec3(0.0f))
     , fieldOfView(75.0f), aspectRatio(800.0f / 600.0f)
-    , nearPlane(1.0f), farPlane(10000.0f)
+    , nearPlane(1.0f), farPlane(4000.0f)
     , horizontalAngle(0.0f), verticalAngle(0.0f)
 {
 }
 
-glm::mat4 scene::Camera::getViewProjectionMatrix() const
+glm::mat4 scene::Camera::viewProjection() const
 {
     return projection() * view();
 }
@@ -43,11 +43,11 @@ glm::vec3 scene::Camera::forward() const {
 }
 
 glm::vec3 scene::Camera::right() const {
-    return glm::vec3(glm::inverse(orientation()) * glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+    return glm::normalize(glm::vec3(glm::inverse(orientation()) * glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
 }
 
 glm::vec3 scene::Camera::up() const {
-    return glm::vec3(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+    return glm::normalize(glm::vec3(glm::inverse(orientation()) * glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
 }
 
 void scene::Camera::rotate(float horizontalAngle, float vertialAngle)

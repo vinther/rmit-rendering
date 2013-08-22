@@ -40,13 +40,13 @@ public:
     size_t reportSize() const;
     void reload();
 
-    Assimp::Importer importer;
-
     std::unique_ptr<const aiScene, std::function<void(const aiScene*)>> scene;
     std::vector<std::shared_ptr<Material>> materials;
 
     std::string path;
     std::string basePath;
+private:
+    Assimp::Importer importer;
 };
 
 }

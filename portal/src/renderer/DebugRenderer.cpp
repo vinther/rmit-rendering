@@ -106,7 +106,7 @@ void DebugRenderer::initialize()
 void DebugRenderer::render(const scene::Scene& scene)
 {
     const auto& camera = *(scene.camera);
-    const glm::mat4 viewProjectionMatrix = camera.getViewProjectionMatrix();
+    const glm::mat4 viewProjectionMatrix = camera.viewProjection();
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();

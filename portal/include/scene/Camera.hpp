@@ -28,7 +28,7 @@ public:
 
 	float horizontalAngle, verticalAngle;
 
-    glm::mat4 getViewProjectionMatrix() const;
+    glm::mat4 viewProjection() const;
     glm::mat4 projection() const;
     glm::mat4 view() const;
 

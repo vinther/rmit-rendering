@@ -33,7 +33,7 @@ void assets::AssetManager::addToCache(std::string name, std::shared_ptr<Asset> a
     cachedAssets[name] = asset;
 
 #ifdef linux
-    for (const auto& path: asset->files)
+    for (const auto& path: asset->assetFilePaths)
     {
         fileWatcher->addWatchDescriptor(path, asset);
     }

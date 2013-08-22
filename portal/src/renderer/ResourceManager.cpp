@@ -22,15 +22,16 @@
 #include "assets/Shader.hpp"
 #include "assets/Texture.hpp"
 
-#include "renderer/BufferedModel.hpp"
-#include "renderer/BufferedTexture.hpp"
-#include "renderer/BufferedMaterial.hpp"
-#include "renderer/BufferedShader.hpp"
+#include "renderer/resources/Model.hpp"
+#include "renderer/resources/Texture.hpp"
+#include "renderer/resources/Material.hpp"
+#include "renderer/resources/Shader.hpp"
+#include "renderer/resources/FrameBuffer.hpp"
 
 #include "Utilities.hpp"
 
 renderer::ResourceManager::ResourceManager()
-    : bufferedModels()
+    : models()
 {
 }
 
@@ -39,13 +40,13 @@ renderer::ResourceManager::~ResourceManager()
 }
 
 template <class T, class CacheType>
-T& fetchFromCache(std::shared_ptr<const typename T::asset_type>& asset, CacheType& cache, renderer::ResourceManager& resourceManager)
+std::shared_ptr<T>& fetchFromCache(std::shared_ptr<const typename T::asset_type>& asset, CacheType& cache, renderer::ResourceManager& resourceManager)
 {
     const auto& bufferedObject = cache.find(asset->hash);
 
     if (std::end(cache) != bufferedObject)
     {
-        return *(cache[asset->hash]);
+        return cache[asset->hash];
     } else
     {
         auto newBufferedObject = std::make_unique<T>(asset);
@@ -53,70 +54,70 @@ T& fetchFromCache(std::shared_ptr<const typename T::asset_type>& asset, CacheTyp
 
         cache[asset->hash] = std::move(newBufferedObject);
 
-        return *(cache[asset->hash]);
+        return cache[asset->hash];
     }
 }
 
-void renderer::ResourceManager::updateBuffers()
+void renderer::ResourceManager::updateResources()
 {
-	for (const auto& bufferedAsset: bufferedShaders)
-		if (!bufferedAsset.second->checkAssetVersion())
-			bufferedAsset.second->loadFromAsset(*this);
+	for (const auto& resource: shaders)
+		if (!resource.second->checkAssetVersion())
+		    resource.second->loadFromAsset(*this);
 }
 
 namespace renderer
 {
 
 template <>
-const BufferedModel& ResourceManager::getByAsset<BufferedModel>(
-        std::shared_ptr<const typename BufferedModel::asset_type> asset)
+const std::shared_ptr<resources::Model> ResourceManager::getByAsset<resources::Model>(
+        std::shared_ptr<const typename resources::Model::asset_type> asset)
 {
-    return fetchFromCache<BufferedModel>(asset, bufferedModels, *this);
+    return fetchFromCache<resources::Model>(asset, models, *this);
 }
 
 template <>
-const BufferedTexture& ResourceManager::getByAsset<BufferedTexture>(
-        std::shared_ptr<const typename BufferedTexture::asset_type> asset)
+const std::shared_ptr<resources::Texture> ResourceManager::getByAsset<resources::Texture>(
+        std::shared_ptr<const typename resources::Texture::asset_type> asset)
 {
-    return fetchFromCache<BufferedTexture>(asset, bufferedTextures, *this);
+    return fetchFromCache<resources::Texture>(asset, textures, *this);
 }
 
 template <>
-const BufferedMaterial& ResourceManager::getByAsset<BufferedMaterial>(
-        std::shared_ptr<const typename BufferedMaterial::asset_type> asset)
+const std::shared_ptr<resources::Material> ResourceManager::getByAsset<resources::Material>(
+        std::shared_ptr<const typename resources::Material::asset_type> asset)
 {
-    return fetchFromCache<BufferedMaterial>(asset, bufferedMaterials, *this);
+    return fetchFromCache<resources::Material>(asset, materials, *this);
 }
 
 template <>
-const BufferedShader& ResourceManager::getByAsset<BufferedShader>(
-        std::shared_ptr<const typename BufferedShader::asset_type> asset)
+const std::shared_ptr<resources::Shader> ResourceManager::getByAsset<resources::Shader>(
+        std::shared_ptr<const typename resources::Shader::asset_type> asset)
 {
-    return fetchFromCache<BufferedShader>(asset, bufferedShaders, *this);
+    return fetchFromCache<resources::Shader>(asset, shaders, *this);
 }
 
 template<>
-const BufferedModel& ResourceManager::getByHash<BufferedModel>(size_t hash)
+const std::shared_ptr<resources::Model> ResourceManager::getByHash<resources::Model>(size_t hash)
 {
-    return *bufferedModels.at(hash);
+    return models.at(hash);
 }
 
 template<>
-const BufferedTexture& ResourceManager::getByHash<BufferedTexture>(size_t hash)
+const std::shared_ptr<resources::Texture> ResourceManager::getByHash<resources::Texture>(size_t hash)
 {
-    return *bufferedTextures.at(hash);
+    return textures.at(hash);
 }
 
 template<>
-const BufferedMaterial& ResourceManager::getByHash<BufferedMaterial>(size_t hash)
+const std::shared_ptr<resources::Material> ResourceManager::getByHash<resources::Material>(size_t hash)
 {
-    return *bufferedMaterials.at(hash);
+    return materials.at(hash);
 }
 
 template<>
-const BufferedShader& ResourceManager::getByHash<BufferedShader>(size_t hash)
+const std::shared_ptr<resources::Shader> ResourceManager::getByHash<resources::Shader>(size_t hash)
 {
-    return *bufferedShaders.at(hash);
+    return shaders.at(hash);
 }
 
 

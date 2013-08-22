@@ -38,9 +38,16 @@ typedef unsigned int GLuint;
 namespace renderer
 {
 
+namespace resources
+{
+class Model;
+class Shader;
+class Texture;
+class FrameBuffer;
+class UniformBuffer;
+}
+
 class ResourceManager;
-class BufferedModel;
-class BufferedShader;
 
 class Renderer
 {
@@ -50,13 +57,27 @@ public:
 
     struct Settings
     {
+        enum Output
+        {
+            OUTPUT_FULL = 1,
+            OUTPUT_DEPTH,
+            OUTPUT_NORMALS,
+            OUTPUT_ALBEDO,
+            OUTPUT_POSITIONS,
+            OUTPUT_AMBIENT_OCCLUSION,
+        };
+
         Settings()
-            : width(640), height(480)
-            , fov(65.0f), nearClip(1.0f), farClip(10000.0f)
+            : width(1280), height(720)
+            , bumpMapping(false)
+            , output(Output::OUTPUT_FULL)
         {}
 
         Uint16 width, height;
-        float fov, nearClip, farClip;
+
+        bool bumpMapping;
+
+        Output output;
     } settings;
 
     struct RenderResults
@@ -73,21 +94,33 @@ public:
     struct RenderState
     {
         glm::mat4 modelMatrix;
+        glm::mat4 viewMatrix;
+        glm::mat4 projectionMatrix;
+        glm::mat4 normalMatrix;
+
+        std::shared_ptr<const resources::Shader> activeShader;
+        std::shared_ptr<const resources::UniformBuffer> activeUniformBuffer;
     };
 
-    void initialize(SDL_Window* window, SDL_GLContext context);
+    void initialize(SDL_Window* window, SDL_GLContext context, assets::AssetManager& assetManager);
     void prepareFrame(threading::ThreadPool& threadPool, SDL_Window* window, SDL_GLContext context);
     void render(const scene::Scene& scene, RenderResults& results);
 
     std::unique_ptr<ResourceManager> resourceManager;
-
-    size_t shaderHash;
 private:
-    void renderModel(const BufferedModel& model);
-    void renderNode(scene::SceneNode& node, RenderState state, const BufferedShader& shader);
+    void renderModel(const resources::Model& model, RenderState& state) const;
+    void renderNode(const scene::SceneNode& node, RenderState& state) const;
 
-    SDL_Window* window;
-    SDL_GLContext context;
+    void fillGeometryBuffer(const scene::Scene& scene) const;
+    void renderGeometryBuffer(const scene::Scene& scene) const;
+
+    void renderFullscreenScreenQuad() const;
+
+    std::shared_ptr<resources::Shader> deferredPassOneShader, deferredPassTwoShader;
+    std::shared_ptr<resources::Shader> geometryBufferOutputShader;
+
+    std::unique_ptr<resources::FrameBuffer> frameBuffer;
+    std::shared_ptr<resources::UniformBuffer> materialBuffer;
 };
 
 }

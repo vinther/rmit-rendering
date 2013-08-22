@@ -28,7 +28,7 @@ assets::Shader::~Shader()
 
 void assets::Shader::reload()
 {
-    files.clear();
+    assetFilePaths.clear();
 
     loadFromDisk(vertPath, fragPath);
 }
@@ -42,9 +42,9 @@ bool assets::Shader::loadFromDisk(const std::string& vertPath, const std::string
     this->vertShader = Asset::getStringFromFile("assets/" + vertPath);
     this->fragShader = Asset::getStringFromFile("assets/" + fragPath);
 
-    files.clear();
-    files.push_back(vertPath);
-    files.push_back(fragPath);
+    assetFilePaths.clear();
+    assetFilePaths.push_back(vertPath);
+    assetFilePaths.push_back(fragPath);
 
     ++version;
 

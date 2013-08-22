@@ -115,10 +115,10 @@ void CameraController::update(Uint32 microseconds)
         camera.position += -camera.right() * state.moveSpeed * f;
 
     if (state.moveUp)
-        camera.position += camera.up() * state.moveSpeed * f;
+        camera.position += glm::vec3(0.0f, 1.0f, 0.0f) * state.moveSpeed * f;
 
     if (state.moveDown)
-        camera.position += -camera.up() * state.moveSpeed * f;
+        camera.position += -glm::vec3(0.0f, 1.0f, 0.0f) * state.moveSpeed * f;
 }
 
 CameraController::State::State()

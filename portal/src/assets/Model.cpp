@@ -24,26 +24,27 @@ R * Model.cpp
 
 assets::Model::Model(const std::string& name)
     : assets::Asset(name, Type::TYPE_MODEL)
-    , importer()
     , scene()
+	, importer()
 {
 }
 
 assets::Model::~Model()
 {
-    // TODO Auto-generated destructor stub
+	importer.FreeScene();
 }
 
 bool assets::Model::loadFromDisk()
 {
-    auto scene = importer.ReadFile("assets/" + name, aiProcessPreset_TargetRealtime_Quality ^ (aiProcess_JoinIdenticalVertices | aiProcess_GenUVCoords) );
+    auto scene = importer.ReadFile("assets/" + name,
+    		aiProcessPreset_TargetRealtime_Quality ^ (aiProcess_JoinIdenticalVertices | aiProcess_GenUVCoords) );
 
     if (scene && !(scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE))
     {
         this->scene = decltype(this->scene)(scene, [](const aiScene*){});
 
-        files.clear();
-        files.push_back(name);
+        assetFilePaths.clear();
+        assetFilePaths.push_back(name);
 
         path = name;
 
@@ -88,8 +89,6 @@ size_t assets::Model::reportSize() const
 
     return memoryInfo.total;
 }
-
-
 
 void assets::Model::reload()
 {

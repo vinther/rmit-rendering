@@ -14,7 +14,6 @@
 
 assets::Material::Material(const std::string& name)
     : Asset(name, Asset::Type::TYPE_MATERIAL)
-    , translucent(false)
 {
 }
 
@@ -24,28 +23,23 @@ assets::Material::~Material()
 
 bool assets::Material::loadFromDisk(const std::string& basePath, const aiMaterial& material, AssetManager& assetManager)
 {
-    aiString ambientTexture, diffuseTexture, specularTexture, normalsTexture, heightTexture, opacityTexture;
-    material.GetTexture(aiTextureType_AMBIENT, 0, &ambientTexture, nullptr, nullptr, nullptr, nullptr);
-    material.GetTexture(aiTextureType_DIFFUSE, 0, &diffuseTexture, nullptr, nullptr, nullptr, nullptr);
-    material.GetTexture(aiTextureType_SPECULAR, 0, &specularTexture, nullptr, nullptr, nullptr, nullptr);
-    material.GetTexture(aiTextureType_NORMALS, 0, &normalsTexture, nullptr, nullptr, nullptr, nullptr);
-    material.GetTexture(aiTextureType_HEIGHT, 0, &heightTexture, nullptr, nullptr, nullptr, nullptr);
-    material.GetTexture(aiTextureType_OPACITY, 0, &opacityTexture, nullptr, nullptr, nullptr, nullptr);
+	for (const auto& pair: {
+			std::make_pair(0u, aiTextureType_EMISSIVE),
+			std::make_pair(1u, aiTextureType_AMBIENT),
+			std::make_pair(2u, aiTextureType_DIFFUSE),
+			std::make_pair(3u, aiTextureType_SPECULAR),
+			std::make_pair(4u, aiTextureType_HEIGHT)})
+	{
+		aiString texturePath;
 
-    if (0 < ambientTexture.length)
-        texAmbient = assetManager.getOrCreate<Texture>(std::string(ambientTexture.C_Str()), basePath + std::string(ambientTexture.C_Str()));
+		material.GetTexture(pair.second, 0, &texturePath, nullptr, nullptr, nullptr, nullptr);
 
-    if (0 < diffuseTexture.length)
-        texDiffuse = assetManager.getOrCreate<Texture>(std::string(diffuseTexture.C_Str()), basePath + std::string(diffuseTexture.C_Str()));
+		const std::string fullPath = basePath + std::string(texturePath.C_Str());
 
-    if (0 < specularTexture.length)
-        texSpecular = assetManager.getOrCreate<Texture>(std::string(specularTexture.C_Str()), basePath + std::string(specularTexture.C_Str()));
-
-    if (0 < normalsTexture.length)
-        texNormal = assetManager.getOrCreate<Texture>(std::string(normalsTexture.C_Str()), basePath + std::string(normalsTexture.C_Str()));
-
-    if (0 < heightTexture.length)
-        texBump = assetManager.getOrCreate<Texture>(std::string(heightTexture.C_Str()), basePath + std::string(heightTexture.C_Str()));
+		if (0 < texturePath.length)
+			textures[pair.first] =
+					assetManager.getOrCreate<Texture>(std::string(texturePath.C_Str()), fullPath.c_str());
+	}
 
     aiColor3D emissive, ambient, diffuse, specular;
     float shininess;
@@ -56,14 +50,14 @@ bool assets::Material::loadFromDisk(const std::string& basePath, const aiMateria
     material.Get(AI_MATKEY_COLOR_SPECULAR, specular);
     material.Get(AI_MATKEY_SHININESS, shininess);
 
-    materialInfo.emission = glm::vec4(emissive.r, emissive.g, emissive.b, 1.0f);
-    materialInfo.ambient = glm::vec4(ambient.r, ambient.g, ambient.b, 1.0f);
-    materialInfo.diffuse = glm::vec4(diffuse.r, diffuse.g, diffuse.b, 1.0f);
-    materialInfo.specular = glm::vec4(specular.r, specular.g, specular.b, 1.0f);
-    materialInfo.shininess = shininess;
+    this->emission = glm::vec4(emissive.r, emissive.g, emissive.b, 1.0f);
+    this->ambient = glm::vec4(ambient.r, ambient.g, ambient.b, 1.0f);
+    this->diffuse = glm::vec4(diffuse.r, diffuse.g, diffuse.b, 1.0f);
+    this->specular = glm::vec4(specular.r, specular.g, specular.b, 1.0f);
+    this->shininess = shininess;
 
-    if (texDiffuse && texDiffuse->surface)
-        translucent = texDiffuse->surface->format->BytesPerPixel == 4;
+    if (textures[2] && textures[2]->surface)
+        translucent = textures[2]->surface->format->BytesPerPixel == 4;
 
     return true;
 }

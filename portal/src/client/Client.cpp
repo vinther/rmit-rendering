@@ -19,7 +19,7 @@
 #include "renderer/Renderer.hpp"
 #include "renderer/DebugRenderer.hpp"
 #include "renderer/ResourceManager.hpp"
-#include "renderer/BufferedShader.hpp"
+#include "renderer/resources/Shader.hpp"
 
 #include "client/Interface.hpp"
 #include "client/CameraController.hpp"
@@ -73,7 +73,7 @@ void Client::initialize(SDL_Window* window, SDL_GLContext context)
     threadPool->initialize();
 
     interface->initialize();
-    renderer->initialize(window, context);
+    renderer->initialize(window, context, *(assetManager));
     debugRenderer->initialize();
 
     scene->camera->position = glm::vec3(-14.0f, 1.5f, 0.0f);
@@ -81,26 +81,19 @@ void Client::initialize(SDL_Window* window, SDL_GLContext context)
 
     scene->root->models.push_back(assetManager->getOrCreate<assets::Model>("models/crytek-sponza/sponza.obj", std::ref(*assetManager)));
 
-//    auto child = std::make_unique<scene::SceneNode>();
-//    child->model = assetManager->getOrCreate<assets::Model>("models/shuttle.obj", std::ref(*assetManager));
-//    child->transformation = glm::translate(child->transformation, glm::vec3(0.0f, 0.0f, -50.0f));
-
-    //scene->root->children.push_back(std::move(child));
-
-    auto shader = assetManager->create<assets::Shader>("shaders/default", "shaders/default.vert", "shaders/default.frag");
-
-    renderer->shaderHash = shader->hash;
-    renderer->resourceManager->getByAsset<renderer::BufferedShader>(shader);
-
     scene->initialize();
 }
 
 void Client::reshape(Uint32 width, Uint32 height)
 {
+	scene->camera->aspectRatio = (float) (width) / (float) height;
+
     auto& rendererSettings = renderer->settings;
 
     rendererSettings.width = width;
     rendererSettings.height = height;
+
+
 
     auto& debugRendererSettings = debugRenderer->settings;
 

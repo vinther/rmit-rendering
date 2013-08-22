@@ -20,8 +20,8 @@
 
 #include "Config.hpp"
 
-const int DEFAULT_WIDTH = 800;
-const int DEFAULT_HEIGHT = 600;
+const int DEFAULT_WIDTH = 1280;
+const int DEFAULT_HEIGHT = 720;
 const int DEFAULT_DEPTH = 32;
 
 static int exitConditions;

@@ -11,6 +11,7 @@
 #include "assets/Asset.hpp"
 
 #include <memory>
+#include <array>
 
 #include <glm/glm.hpp>
 
@@ -28,22 +29,15 @@ public:
     Material(const std::string& name);
     virtual ~Material();
 
-    struct MaterialInfo
-    {
-        glm::vec4 emission;
-        glm::vec4 ambient;
-        glm::vec4 diffuse;
-        glm::vec4 specular;
-        float shininess;
-    } materialInfo;
+	std::array<std::shared_ptr<assets::Texture>, 5> textures;
 
-    bool translucent;
+	glm::vec4 emission;
+	glm::vec4 ambient;
+	glm::vec4 diffuse;
+	glm::vec4 specular;
+	float shininess;
 
-    std::shared_ptr<assets::Texture> texAmbient;
-    std::shared_ptr<assets::Texture> texDiffuse;
-    std::shared_ptr<assets::Texture> texSpecular;
-    std::shared_ptr<assets::Texture> texNormal;
-    std::shared_ptr<assets::Texture> texBump;
+	bool translucent;
 
     bool loadFromDisk(const std::string& basePath, const aiMaterial& material, AssetManager& assetManager);
 

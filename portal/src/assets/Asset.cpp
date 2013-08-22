@@ -17,7 +17,7 @@ assets::Asset::Asset(const std::string& name, Type type)
     : name(name)
     , hash(0)
     , type(type)
-    , files(std::vector<std::string>())
+    , assetFilePaths(std::vector<std::string>())
     , version(0)
 {
     std::hash<std::string> hash_fn;
