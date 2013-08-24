@@ -18,6 +18,7 @@
 
 #include "threading/ThreadPool.hpp"
 
+#include "Utilities.hpp"
 #include "Config.hpp"
 
 const int DEFAULT_WIDTH = 1280;
@@ -44,7 +45,7 @@ int main(int argc, char **argv)
 
     bool windowFocus = true;
 
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
@@ -87,14 +88,15 @@ int main(int argc, char **argv)
 
     SDL_ShowCursor(0);
     SDL_SetWindowGrab(window, SDL_FALSE);
-
-    SDL_Log("Build %d (%s)", config::build::buildNumber(), config::build::type());
-    SDL_Log("Platform: %s (%d logical CPU cores)", SDL_GetPlatform(), SDL_GetCPUCount());
-    SDL_Log("OpenGL: %s (%s)", (char*) glGetString(GL_VERSION), (char*) glGetString(GL_RENDERER));
+    SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG);
 
     std::shared_ptr<Client> client = std::make_shared<Client>(argc, argv);
     client->initialize(window, glContext);
     client->reshape(windowWidth, windowHeight);
+
+    SDL_Log("Build %d (%s)", config::build::buildNumber(), config::build::type());
+    SDL_Log("Platform: %s (%d logical CPU cores)", SDL_GetPlatform(), SDL_GetCPUCount());
+    SDL_Log("OpenGL: %s (%s)", (char*) glGetString(GL_VERSION), (char*) glGetString(GL_RENDERER));
 
     while (!exitConditions)
     {
@@ -104,6 +106,7 @@ int main(int argc, char **argv)
             switch (ev.type)
             {
             case SDL_QUIT:
+                SDL_Log("Quit event received");
                 quit();
                 break;
 
@@ -115,9 +118,11 @@ int main(int argc, char **argv)
                     break;
                 case SDL_WINDOWEVENT_FOCUS_LOST:
                     windowFocus = false;
+                    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Window lost focus");
                     break;
                 case SDL_WINDOWEVENT_FOCUS_GAINED:
                     windowFocus = true;
+                    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Window gained focus");
                     break;
                 default:
                     break;
@@ -147,7 +152,7 @@ int main(int argc, char **argv)
         client->finalizeFrame(window, glContext);
 
         SDL_GL_SwapWindow(window);
-        SDL_Delay(1);
+        SDL_Delay(8);
     }
 
     client->cleanup();

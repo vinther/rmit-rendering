@@ -62,11 +62,12 @@ void assets::AssetManager::reportCacheContents() const
         }
     };
 
-    SDL_Log("Cached assets: ");
+    SDL_LogDebug(client::PORTAL_LOG_CATEGORY_ASSETS, "Cached assets: ");
     for (auto it = cachedAssets.cbegin(); it != cachedAssets.cend(); ++it)
     {
         const auto& asset = *(it->second);
 
-        SDL_Log("[%s] \"%s\" (%d bytes)", getTypeName(asset.type).c_str(), asset.name.c_str(), asset.reportSize());
+        SDL_LogDebug(client::PORTAL_LOG_CATEGORY_ASSETS,
+                "[%s] \"%s\" (%d bytes)", getTypeName(asset.type).c_str(), asset.name.c_str(), asset.reportSize());
     }
 }

@@ -37,6 +37,19 @@
 #include "Config.hpp"
 #include "Utilities.hpp"
 
+struct Globals
+{
+    std::shared_ptr<Client> client;
+};
+
+static Globals globals;
+
+static void globalLogFunction(void *userdata, int category, SDL_LogPriority priority, const char *message)
+{
+    if (globals.client)
+        globals.client->logFunction(userdata, category, priority, message);
+}
+
 Client::Client(int argc, char** argv)
     : keyboardHandler(), mouseHandler()
     , scene()
@@ -49,7 +62,7 @@ Client::Client(int argc, char** argv)
     , frameCount(0)
     , timeFrameFPS()
     , frameCountFPS(0)
-
+    , defaultLogOutputFunction(nullptr)
 {
     glutInit(&argc, argv);
 }
@@ -58,11 +71,25 @@ void Client::initialize(SDL_Window* window, SDL_GLContext context)
 {
     cleanup();
 
+    globals.client = shared_from_this();
+
+    void* defaultUserData;
+
+    SDL_LogGetOutputFunction(&defaultLogOutputFunction, &defaultUserData);
+
+    logFunction = [&](void *userdata, int category, SDL_LogPriority priority, const char *message) {
+        defaultLogOutputFunction(userdata, category, priority, message);
+        interface->addMessage(category, priority, message);
+    };
+
+    interface = std::make_unique<Interface>(shared_from_this());
+
+    SDL_LogSetOutputFunction(globalLogFunction, nullptr);
+    SDL_LogDebug(client::PORTAL_LOG_CATEGORY_CLIENT, "Initializing client");
+
     keyboardHandler = std::make_unique<input::KeyboardHandler>(shared_from_this());
     mouseHandler = std::make_unique<input::MouseHandler>(shared_from_this());
-    interface = std::make_unique<Interface>(shared_from_this());
     cameraController = std::make_unique<CameraController>(shared_from_this());
-
     scene = std::make_unique<scene::Scene>();
     assetManager = std::make_unique<assets::AssetManager>();
     renderer = std::make_unique<renderer::Renderer>();
@@ -71,29 +98,35 @@ void Client::initialize(SDL_Window* window, SDL_GLContext context)
 
     threadPool->settings.numThreads = SDL_GetCPUCount() - 1;
     threadPool->initialize();
+    SDL_LogDebug(client::PORTAL_LOG_CATEGORY_CLIENT, "Threadpool initialized");
 
     interface->initialize();
+    SDL_LogDebug(client::PORTAL_LOG_CATEGORY_CLIENT, "Interface initialized");
+
     renderer->initialize(window, context, *(assetManager));
+    SDL_LogDebug(client::PORTAL_LOG_CATEGORY_CLIENT, "Renderer initialized");
+
     debugRenderer->initialize();
+    SDL_LogDebug(client::PORTAL_LOG_CATEGORY_CLIENT, "Debug initialized");
+
+    scene->root->models.push_back(assetManager->getOrCreate<assets::Model>("models/crytek-sponza/sponza.obj", std::ref(*assetManager)));
+    scene->initialize();
+    SDL_LogDebug(client::PORTAL_LOG_CATEGORY_CLIENT, "Scene initialized");
 
     scene->camera->position = glm::vec3(-14.0f, 1.5f, 0.0f);
     scene->camera->rotate(90.0f, 30.0f);
-
-    scene->root->models.push_back(assetManager->getOrCreate<assets::Model>("models/crytek-sponza/sponza.obj", std::ref(*assetManager)));
-
-    scene->initialize();
 }
 
 void Client::reshape(Uint32 width, Uint32 height)
 {
+    SDL_LogDebug(client::PORTAL_LOG_CATEGORY_CLIENT, "Window reshaped to %dx%d", width, height);
+
 	scene->camera->aspectRatio = (float) (width) / (float) height;
 
     auto& rendererSettings = renderer->settings;
 
     rendererSettings.width = width;
     rendererSettings.height = height;
-
-
 
     auto& debugRendererSettings = debugRenderer->settings;
 
@@ -114,10 +147,8 @@ void Client::prepareFrame(SDL_Window* window, SDL_GLContext context)
     ++frameCountFPS;
 
     const auto now = timeFrameBegin = std::chrono::high_resolution_clock::now();
-    const auto msSinceLastFrame = std::chrono::duration_cast<std::chrono::milliseconds>(now - timeFrameEnd).count();
     const auto msSinceLastFPS = std::chrono::duration_cast<std::chrono::milliseconds>((now - timeFrameFPS)).count();
-
-    UNUSED(msSinceLastFrame);
+    const auto microsSinceLastFrame = std::chrono::duration_cast<std::chrono::microseconds>(now - timeFrameEnd).count();
 
     if (msSinceLastFPS > 1000)
     {
@@ -129,7 +160,8 @@ void Client::prepareFrame(SDL_Window* window, SDL_GLContext context)
         interface->data.fps = framesPerSecond;
     }
 
-    cameraController->update(std::chrono::duration_cast<std::chrono::microseconds>(now - timeFrameEnd).count());
+    cameraController->update(microsSinceLastFrame);
+    interface->update(microsSinceLastFrame);
     assetManager->fileWatcher->update();
 
     renderer->prepareFrame(*(threadPool), window, context);
@@ -175,8 +207,9 @@ void Client::finalizeFrame(SDL_Window* window, SDL_GLContext context)
     interface->data.cameraPosition = scene->camera->position;
     interface->data.cameraDirection = scene->camera->forward();
 
+    Interface::RenderResults interfaceRenderResults;
     interface->data.renderTime = results.renderTime.count();
-    interface->display(nullptr);
+    interface->render(interfaceRenderResults);
 
     timeFrameEnd = std::chrono::high_resolution_clock::now();
 }
@@ -219,6 +252,8 @@ void Client::event(SDL_Event* event)
 
 void Client::cleanup()
 {
+    SDL_LogDebug(client::PORTAL_LOG_CATEGORY_CLIENT, "Cleaning up client resources");
+
     if (threadPool)
         threadPool->synchronize(threading::Task::Flags::ALL_FLAGS);
 
@@ -227,7 +262,15 @@ void Client::cleanup()
     scene.reset();
     interface.reset();
     cameraController.reset();
+    assetManager.reset();
     renderer.reset();
+    debugRenderer.reset();
     threadPool.reset();
+
+    if (this == globals.client.get())
+        globals.client.reset();
+
+    if (defaultLogOutputFunction)
+        SDL_LogSetOutputFunction(defaultLogOutputFunction, nullptr);
 }
 

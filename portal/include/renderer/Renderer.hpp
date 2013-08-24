@@ -57,27 +57,34 @@ public:
 
     struct Settings
     {
-        enum Output
+        enum OutputMode
         {
-            OUTPUT_FULL = 1,
-            OUTPUT_DEPTH,
-            OUTPUT_NORMALS,
-            OUTPUT_ALBEDO,
-            OUTPUT_POSITIONS,
-            OUTPUT_AMBIENT_OCCLUSION,
+            FULL = 1,
+            DEPTH_ONLY,
+            NORMALS_ONLY,
+            ALBEDO_ONLY,
+            POSITIONS_ONLY,
+            AMBIENT_OCCLUSION_ONLY,
         };
 
         Settings()
             : width(1280), height(720)
-            , bumpMapping(false)
-            , output(Output::OUTPUT_FULL)
+            , bumpMapping(true), ambientOcclusion(true), lighting(true)
+            , output(OutputMode::FULL)
         {}
 
         Uint16 width, height;
 
         bool bumpMapping;
+        bool ambientOcclusion;
+        bool lighting;
 
-        Output output;
+        void toggleBumpMapping();
+        void toggleAmbientOcclusion();
+        void toggleLighting();
+        void setOutput(OutputMode output);
+
+        OutputMode output;
     } settings;
 
     struct RenderResults

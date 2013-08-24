@@ -22,7 +22,7 @@ in vec2 texCoord;
 out vec4 fragColor;
 
 uniform float test;
-uniform vec3 pingStart;
+uniform vec3 pingStart;//
 
 /*
     //vec3 cameraPosition = -worldToCameraMatrix[3].xyz * mat3(worldToCameraMatrix);
@@ -132,6 +132,8 @@ float SSAO(vec3 viewPos, vec3 viewNormal, vec2 uv, float depth)
 }
 
 uniform int ambientOcclusionOnly;
+uniform int enableAmbientOcclusion;
+uniform int enableLighting;
 
 void main()
 {
@@ -153,14 +155,23 @@ void main()
 
     vec3 lightPos = vec3(vec4(sin(test * 4.0f) * 1400.0f, 200, 0.0, 0.0));
     
-    const vec4 lightColor = vec4(1, 1, 1, 1.0f);
-    const vec4 globalAmbient = vec4(0.2, 0.2, 0.2, 1.0);
+    vec4 lightColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+
+
+    
 
   // Compute the diffuse term
   // Normalized vector toward the light source
 
     vec3 L = normalize(vec3(lightPos) - P);
-    float diffuseLight = max(dot(N, L), 0);
+    float diffuseLight;
+
+    if (1 == enableLighting)
+        diffuseLight = max(dot(N, L), 0);
+    else
+        diffuseLight = 1.0f;
+
     vec4 diffuse = lightColor * diffuseLight * albedo;
 
   // Compute the specular term
@@ -183,14 +194,15 @@ void main()
     if (t - d > 8.0f && t - d < 128.0f)    
         col = vec4(0.0, 0.8, 0.8, 0.0f) * (1.0 - clamp(log(t-d) / log(128.0), 0.0, 1.0)) * (1.0 - smoothstep(0.0f, 2000.0, d));
 
-	fragColor.xyz = vec3(depth, depth, depth);
-    fragColor = albedo;
-    fragColor.xyz = P;
+    float ao = 1.0f;
+    
+    if (1 == enableAmbientOcclusion)
+        ao = SSAO(P, N, texCoord, depth);
 
     if (1 == ambientOcclusionOnly)
-        fragColor = vec4(1.f) * SSAO(P, N, texCoord, depth);
+        fragColor = vec4(1.f) * ao;
     else
-        fragColor = diffuse * SSAO(P, N, texCoord, depth);
+        fragColor = diffuse * ao;
 
     //fragColor = lightColor * diffuseLight;
 

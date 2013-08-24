@@ -251,17 +251,16 @@ void renderer::Renderer::renderGeometryBuffer(const scene::Scene& scene) const
     std::shared_ptr<resources::Shader> activeShader;
 
     {
-        using Output = Settings::Output;
+        using OutputMode = Settings::OutputMode;
 
-        if (Output::OUTPUT_FULL == settings.output || Output::OUTPUT_AMBIENT_OCCLUSION == settings.output)
+        if (OutputMode::FULL == settings.output || OutputMode::AMBIENT_OCCLUSION_ONLY == settings.output)
         {
             activeShader = deferredPassTwoShader;
             activeShader->enable();
 
-            if (Output::OUTPUT_AMBIENT_OCCLUSION == settings.output)
-                activeShader->setUniform("ambientOcclusionOnly", 1);
-            else
-                activeShader->setUniform("ambientOcclusionOnly", 0);
+            activeShader->setUniform("enableAmbientOcclusion", settings.ambientOcclusion);
+            activeShader->setUniform("enableLighting", settings.lighting);
+            activeShader->setUniform("ambientOcclusionOnly", OutputMode::AMBIENT_OCCLUSION_ONLY == settings.output);
         } else
         {
             activeShader = geometryBufferOutputShader;
@@ -269,13 +268,13 @@ void renderer::Renderer::renderGeometryBuffer(const scene::Scene& scene) const
 
             switch (settings.output)
             {
-            case Output::OUTPUT_DEPTH:
+            case OutputMode::DEPTH_ONLY:
                 activeShader->setSubroutine("depth", GL_FRAGMENT_SHADER); break;
-            case Output::OUTPUT_NORMALS:
+            case OutputMode::NORMALS_ONLY:
                 activeShader->setSubroutine("normals", GL_FRAGMENT_SHADER); break;
-            case Output::OUTPUT_ALBEDO:
+            case OutputMode::ALBEDO_ONLY:
                 activeShader->setSubroutine("albedo", GL_FRAGMENT_SHADER); break;
-            case Output::OUTPUT_POSITIONS:
+            case OutputMode::POSITIONS_ONLY:
                 activeShader->setSubroutine("positions", GL_FRAGMENT_SHADER); break;
             default:
                 break;
@@ -338,4 +337,42 @@ void renderer::Renderer::prepareFrame(threading::ThreadPool& threadPool, SDL_Win
 	resourceManager->updateResources();
 }
 
+void renderer::Renderer::Settings::toggleBumpMapping()
+{
+    bumpMapping = !bumpMapping;
+    SDL_LogDebug(client::PORTAL_LOG_CATEGORY_RENDERER, "Bump mapping %s", bumpMapping ? "ON" : "OFF");
+}
 
+void renderer::Renderer::Settings::toggleAmbientOcclusion()
+{
+    ambientOcclusion = !ambientOcclusion;
+    SDL_LogDebug(client::PORTAL_LOG_CATEGORY_RENDERER, "SSAO %s", ambientOcclusion ? "ON" : "OFF");
+}
+
+void renderer::Renderer::Settings::toggleLighting()
+{
+    lighting = !lighting;
+    SDL_LogDebug(client::PORTAL_LOG_CATEGORY_RENDERER, "Lighting %s", lighting ? "ON" : "OFF");
+}
+
+void renderer::Renderer::Settings::setOutput(OutputMode output)
+{
+    this->output = output;
+
+    auto getName = [](const OutputMode mode) -> std::string
+    {
+        switch (mode)
+        {
+        case FULL: return "Full shading"; break;
+        case DEPTH_ONLY: return "Depth only"; break;
+        case NORMALS_ONLY: return "Normals only"; break;
+        case ALBEDO_ONLY: return "Albedo only"; break;
+        case POSITIONS_ONLY: return "Positions only"; break;
+        case AMBIENT_OCCLUSION_ONLY: return "Ambient occlusion only"; break;
+        }
+
+        return "UNKNOWN";
+    };
+
+    SDL_LogDebug(client::PORTAL_LOG_CATEGORY_RENDERER, "Output mode: %s", getName(output).c_str());
+}

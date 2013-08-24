@@ -9,9 +9,9 @@
 
 #include <fstream>
 
-#include <GL/glew.h>
-#include <GL/gl.h>
 #include <SDL2/SDL_log.h>
+
+#include "Utilities.hpp"
 
 assets::Shader::Shader(const std::string& name)
     : Asset(name, Asset::Type::TYPE_SHADER)
@@ -28,6 +28,8 @@ assets::Shader::~Shader()
 
 void assets::Shader::reload()
 {
+    SDL_LogDebug(client::PORTAL_LOG_CATEGORY_ASSETS, "Reloading shader: \"%s\"", name.c_str());
+
     assetFilePaths.clear();
 
     loadFromDisk(vertPath, fragPath);

@@ -11,6 +11,8 @@
 
 #include <SDL2/SDL_image.h>
 
+#include "Utilities.hpp"
+
 assets::Texture::Texture(const std::string& name)
     : Asset(name, Asset::Type::TYPE_TEXTURE)
     , surface()
@@ -50,5 +52,7 @@ size_t assets::Texture::reportSize() const
 
 void assets::Texture::reload()
 {
+    SDL_LogDebug(client::PORTAL_LOG_CATEGORY_ASSETS, "Reloading texture: \"%s\"", name.c_str());
+
     loadFromDisk(path);
 }

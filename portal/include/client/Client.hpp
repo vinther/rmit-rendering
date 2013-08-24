@@ -78,6 +78,7 @@ public:
 
 	std::unique_ptr<threading::ThreadPool> threadPool;
 
+    std::function<void(void *userdata, int category, SDL_LogPriority priority, const char *message)> logFunction;
 private:
 	std::chrono::high_resolution_clock::time_point timeFrameBegin;
 	std::chrono::high_resolution_clock::time_point timeFrameEnd;
@@ -86,6 +87,8 @@ private:
 
 	std::chrono::high_resolution_clock::time_point timeFrameFPS;
 	unsigned int frameCountFPS;
+
+	SDL_LogOutputFunction defaultLogOutputFunction;
 };
 
 #endif /* CLIENT_HPP_ */

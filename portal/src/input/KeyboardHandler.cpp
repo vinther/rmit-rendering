@@ -11,6 +11,7 @@
 
 #include "client/Client.hpp"
 #include "client/CameraController.hpp"
+#include "client/Interface.hpp"
 
 #include "scene/Scene.hpp"
 
@@ -24,22 +25,37 @@
 input::KeyboardHandler::KeyboardHandler(std::shared_ptr<Client> client)
     : client(client)
 {
-
     {
-        using ROutput = renderer::Renderer::Settings::Output;
+        using ROutput = renderer::Renderer::Settings::OutputMode;
 
-        keydownMap[{'1', 0}] = [] (Client& c) { c.renderer->settings.output = ROutput::OUTPUT_FULL; };
-        keydownMap[{'2', 0}] = [] (Client& c) { c.renderer->settings.output = ROutput::OUTPUT_DEPTH; };
-        keydownMap[{'3', 0}] = [] (Client& c) { c.renderer->settings.output = ROutput::OUTPUT_NORMALS; };
-        keydownMap[{'4', 0}] = [] (Client& c) { c.renderer->settings.output = ROutput::OUTPUT_ALBEDO; };
-        keydownMap[{'5', 0}] = [] (Client& c) { c.renderer->settings.output = ROutput::OUTPUT_POSITIONS; };
-        keydownMap[{'6', 0}] = [] (Client& c) { c.renderer->settings.output = ROutput::OUTPUT_AMBIENT_OCCLUSION; };
-        keydownMap[{'7', 0}] = [] (Client& c) { c.renderer->settings.output = ROutput::OUTPUT_FULL; };
-        keydownMap[{'8', 0}] = [] (Client& c) { c.renderer->settings.bumpMapping = !c.renderer->settings.bumpMapping; };
+        keydownMap[{'1', 0}] = [] (Client& c) { c.renderer->settings.setOutput(ROutput::FULL); };
+        keydownMap[{'2', 0}] = [] (Client& c) { c.renderer->settings.setOutput(ROutput::DEPTH_ONLY); };
+        keydownMap[{'3', 0}] = [] (Client& c) { c.renderer->settings.setOutput(ROutput::NORMALS_ONLY); };
+        keydownMap[{'4', 0}] = [] (Client& c) { c.renderer->settings.setOutput(ROutput::ALBEDO_ONLY); };
+        keydownMap[{'5', 0}] = [] (Client& c) { c.renderer->settings.setOutput(ROutput::AMBIENT_OCCLUSION_ONLY); };
+        keydownMap[{'6', 0}] = [] (Client& c) { c.renderer->settings.setOutput(ROutput::POSITIONS_ONLY); };
     }
 
     keydownMap[{'c', 0}] = [] (Client& c) { c.debugRenderer->lines.clear(); };
     keydownMap[{'q', 0}] = [] (Client& c) { c.assetManager->reportCacheContents(); };
+    keydownMap[{'v', 0}] = [] (Client& c) { c.renderer->settings.toggleAmbientOcclusion(); };
+    keydownMap[{'b', 0}] = [] (Client& c) { c.renderer->settings.toggleBumpMapping(); };
+    keydownMap[{'n', 0}] = [] (Client& c) { c.renderer->settings.toggleLighting(); };
+    keydownMap[{'t', 0}] = [] (Client& c) { c.interface->toggleConsole(); };
+
+    keydownMap[{SDLK_UP, 0}] = [] (Client& c) { c.interface->scroll(1);  };
+    keydownMap[{SDLK_DOWN, 0}] = [] (Client& c) { c.interface->scroll(-1);  };
+
+    keydownMap[{SDLK_PAGEUP, 0}] = [] (Client& c) { c.interface->scroll(c.interface->console.linesPerPage - 1);  };
+    keydownMap[{SDLK_PAGEDOWN, 0}] = [] (Client& c) { c.interface->scroll(-c.interface->console.linesPerPage + 1);  };
+
+    keydownMap[{SDLK_HOME, 0}] = [] (Client& c) { c.interface->scrollTo(-1);  };
+    keydownMap[{SDLK_END, 0}] = [] (Client& c) { c.interface->scrollTo(0);  };
+
+    keydownMap[{'1', KMOD_LSHIFT}] = [] (Client& c) { c.debugRenderer->settings.drawBVH = !c.debugRenderer->settings.drawBVH; };
+    keydownMap[{'2', KMOD_LSHIFT}] = [] (Client& c) { c.debugRenderer->settings.drawRays = !c.debugRenderer->settings.drawRays; };
+    keydownMap[{'3', KMOD_LSHIFT}] = [] (Client& c) { c.debugRenderer->settings.drawCrosshair = !c.debugRenderer->settings.drawCrosshair; };
+
     keydownMap[{SDLK_ESCAPE, 0}] = [] (Client& c) { UNUSED(c); SDL_Log("ESC pressed, exit inevitable"); };
 }
 
@@ -52,11 +68,9 @@ void input::KeyboardHandler::event(const SDL_KeyboardEvent& event) const
     switch (event.type)
     {
     case SDL_KEYDOWN:
-        keydown(event.keysym.sym, event.keysym.mod);
-        break;
+        keydown(event.keysym.sym, event.keysym.mod); break;
     case SDL_KEYUP:
-        keyup(event.keysym.sym, event.keysym.mod);
-        break;
+        keyup(event.keysym.sym, event.keysym.mod); break;
     default:
         break;
     }
@@ -75,25 +89,6 @@ void callKeyFunction(const T& keymap, Uint16 key, Uint16 mod, Client& client)
 
 void input::KeyboardHandler::keydown(SDL_Keycode key, Uint16 mod) const
 {
-    if ('1' == key)
-    {
-        if (mod & (KMOD_LSHIFT | KMOD_RSHIFT))
-            client->debugRenderer->settings.drawBVH = !client->debugRenderer->settings.drawBVH;
-    }
-
-    if ('2' == key)
-    {
-        if (mod & (KMOD_LSHIFT | KMOD_RSHIFT))
-            client->debugRenderer->settings.drawRays = !client->debugRenderer->settings.drawRays;
-
-    }
-
-    if ('3' == key)
-    {
-        if (mod & (KMOD_LSHIFT | KMOD_RSHIFT))
-            client->debugRenderer->settings.drawCrosshair = !client->debugRenderer->settings.drawCrosshair;
-    }
-
     callKeyFunction(keydownMap, key, mod, *client);
 
     client->cameraController->keyDown(key, mod);

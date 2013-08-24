@@ -92,6 +92,8 @@ size_t assets::Model::reportSize() const
 
 void assets::Model::reload()
 {
+    SDL_LogDebug(client::PORTAL_LOG_CATEGORY_ASSETS, "Reloading model: \"%s\"", name.c_str());
+
     importer.FreeScene();
     loadFromDisk();
 }
