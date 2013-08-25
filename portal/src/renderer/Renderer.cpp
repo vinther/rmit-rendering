@@ -164,6 +164,7 @@ void renderer::Renderer::renderNode(const scene::SceneNode& node, RenderState& s
     state.modelMatrix = state.modelMatrix * node.transformation;
 
     state.activeShader->setUniform("modelViewMatrix", state.viewMatrix * state.modelMatrix);
+    geometryPassShader->setUniform("normalMatrix", glm::transpose(glm::inverse(state.viewMatrix * state.modelMatrix)));
 
     for (const auto& model: node.models)
     {
@@ -301,9 +302,6 @@ void renderer::Renderer::doLightPasses(const scene::Scene& scene) const
         pointLightShader->setUniform("viewMatrix", camera.view());
         pointLightShader->setUniform("modelMatrix", model);
         pointLightShader->setUniform("viewProjectionInverse", glm::inverse(camera.viewProjection()));
-
-        glm::vec4 test = model * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-        SDL_Log("%f %f %f %f", test.x, test.y, test.z, test.w);
 
         // Set light parameters here
         glutSolidSphere(200, 24, 24);
