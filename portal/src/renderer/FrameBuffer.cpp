@@ -20,52 +20,6 @@
 namespace renderer {
 namespace resources {
 
-///////////////////////////////////////////////////////////////////////////////
-// check FBO completeness
-///////////////////////////////////////////////////////////////////////////////
-bool checkFramebufferStatus()
-{
-    // check FBO status
-    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-    switch(status)
-    {
-    case GL_FRAMEBUFFER_COMPLETE:
-        return true;
-
-    case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-        SDL_Log("[ERROR] Framebuffer incomplete: Attachment is NOT complete." );
-        return false;
-
-    case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-        SDL_Log("[ERROR] Framebuffer incomplete: No image is attached to FBO." );
-        return false;
-
-    case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
-        SDL_Log("[ERROR] Framebuffer incomplete: Attached images have different dimensions." );
-        return false;
-
-    case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
-        SDL_Log("[ERROR] Framebuffer incomplete: Color attached images have different internal formats." );
-        return false;
-
-    case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
-        SDL_Log("[ERROR] Framebuffer incomplete: Draw buffer." );
-        return false;
-
-    case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-        SDL_Log("[ERROR] Framebuffer incomplete: Read buffer." );
-        return false;
-
-    case GL_FRAMEBUFFER_UNSUPPORTED:
-        SDL_Log("[ERROR] Framebuffer incomplete: Unsupported by FBO implementation." );
-        return false;
-
-    default:
-        SDL_Log("[ERROR] Framebuffer incomplete: Unknown error." );
-        return false;
-    }
-}
-
 FrameBuffer::FrameBuffer()
     : buffer(0)
 {
@@ -88,7 +42,7 @@ void FrameBuffer::attach(std::unique_ptr<Texture> texture, GLenum attachmentPoin
     attachments.emplace_back(attachmentPoint, std::move(texture));
 }
 
-void FrameBuffer::enable()
+void FrameBuffer::enableAll()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, buffer);
 
@@ -104,6 +58,12 @@ void FrameBuffer::enable()
     std::sort(std::begin(v), std::end(v));
 
     glDrawBuffers(v.size(), v.data());
+}
+
+void FrameBuffer::enable(const std::initializer_list<GLenum> attachments)
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, buffer);
+    glDrawBuffers(attachments.size(), attachments.begin());
 }
 
 void FrameBuffer::disable()

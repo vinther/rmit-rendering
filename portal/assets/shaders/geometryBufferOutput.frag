@@ -51,6 +51,15 @@ vec3 depth(vec2 uv)
 
 subroutine(textureOutputType)
 
+vec3 lightAccumulation(vec2 uv)
+{
+    vec4 RT0 = texture2D(RT0Sampler, uv);
+
+    return vec3(RT0);
+}
+
+subroutine(textureOutputType)
+
 vec3 albedo(vec2 uv)
 {
     vec4 RT3 = texture2D(RT3Sampler, uv);

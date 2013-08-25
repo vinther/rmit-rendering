@@ -41,7 +41,7 @@ namespace renderer
 namespace resources
 {
 class Model;
-class Shader;
+class ShaderProgram;
 class Texture;
 class FrameBuffer;
 class UniformBuffer;
@@ -105,7 +105,7 @@ public:
         glm::mat4 projectionMatrix;
         glm::mat4 normalMatrix;
 
-        std::shared_ptr<const resources::Shader> activeShader;
+        std::shared_ptr<const resources::ShaderProgram> activeShader;
         std::shared_ptr<const resources::UniformBuffer> activeUniformBuffer;
     };
 
@@ -118,16 +118,29 @@ private:
     void renderModel(const resources::Model& model, RenderState& state) const;
     void renderNode(const scene::SceneNode& node, RenderState& state) const;
 
-    void fillGeometryBuffer(const scene::Scene& scene) const;
-    void renderGeometryBuffer(const scene::Scene& scene) const;
+    void doGeometryPass(const scene::Scene& scene) const;
+    void doLightPasses(const scene::Scene& scene) const;
+    void doPostProcessing(const scene::Scene& scene) const;
+    void finalizeOutput(const scene::Scene& scene) const;
 
     void renderFullscreenScreenQuad() const;
 
-    std::shared_ptr<resources::Shader> deferredPassOneShader, deferredPassTwoShader;
-    std::shared_ptr<resources::Shader> geometryBufferOutputShader;
+    enum BindingPoints
+    {
+        CAMERA_POSITION = 1,
+        VIEW_PROJECTION_MATRIX,
+        INV_VIEW_PROJECTION_MATRIX,
+        TIME,
+    };
 
-    std::unique_ptr<resources::FrameBuffer> frameBuffer;
+    std::shared_ptr<resources::ShaderProgram> geometryPassShader;
+    std::shared_ptr<resources::ShaderProgram> ambientLightShader;
+    std::shared_ptr<resources::ShaderProgram> pointLightShader;
+    std::shared_ptr<resources::ShaderProgram> finalShader;
+
+    std::unique_ptr<resources::FrameBuffer> geometryBuffer;
     std::shared_ptr<resources::UniformBuffer> materialBuffer;
+    std::shared_ptr<resources::UniformBuffer> geometryBufferSetup;
 };
 
 }

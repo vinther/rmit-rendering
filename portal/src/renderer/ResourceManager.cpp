@@ -90,10 +90,10 @@ const std::shared_ptr<resources::Material> ResourceManager::getByAsset<resources
 }
 
 template <>
-const std::shared_ptr<resources::Shader> ResourceManager::getByAsset<resources::Shader>(
-        std::shared_ptr<const typename resources::Shader::asset_type> asset)
+const std::shared_ptr<resources::ShaderProgram> ResourceManager::getByAsset<resources::ShaderProgram>(
+        std::shared_ptr<const typename resources::ShaderProgram::asset_type> asset)
 {
-    return fetchFromCache<resources::Shader>(asset, shaders, *this);
+    return fetchFromCache<resources::ShaderProgram>(asset, shaders, *this);
 }
 
 template<>
@@ -115,7 +115,7 @@ const std::shared_ptr<resources::Material> ResourceManager::getByHash<resources:
 }
 
 template<>
-const std::shared_ptr<resources::Shader> ResourceManager::getByHash<resources::Shader>(size_t hash)
+const std::shared_ptr<resources::ShaderProgram> ResourceManager::getByHash<resources::ShaderProgram>(size_t hash)
 {
     return shaders.at(hash);
 }

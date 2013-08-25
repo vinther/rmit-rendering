@@ -51,7 +51,7 @@ void printOglError(const char *file, int line)
 
 renderer::Renderer::Renderer()
     : resourceManager(std::make_unique<ResourceManager>())
-    , frameBuffer()
+    , geometryBuffer()
 {
     // TODO Auto-generated constructor stub
 
@@ -83,21 +83,24 @@ void renderer::Renderer::initialize(SDL_Window* window, SDL_GLContext context, a
 
     glCullFace(GL_BACK);
 
-    const auto passOneShaderAsset = assetManager.getOrCreate<assets::Shader>(
-            "shaders/passOne", "shaders/deferredPassOne.vert", "shaders/deferredPassOne.frag");
+    const auto geometryPassShaderAsset = assetManager.getOrCreate<assets::Shader>(
+            "shaders/geometryPass", "shaders/geometryPass.vert", "shaders/geometryPass.frag");
 
-    const auto passTwoShaderAsset = assetManager.getOrCreate<assets::Shader>(
-            "shaders/passTwo", "shaders/fullScreenQuad.vert", "shaders/deferredPassTwo.frag");
+    const auto ambientLightShaderAsset = assetManager.getOrCreate<assets::Shader>(
+            "shaders/ambientLight", "shaders/fullscreenQuad.vert", "shaders/ambientLight.frag");
 
-    deferredPassOneShader = resourceManager->getByAsset<resources::Shader>(passOneShaderAsset);
-    deferredPassTwoShader = resourceManager->getByAsset<resources::Shader>(passTwoShaderAsset);
+    const auto pointLightShaderAsset = assetManager.getOrCreate<assets::Shader>(
+            "shaders/pointLight", "shaders/defaultLight.vert", "shaders/pointLight.frag");
 
     const auto geometryBufferOutputShaderAsset = assetManager.getOrCreate<assets::Shader>(
-            "shaders/geometryBufferOutput", "shaders/fullScreenQuad.vert", "shaders/geometryBufferOutput.frag");
+            "shaders/final", "shaders/fullscreenQuad.vert", "shaders/geometryBufferOutput.frag");
 
-    geometryBufferOutputShader = resourceManager->getByAsset<resources::Shader>(geometryBufferOutputShaderAsset);
+    geometryPassShader = resourceManager->getByAsset<resources::ShaderProgram>(geometryPassShaderAsset);
+    ambientLightShader = resourceManager->getByAsset<resources::ShaderProgram>(ambientLightShaderAsset);
+    pointLightShader = resourceManager->getByAsset<resources::ShaderProgram>(pointLightShaderAsset);
+    finalShader = resourceManager->getByAsset<resources::ShaderProgram>(geometryBufferOutputShaderAsset);
 
-    frameBuffer = std::make_unique<resources::FrameBuffer>();
+    geometryBuffer = std::make_unique<resources::FrameBuffer>();
 
     auto DS = std::make_unique<resources::Texture>(nullptr);
     auto RT0 = std::make_unique<resources::Texture>(nullptr);
@@ -111,11 +114,11 @@ void renderer::Renderer::initialize(SDL_Window* window, SDL_GLContext context, a
     RT2->createBlank(GL_RGBA8, settings.width, settings.height, GL_RGBA, GL_UNSIGNED_BYTE, resources::Texture::MipMapMode::NO_MIPMAP);
     RT3->createBlank(GL_RGBA8, settings.width, settings.height, GL_RGBA, GL_UNSIGNED_BYTE, resources::Texture::MipMapMode::NO_MIPMAP);
 
-    frameBuffer->attach(std::move(DS), GL_DEPTH_STENCIL_ATTACHMENT);
-    frameBuffer->attach(std::move(RT0), GL_COLOR_ATTACHMENT0);
-    frameBuffer->attach(std::move(RT1), GL_COLOR_ATTACHMENT1);
-    frameBuffer->attach(std::move(RT2), GL_COLOR_ATTACHMENT2);
-    frameBuffer->attach(std::move(RT3), GL_COLOR_ATTACHMENT3);
+    geometryBuffer->attach(std::move(DS), GL_DEPTH_STENCIL_ATTACHMENT);
+    geometryBuffer->attach(std::move(RT0), GL_COLOR_ATTACHMENT0);
+    geometryBuffer->attach(std::move(RT1), GL_COLOR_ATTACHMENT1);
+    geometryBuffer->attach(std::move(RT2), GL_COLOR_ATTACHMENT2);
+    geometryBuffer->attach(std::move(RT3), GL_COLOR_ATTACHMENT3);
 
     materialBuffer = std::make_shared<resources::UniformBuffer>();
 }
@@ -132,6 +135,7 @@ float test = 0.0f;
 unsigned int testInt = 0;
 
 
+
 void renderer::Renderer::render(const scene::Scene& scene, RenderResults& results)
 {
     using namespace std::chrono;
@@ -140,15 +144,14 @@ void renderer::Renderer::render(const scene::Scene& scene, RenderResults& result
     test += 0.01f;
     testInt += 1;
 
-    materialBuffer->enable();
-
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glClearColor(125.0f / 255.0f, 190.0f / 255.0f, 239.0f / 255.0f, 0);
 
-    fillGeometryBuffer(scene);
-    renderGeometryBuffer(scene);
+    doGeometryPass(scene);
+    doLightPasses(scene);
+    doPostProcessing(scene);
 
-    materialBuffer->disable();
+    finalizeOutput(scene);
 
     results.settings = settings;
     results.renderTime = duration_cast<microseconds>(high_resolution_clock::now() - timeBegin);
@@ -161,7 +164,6 @@ void renderer::Renderer::renderNode(const scene::SceneNode& node, RenderState& s
     state.modelMatrix = state.modelMatrix * node.transformation;
 
     state.activeShader->setUniform("modelViewMatrix", state.viewMatrix * state.modelMatrix);
-    state.activeShader->setUniform("normalMatrix", glm::transpose(glm::inverse(state.viewMatrix * state.modelMatrix)));
 
     for (const auto& model: node.models)
     {
@@ -197,37 +199,37 @@ void renderer::Renderer::renderModel(const resources::Model& model, RenderState&
     glBindVertexArray(0);
 }
 
-void renderer::Renderer::fillGeometryBuffer(const scene::Scene& scene) const
+void renderer::Renderer::doGeometryPass(const scene::Scene& scene) const
 {
     const auto& camera = *(scene.camera);
 
-    deferredPassOneShader->enable();
-    frameBuffer->enable();
+    geometryBuffer->enable({GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3});
+    geometryPassShader->enable();
+    materialBuffer->enable();
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glClearColor(125.0f / 255.0f, 190.0f / 255.0f, 239.0f / 255.0f, 0);
-    glClearStencil(0);
-    glEnable(GL_STENCIL_TEST);
+    glEnable(GL_DEPTH_TEST);
 
     {
         using TextureTypes = resources::Material::MaterialInfo::TextureBuffers;
 
-        deferredPassOneShader->setUniform("emissiveTexSampler", TextureTypes::TEXTURE_EMISSIVE);
-        deferredPassOneShader->setUniform("ambientTexSampler", TextureTypes::TEXTURE_AMBIENT);
-        deferredPassOneShader->setUniform("diffuseTexSampler", TextureTypes::TEXTURE_DIFFUSE);
-        deferredPassOneShader->setUniform("specularTexSampler", TextureTypes::TEXTURE_SPECULAR);
-        deferredPassOneShader->setUniform("bumpTexSampler", TextureTypes::TEXTURE_BUMP);
+        geometryPassShader->setUniform("emissiveTexSampler", TextureTypes::TEXTURE_EMISSIVE);
+        geometryPassShader->setUniform("ambientTexSampler", TextureTypes::TEXTURE_AMBIENT);
+        geometryPassShader->setUniform("diffuseTexSampler", TextureTypes::TEXTURE_DIFFUSE);
+        geometryPassShader->setUniform("specularTexSampler", TextureTypes::TEXTURE_SPECULAR);
+        geometryPassShader->setUniform("bumpTexSampler", TextureTypes::TEXTURE_BUMP);
     }
 
-    deferredPassOneShader->setUniform("projectionMatrix", camera.projection());
-    deferredPassOneShader->setUniform("test", test);
-    deferredPassOneShader->setUniform("enableBumpMapping", settings.bumpMapping);
+    geometryPassShader->setUniform("projectionMatrix", camera.projection());
+    geometryPassShader->setUniform("test", test);
+    geometryPassShader->setUniform("enableBumpMapping", settings.bumpMapping);
 
-    deferredPassOneShader->bindUniformBlock("MaterialParametersLoc", 1);
+    geometryPassShader->bindUniformBlock("MaterialParametersLoc", 1);
 
     RenderState state{
         glm::mat4(1.0f), camera.view(), camera.projection(), glm::mat4(1.0f),
-        deferredPassOneShader, materialBuffer
+        geometryPassShader, materialBuffer
     };
 
     glEnableClientState(GL_VERTEX_ARRAY);
@@ -237,80 +239,144 @@ void renderer::Renderer::fillGeometryBuffer(const scene::Scene& scene) const
     glDisableClientState(GL_VERTEX_ARRAY);
 
     glDisable(GL_STENCIL_TEST);
+    glDisable(GL_DEPTH_TEST);
 
-    frameBuffer->disable();
-    deferredPassOneShader->disable();
+    geometryPassShader->disable();
+    materialBuffer->disable();
+    geometryBuffer->disable();
 }
 
-void renderer::Renderer::renderGeometryBuffer(const scene::Scene& scene) const
+#include <GL/glut.h>
+
+void renderer::Renderer::doLightPasses(const scene::Scene& scene) const
 {
     const auto& camera = *(scene.camera);
 
-    glDisable(GL_DEPTH_TEST);
+    ambientLightShader->enable();
+    geometryBuffer->bindTextures({
+        {GL_COLOR_ATTACHMENT1, GL_TEXTURE1},
+        {GL_COLOR_ATTACHMENT2, GL_TEXTURE2},
+        {GL_COLOR_ATTACHMENT3, GL_TEXTURE3},
+        {GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE4}
+    });
 
-    std::shared_ptr<resources::Shader> activeShader;
-
+    for (const auto& t: {
+            std::make_pair("RT1Sampler", 1),
+            std::make_pair("RT2Sampler", 2),
+            std::make_pair("RT3Sampler", 3),
+            std::make_pair("DSSampler",  4)})
     {
-        using OutputMode = Settings::OutputMode;
-
-        if (OutputMode::FULL == settings.output || OutputMode::AMBIENT_OCCLUSION_ONLY == settings.output)
-        {
-            activeShader = deferredPassTwoShader;
-            activeShader->enable();
-
-            activeShader->setUniform("enableAmbientOcclusion", settings.ambientOcclusion);
-            activeShader->setUniform("enableLighting", settings.lighting);
-            activeShader->setUniform("ambientOcclusionOnly", OutputMode::AMBIENT_OCCLUSION_ONLY == settings.output);
-        } else
-        {
-            activeShader = geometryBufferOutputShader;
-            activeShader->enable();
-
-            switch (settings.output)
-            {
-            case OutputMode::DEPTH_ONLY:
-                activeShader->setSubroutine("depth", GL_FRAGMENT_SHADER); break;
-            case OutputMode::NORMALS_ONLY:
-                activeShader->setSubroutine("normals", GL_FRAGMENT_SHADER); break;
-            case OutputMode::ALBEDO_ONLY:
-                activeShader->setSubroutine("albedo", GL_FRAGMENT_SHADER); break;
-            case OutputMode::POSITIONS_ONLY:
-                activeShader->setSubroutine("positions", GL_FRAGMENT_SHADER); break;
-            default:
-                break;
-            }
-        }
+        ambientLightShader->setUniform(t.first, t.second);
     }
 
-    activeShader->setUniform("RT0Sampler", 0);
-    activeShader->setUniform("RT1Sampler", 1);
-    activeShader->setUniform("RT2Sampler", 2);
-    activeShader->setUniform("RT3Sampler", 3);
-    activeShader->setUniform("DSSampler", 4);
+    geometryBuffer->enable({GL_COLOR_ATTACHMENT0});
+
+    ambientLightShader->enable();
+
+    renderFullscreenScreenQuad();
+
+    for(;false;)
+    {
+        // Set light parameters here
+        //renderFullscreenScreenQuad();
+    }
+
+    glDisable(GL_DEPTH_TEST);
+    pointLightShader->enable();
+
+    for (const auto& t: {
+            std::make_pair("RT1Sampler", 1),
+            std::make_pair("RT2Sampler", 2),
+            std::make_pair("RT3Sampler", 3),
+            std::make_pair("DSSampler",  4)})
+    {
+        pointLightShader->setUniform(t.first, t.second);
+    }
+
+    glDisable(GL_CULL_FACE);
+//    for(;false;)
+//    {
+        glm::mat4 model = glm::translate(glm::sin(test) * 1000.0f, 50.0f, 450.0f);
+        pointLightShader->setUniform("projectionMatrix", camera.projection());
+        pointLightShader->setUniform("viewMatrix", camera.view());
+        pointLightShader->setUniform("modelMatrix", model);
+        pointLightShader->setUniform("viewProjectionInverse", glm::inverse(camera.viewProjection()));
+
+        glm::vec4 test = model * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+        SDL_Log("%f %f %f %f", test.x, test.y, test.z, test.w);
+
+        // Set light parameters here
+        glutSolidSphere(200, 24, 24);
+//    }
+
+    glEnable(GL_CULL_FACE);
+
+    glEnable(GL_DEPTH_TEST);
+
+//            activeShader->setUniform("enableAmbientOcclusion", settings.ambientOcclusion);
+//            activeShader->setUniform("enableLighting", settings.lighting);
+//            activeShader->setUniform("ambientOcclusionOnly", OutputMode::AMBIENT_OCCLUSION_ONLY == settings.output);
+
+    geometryBuffer->disable();
+}
+
+void renderer::Renderer::doPostProcessing(const scene::Scene& scene) const
+{
+    UNUSED(scene);
+}
+
+void renderer::Renderer::finalizeOutput(const scene::Scene& scene) const
+{
+    const auto& camera = *(scene.camera);
+
+    std::shared_ptr<const resources::ShaderProgram> activeShader = finalShader;
+    activeShader->enable();
+
+    geometryBuffer->disable();
+    geometryBuffer->bindTextures({
+        {GL_COLOR_ATTACHMENT0, GL_TEXTURE0},
+        {GL_COLOR_ATTACHMENT1, GL_TEXTURE1},
+        {GL_COLOR_ATTACHMENT2, GL_TEXTURE2},
+        {GL_COLOR_ATTACHMENT3, GL_TEXTURE3},
+        {GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE4}
+    });
+
+    for (const auto& t: {
+            std::make_pair("RT0Sampler", 0),
+            std::make_pair("RT1Sampler", 1),
+            std::make_pair("RT2Sampler", 2),
+            std::make_pair("RT3Sampler", 3),
+            std::make_pair("DSSampler",  4)})
+    {
+        activeShader->setUniform(t.first, t.second);
+    }
 
     activeShader->setUniform("viewProjectionInverse", glm::inverse(camera.viewProjection()));
     activeShader->setUniform("cameraPosition", camera.position);
 
-    frameBuffer->bindTextures({
-            {GL_COLOR_ATTACHMENT0, GL_TEXTURE0},
-            {GL_COLOR_ATTACHMENT1, GL_TEXTURE1},
-            {GL_COLOR_ATTACHMENT2, GL_TEXTURE2},
-            {GL_COLOR_ATTACHMENT3, GL_TEXTURE3},
-            {GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE4}
-    });
+    {
+        using OutputMode = Settings::OutputMode;
 
-    activeShader->setUniform("test", test);
-
-    if (testInt >= 200) {
-        activeShader->setUniform("pingStart", camera.position);
-        testInt = 0;
+        switch (settings.output)
+        {
+        case OutputMode::FULL:
+            activeShader->setSubroutine("lightAccumulation", GL_FRAGMENT_SHADER); break;
+        case OutputMode::DEPTH_ONLY:
+            activeShader->setSubroutine("depth", GL_FRAGMENT_SHADER); break;
+        case OutputMode::NORMALS_ONLY:
+            activeShader->setSubroutine("normals", GL_FRAGMENT_SHADER); break;
+        case OutputMode::ALBEDO_ONLY:
+            activeShader->setSubroutine("albedo", GL_FRAGMENT_SHADER); break;
+        case OutputMode::POSITIONS_ONLY:
+            activeShader->setSubroutine("positions", GL_FRAGMENT_SHADER); break;
+        default:
+            break;
+        }
     }
 
     renderFullscreenScreenQuad();
 
     activeShader->disable();
-
-    glEnable(GL_DEPTH_TEST);
 }
 
 void renderer::Renderer::renderFullscreenScreenQuad() const

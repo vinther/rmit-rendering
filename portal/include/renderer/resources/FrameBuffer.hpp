@@ -32,7 +32,8 @@ public:
 
 	void attach(std::unique_ptr<Texture> texture, GLenum attachmentPoint);
 
-	void enable();
+	void enableAll();
+	void enable(const std::initializer_list<GLenum> attachments);
 	void disable();
 	void bindTextures(const std::initializer_list<binding_type>& bindings);
 

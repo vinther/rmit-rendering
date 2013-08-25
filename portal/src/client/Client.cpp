@@ -114,7 +114,7 @@ void Client::initialize(SDL_Window* window, SDL_GLContext context)
     SDL_LogDebug(client::PORTAL_LOG_CATEGORY_CLIENT, "Scene initialized");
 
     scene->camera->position = glm::vec3(-14.0f, 1.5f, 0.0f);
-    scene->camera->rotate(90.0f, 30.0f);
+    //scene->camera->rotate(90.0f, 30.0f);
 }
 
 void Client::reshape(Uint32 width, Uint32 height)

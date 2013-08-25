@@ -25,7 +25,7 @@ namespace resources
 {
 
 
-Shader::Shader(std::shared_ptr<const asset_type> asset)
+ShaderProgram::ShaderProgram(std::shared_ptr<const asset_type> asset)
     : AssetResource(asset)
 	, modelMatrix(0), viewMatrix(0), projectionMatrix(0)
     , program(0)
@@ -33,12 +33,12 @@ Shader::Shader(std::shared_ptr<const asset_type> asset)
 
 }
 
-Shader::~Shader()
+ShaderProgram::~ShaderProgram()
 {
     // TODO Auto-generated destructor stub
 }
 
-void Shader::loadFromAsset(ResourceManager& resourceManager)
+void ShaderProgram::loadFromAsset(ResourceManager& resourceManager)
 {
     UNUSED(resourceManager);
     SDL_LogDebug(client::PORTAL_LOG_CATEGORY_RENDERER, "Compiling shader: \"%s\"", asset->name.c_str());
@@ -110,67 +110,67 @@ inline GLint getUniformLocationImpl(GLuint program, const std::string& name)
     return location;
 }
 
-GLint Shader::getUniformLocation(const std::string& name) const
+GLint ShaderProgram::getUniformLocation(const std::string& name) const
 {
     return getUniformLocationImpl(program, name.c_str());
 }
 
-void Shader::enable() const
+void ShaderProgram::enable() const
 {
     glUseProgram(program);
 }
 
-void Shader::disable() const
+void ShaderProgram::disable() const
 {
     glUseProgram(0);
 }
 
-void Shader::setUniform(const std::string& name, const glm::mat4& matrix) const
+void ShaderProgram::setUniform(const std::string& name, const glm::mat4& matrix) const
 {
     const auto location = getUniformLocationImpl(program, name);
 
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
-void Shader::setUniform(const std::string& name, GLint value) const
+void ShaderProgram::setUniform(const std::string& name, GLint value) const
 {
     const auto location = getUniformLocationImpl(program, name);
 
     glUniform1i(location, value);
 }
 
-void Shader::setUniform(const std::string& name, float value) const
+void ShaderProgram::setUniform(const std::string& name, float value) const
 {
     const auto location = getUniformLocationImpl(program, name);
 
     glUniform1f(location, value);
 }
 
-void Shader::setUniform(const std::string& name, const glm::vec3& vector) const
+void ShaderProgram::setUniform(const std::string& name, const glm::vec3& vector) const
 {
     const auto location = getUniformLocationImpl(program, name);
 
     glUniform3fv(location, 1, glm::value_ptr(vector));
 }
 
-void Shader::setUniform(const std::string& name, const glm::vec4& vector) const
+void ShaderProgram::setUniform(const std::string& name, const glm::vec4& vector) const
 {
     const auto location = getUniformLocationImpl(program, name);
 
     glUniform4fv(location, 1, glm::value_ptr(vector));
 }
 
-GLuint Shader::getBlockIndex(const std::string& name) const
+GLuint ShaderProgram::getBlockIndex(const std::string& name) const
 {
     return glGetUniformBlockIndex(program, name.c_str());
 }
 
-void Shader::bindUniformBlock(const std::string& name, GLuint location) const
+void ShaderProgram::bindUniformBlock(const std::string& name, GLuint location) const
 {
     glUniformBlockBinding(program, getBlockIndex(name), location);
 }
 
-void Shader::setSubroutine(const std::string& name, GLenum type) const
+void ShaderProgram::setSubroutine(const std::string& name, GLenum type) const
 {
     GLuint index = glGetSubroutineIndex(program, type, name.c_str());
     glUniformSubroutinesuiv(type, 1, &index);

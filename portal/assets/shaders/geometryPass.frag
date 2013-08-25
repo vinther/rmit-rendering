@@ -31,10 +31,9 @@ uniform sampler2D bumpTexSampler;
 
 uniform bool enableBumpMapping;
 
-layout(location = 0) out vec4 RT0;
-layout(location = 1) out vec4 RT1;
-layout(location = 2) out vec4 RT2;
-layout(location = 3) out vec4 RT3;
+layout(location = 0) out vec4 RT1;
+layout(location = 1) out vec4 RT2;
+layout(location = 2) out vec4 RT3;
 
 // http://aras-p.info/texts/CompactNormalStorage.html#method04spheremap
 vec2 encode (vec3 n)
@@ -84,10 +83,8 @@ void main()
         normal = vertexNormal;
     }
      
-
     vec3 transformedNormal = vec3(normal.xy, max(normal.z, -1.0 + Epsilon));
     
-    RT0 =  frontMaterial.ambient;
     RT1.zw = vec2(1.0f, 1.0f);
     RT1.xy = encode(normalize(transformedNormal));
     RT2 = vec4(0.0f, 0.0f, 0.0f, frontMaterial.shininess) + frontMaterial.diffuse;

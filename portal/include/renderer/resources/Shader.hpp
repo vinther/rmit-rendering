@@ -26,11 +26,11 @@ class ResourceManager;
 namespace resources
 {
 
-class Shader: public AssetResource<assets::Shader>
+class ShaderProgram: public AssetResource<assets::Shader>
 {
 public:
-    Shader(std::shared_ptr<const asset_type> asset);
-    ~Shader();
+    ShaderProgram(std::shared_ptr<const asset_type> asset);
+    ~ShaderProgram();
 
     GLuint modelMatrix, viewMatrix, projectionMatrix;
     GLuint program;
@@ -48,7 +48,6 @@ public:
     GLuint getBlockIndex(const std::string& name) const;
 
     void setSubroutine(const std::string& name, GLenum type) const;
-
 
     void bindUniformBlock(const std::string& name, GLuint location) const;
 

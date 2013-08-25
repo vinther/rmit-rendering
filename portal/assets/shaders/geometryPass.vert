@@ -17,7 +17,7 @@ smooth out vec2 vertexTexCoord;
 void main()
 {
 	vertexPosition = position;
-	vertexNormal = normalize(vec3(vec4(normal, 0.0)));
+	vertexNormal = normalize(normal);
 	vertexTangent = tangent;
 	vertexTexCoord = vec2(texCoord.x, 1.0 - texCoord.y);
 	

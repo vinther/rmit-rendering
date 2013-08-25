@@ -21,7 +21,7 @@ namespace resources
 class Model;
 class Texture;
 class Material;
-class Shader;
+class ShaderProgram;
 class FrameBuffer;
 }
 
@@ -42,7 +42,7 @@ public:
     std::unordered_map<size_t, std::shared_ptr<resources::Model>> models;
     std::unordered_map<size_t, std::shared_ptr<resources::Texture>> textures;
     std::unordered_map<size_t, std::shared_ptr<resources::Material>> materials;
-    std::unordered_map<size_t, std::shared_ptr<resources::Shader>> shaders;
+    std::unordered_map<size_t, std::shared_ptr<resources::ShaderProgram>> shaders;
 };
 
 }
