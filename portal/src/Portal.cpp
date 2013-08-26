@@ -152,7 +152,6 @@ int main(int argc, char **argv)
         client->finalizeFrame(window, glContext);
 
         SDL_GL_SwapWindow(window);
-        SDL_Delay(8);
     }
 
     client->cleanup();

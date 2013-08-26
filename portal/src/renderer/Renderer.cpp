@@ -24,14 +24,6 @@
 
 #include "assets/AssetManager.hpp"
 
-#include "renderer/ResourceManager.hpp"
-#include "renderer/resources/Model.hpp"
-#include "renderer/resources/Texture.hpp"
-#include "renderer/resources/Material.hpp"
-#include "renderer/resources/Shader.hpp"
-#include "renderer/resources/FrameBuffer.hpp"
-#include "renderer/resources/UniformBuffer.hpp"
-
 #include "threading/ThreadPool.hpp"
 
 #include "Utilities.hpp"
@@ -120,20 +112,35 @@ void renderer::Renderer::initialize(SDL_Window* window, SDL_GLContext context, a
     geometryBuffer->attach(std::move(RT2), GL_COLOR_ATTACHMENT2);
     geometryBuffer->attach(std::move(RT3), GL_COLOR_ATTACHMENT3);
 
-    materialBuffer = std::make_shared<resources::UniformBuffer>();
-}
+    const auto pointLightAsset = assetManager.getOrCreate<assets::Model>("models/pointLight.obj");
 
-struct LightSourceParameters
-{
-  glm::vec4 ambient;
-  glm::vec4 diffuse;
-  glm::vec4 specular;
-  glm::vec4 position;
-} lights[8];
+    materialBuffer = std::make_shared<resources::UniformBuffer>();
+    pointLights = std::make_unique<resources::PointLightGroup>();
+
+    pointLights->buffer->bind(BindingPoints::POINT_LIGHT_BUFFER);
+
+    std::vector<resources::PointLightGroup::LightData> pointLightData;
+
+    pointLightData.resize(64);
+
+    std::mt19937 gen;
+    std::uniform_real_distribution<float> D;
+
+    std::generate(std::begin(pointLightData), std::end(pointLightData), [&](){
+        return resources::PointLightGroup::LightData{
+                glm::vec4(D(gen) * 2000.0f - 1000.0f, D(gen) * 600.0f, D(gen) * 1000.0f - 500.0f, 0.0f),
+                glm::vec4(D(gen), D(gen), D(gen), 1.0f),
+                glm::vec4(D(gen) * 1200.0f, 0.0f, 0.0f, 0.0f)};
+    });
+
+    assert(sizeof(resources::PointLightGroup::LightData) == 3 * 4 * sizeof(float));
+
+    pointLights->create(pointLightAsset, pointLightData);
+    printOpenGLError();
+}
 
 float test = 0.0f;
 unsigned int testInt = 0;
-
 
 
 void renderer::Renderer::render(const scene::Scene& scene, RenderResults& results)
@@ -280,8 +287,6 @@ void renderer::Renderer::doLightPasses(const scene::Scene& scene) const
         //renderFullscreenScreenQuad();
     }
 
-
-
     pointLightShader->enable();
 
     for (const auto& t: {
@@ -302,22 +307,23 @@ void renderer::Renderer::doLightPasses(const scene::Scene& scene) const
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE);
 
-//    for(;false;)
-//    {
-        glm::mat4 model = glm::translate(glm::sin(test) * 1000.0f, 50.0f, 0.0f);
-        pointLightShader->setUniform("projectionMatrix", camera.projection());
-        pointLightShader->setUniform("viewMatrix", camera.view());
-        pointLightShader->setUniform("modelMatrix", model);
-        pointLightShader->setUniform("viewProjectionInverse", glm::inverse(camera.viewProjection()));
+    pointLightShader->setUniform("projectionMatrix", camera.projection());
+    pointLightShader->setUniform("viewMatrix", camera.view());
+    pointLightShader->setUniform("modelMatrix", glm::mat4(1.0f));
+    pointLightShader->setUniform("viewProjectionInverse", glm::inverse(camera.viewProjection()));
+    pointLightShader->bindUniformBlock("LightDataLoc", BindingPoints::POINT_LIGHT_BUFFER);
 
-        if (glm::length(camera.position - glm::vec3(glm::sin(test) * 1000.0f, 50.0f, 0.0f)) < 300.0f)
-            glCullFace(GL_FRONT);
-        else
-            glCullFace(GL_BACK);
+    pointLights->buffer->enable();
+    glBindVertexArray(pointLights->meshData.vao);
 
-        // Set light parameters here
-        glutSolidSphere(300, 24, 24);
-//    }
+    glDrawElementsInstanced(GL_TRIANGLES, pointLights->meshData.numFaces * 3, GL_UNSIGNED_INT, 0, pointLights->count);
+
+    glBindVertexArray(0);
+    pointLights->buffer->disable();
+
+    assert(pointLights->meshData.numFaces && pointLights->count && pointLights->meshData.vao);
+
+    printOpenGLError();
 
     glDisable(GL_CULL_FACE);
     glCullFace(GL_BACK);

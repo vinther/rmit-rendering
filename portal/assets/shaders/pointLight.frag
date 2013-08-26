@@ -1,27 +1,16 @@
 #version 410
 
-struct LightSourceParameters 
-{   
-   vec4 ambient;   
-   vec4 diffuse;   
-   vec4 specular;   
-   vec4 position;
-}; 
-
-layout(std140) uniform LightSourceParametersLoc {
-	LightSourceParameters lightSourceParameters[8];
-};
-
+layout(location = 0) out vec4 RT0;
 
 smooth in vec4 fragPosition;
 smooth in vec4 fragLightPosition;
+flat in vec4 color;
+flat in float radius;
 
 uniform sampler2D RT1Sampler;
 uniform sampler2D RT2Sampler;
 uniform sampler2D RT3Sampler;
 uniform sampler2D DSSampler;
-
-layout(location = 0) out vec4 RT0;
 
 uniform float test;
 uniform vec3 pingStart;
@@ -53,18 +42,11 @@ vec3 viewSpacePos(vec2 uv, float zOverW)
 
     return vec3(D / D.w);  
 }
- 
-uniform int ambientOcclusionOnly;
-uniform int enableAmbientOcclusion;
-uniform int enableLighting;
 
 void main()
 {
     const int screenWidth = 1280;
     const int screenHeight = 720;
-
-    const float radius = 300.0f;
-    vec4 diffuseLightColor = vec4(1.0f, 0.0f, 1.0f, 1.0f);
 
 	vec2 texCoord = (gl_FragCoord).xy;
 	texCoord.x = texCoord.x / screenWidth;
@@ -100,9 +82,5 @@ void main()
     attenuation = max(attenuation, 0);
 	attenuation = 1.0f - smoothstep(0.0, radius, distance);
 
-    vec4 diffuse = albedo * diffuseModifier * diffuseLightColor * attenuation * noZTestFix;
-
-    RT0 = diffuse;
-    
-    RT0 = diffuseLightColor * albedo * noZTestFix * attenuation * vec4(1.0f) * diffuseModifier;
+    RT0 = color * albedo * noZTestFix * attenuation * diffuseModifier;
 }	

@@ -48,16 +48,21 @@ bool assets::Model::loadFromDisk()
 
         path = name;
 
-#ifdef linux
-        auto pathCopy = path;
-        basePath = std::string(dirname((char*)pathCopy.c_str())) + "/";
-#endif
+        SDL_LogDebug(client::PORTAL_LOG_CATEGORY_ASSETS, "Added model with %d meshes (%s)", scene->mNumMeshes, name.c_str());
 
-        //SDL_Log("Added model with %d meshes (%s)", scene->mNumMeshes, name.c_str());
+#ifdef linux
+        const std::string pathCopy = path.c_str();
+        basePath = std::string(dirname((char*)pathCopy.c_str())) + "/";
+
+        assert(pathCopy.data() != path.data());
+#endif
 
         ++version;
 
         return true;
+    } else
+    {
+        SDL_LogError(client::PORTAL_LOG_CATEGORY_ASSETS, "Failed to load model: %s", name.c_str());
     }
 
     return false;

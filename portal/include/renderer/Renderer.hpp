@@ -17,6 +17,15 @@
 
 #include "scene/Camera.hpp"
 
+#include "renderer/ResourceManager.hpp"
+#include "renderer/resources/Model.hpp"
+#include "renderer/resources/Texture.hpp"
+#include "renderer/resources/Material.hpp"
+#include "renderer/resources/Shader.hpp"
+#include "renderer/resources/FrameBuffer.hpp"
+#include "renderer/resources/UniformBuffer.hpp"
+#include "renderer/resources/PointLightGroup.hpp"
+
 namespace scene
 {
 class Scene;
@@ -37,17 +46,6 @@ typedef unsigned int GLuint;
 
 namespace renderer
 {
-
-namespace resources
-{
-class Model;
-class ShaderProgram;
-class Texture;
-class FrameBuffer;
-class UniformBuffer;
-}
-
-class ResourceManager;
 
 class Renderer
 {
@@ -131,7 +129,11 @@ private:
         VIEW_PROJECTION_MATRIX,
         INV_VIEW_PROJECTION_MATRIX,
         TIME,
+
+        POINT_LIGHT_BUFFER,
     };
+
+
 
     std::shared_ptr<resources::ShaderProgram> geometryPassShader;
     std::shared_ptr<resources::ShaderProgram> ambientLightShader;
@@ -141,6 +143,7 @@ private:
     std::unique_ptr<resources::FrameBuffer> geometryBuffer;
     std::shared_ptr<resources::UniformBuffer> materialBuffer;
     std::shared_ptr<resources::UniformBuffer> geometryBufferSetup;
+    std::unique_ptr<resources::PointLightGroup> pointLights;
 };
 
 }

@@ -9,10 +9,28 @@ uniform mat4 projectionMatrix;
 smooth out vec4 fragPosition;
 smooth out vec4 fragLightPosition;
 
+flat out vec4 color;
+flat out float radius;
+
+struct LightData
+{
+	vec4 position;
+	vec4 color;
+	float radius, X, Y, Z;
+};
+
+layout(std140) uniform LightDataLoc
+{
+	LightData lights[1024];
+};
+
 void main()
 {
 	fragPosition = viewMatrix * modelMatrix * position;
-	fragLightPosition = modelMatrix * vec4(0.0, 0.0, 0.0, 1.0);
+	fragLightPosition = lights[gl_InstanceID].position;
 	
-	gl_Position =  projectionMatrix * viewMatrix * modelMatrix * position;
+	radius = lights[gl_InstanceID].radius;
+	color = lights[gl_InstanceID].color;
+	
+	gl_Position = projectionMatrix * viewMatrix * ((mat4(mat3(1.0f) * radius)) * modelMatrix * position + lights[gl_InstanceID].position);
 }
