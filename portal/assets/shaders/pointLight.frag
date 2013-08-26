@@ -14,7 +14,7 @@ layout(std140) uniform LightSourceParametersLoc {
 
 
 smooth in vec4 fragPosition;
-flat in vec4 fragLightPosition;
+smooth in vec4 fragLightPosition;
 
 uniform sampler2D RT1Sampler;
 uniform sampler2D RT2Sampler;
@@ -48,7 +48,7 @@ float LinearizeDepth(float zOverW, float near, float far)
 // http://http.developer.nvidia.com/GPUGems3/gpugems3_ch27.html
 vec3 viewSpacePos(vec2 uv, float zOverW)
 { 
-    vec4 H = vec4(uv * 2.0f - 1.0f, zOverW, 1.0f);  
+    vec4 H = vec4(uv * 2.0f - 1.0f, zOverW * 2.0f - 1.0f, 1.0f);  
     vec4 D = viewProjectionInverse * H;
 
     return vec3(D / D.w);  
@@ -60,11 +60,11 @@ uniform int enableLighting;
 
 void main()
 {
-    int screenWidth = 1280;
-    int screenHeight = 720;
+    const int screenWidth = 1280;
+    const int screenHeight = 720;
 
-    float radius = 200;
-    vec3 diffuseLightColor = vec3(1.0f, 0.0f, 1.0f);
+    const float radius = 300.0f;
+    vec4 diffuseLightColor = vec4(1.0f, 0.0f, 1.0f, 1.0f);
 
 	vec2 texCoord = (gl_FragCoord).xy;
 	texCoord.x = texCoord.x / screenWidth;
@@ -78,21 +78,31 @@ void main()
     vec2 packedNormal = RT1.rg;
     vec4 albedo = RT3;
         
-    vec3 N = decode(packedNormal);
+    vec3 N = normalize(decode(packedNormal));
     vec3 P = viewSpacePos(texCoord, zOverW);
 	
     //Lighting Calcs (view space)
-   	vec3 ltop = fragLightPosition.xyz - P;
-   	float diffuseModifier = max(dot(N.xyz,normalize(ltop)), 0.0);
-    float noZTestFix = step(0.0, radius-length(ltop)); //0.0 if dist > radius, 1.0 otherwise
-    float attenuation = 1 / ((((length(ltop)/(1-((length(ltop)/radius)*(length(ltop)/radius))))/radius)+1)*(((length(ltop)/(1-((length(ltop)/radius)*(length(ltop)/radius))))/radius)+1));
-    attenuation = 0.5f;
+    
+    vec3 L = fragLightPosition.xyz - P;
+   	float diffuseModifier = max(dot(N,normalize(L)), 0.0);
+    float noZTestFix = step(0.0, radius-length(L)); //0.0 if dist > radius, 1.0 otherwise
+    
+    float cutoff = 0.9f;
+    float distance = length(L);
+    // calculate basic attenuation
+    float denom = max(distance, 0) / radius + 1;
+    float attenuation = 1 / (denom * denom);
+     
+    // scale and bias attenuation such that:
+    //   attenuation == 0 at extent of max influence
+    //   attenuation == 1 when d == 0
+    attenuation = (attenuation - cutoff) / (1 - cutoff);
+    attenuation = max(attenuation, 0);
+	attenuation = 1.0f - smoothstep(0.0, radius, distance);
 
-    vec4 diffuse = diffuseModifier * vec4(diffuseLightColor, 1.0) * attenuation * noZTestFix;
+    vec4 diffuse = albedo * diffuseModifier * diffuseLightColor * attenuation * noZTestFix;
 
-    //RT0.xyz = normalize(fragPosition.xyz);
-    RT0 = diffuseModifier * vec4(diffuseLightColor, 1.0);
-    //RT0.xyz = fragLightPosition.xyz;
     RT0 = diffuse;
-    RT0.w = 0.5f;
+    
+    RT0 = diffuseLightColor * albedo * noZTestFix * attenuation * vec4(1.0f) * diffuseModifier;
 }	

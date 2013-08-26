@@ -41,7 +41,7 @@ private:
             return hasher(((Uint32) keyPair.first) << 16 & keyPair.second);
         }
 
-        static std::hash<Uint32> hasher;
+        std::hash<Uint32> hasher;
     };
 
     std::unordered_map<KeyModPair, std::function<void(Client&)>, KeyHasher> keydownMap;

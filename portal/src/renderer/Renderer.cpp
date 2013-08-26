@@ -213,13 +213,11 @@ void renderer::Renderer::doGeometryPass(const scene::Scene& scene) const
     glEnable(GL_DEPTH_TEST);
 
     {
-        using TextureTypes = resources::Material::MaterialInfo::TextureBuffers;
-
-        geometryPassShader->setUniform("emissiveTexSampler", TextureTypes::TEXTURE_EMISSIVE);
-        geometryPassShader->setUniform("ambientTexSampler", TextureTypes::TEXTURE_AMBIENT);
-        geometryPassShader->setUniform("diffuseTexSampler", TextureTypes::TEXTURE_DIFFUSE);
-        geometryPassShader->setUniform("specularTexSampler", TextureTypes::TEXTURE_SPECULAR);
-        geometryPassShader->setUniform("bumpTexSampler", TextureTypes::TEXTURE_BUMP);
+        geometryPassShader->setUniform("emissiveTexSampler", resources::Material::MaterialInfo::TEXTURE_EMISSIVE);
+        geometryPassShader->setUniform("ambientTexSampler", resources::Material::MaterialInfo::TEXTURE_AMBIENT);
+        geometryPassShader->setUniform("diffuseTexSampler", resources::Material::MaterialInfo::TEXTURE_DIFFUSE);
+        geometryPassShader->setUniform("specularTexSampler", resources::Material::MaterialInfo::TEXTURE_SPECULAR);
+        geometryPassShader->setUniform("bumpTexSampler", resources::Material::MaterialInfo::TEXTURE_BUMP);
     }
 
     geometryPassShader->setUniform("projectionMatrix", camera.projection());
@@ -282,7 +280,8 @@ void renderer::Renderer::doLightPasses(const scene::Scene& scene) const
         //renderFullscreenScreenQuad();
     }
 
-    glDisable(GL_DEPTH_TEST);
+
+
     pointLightShader->enable();
 
     for (const auto& t: {
@@ -294,22 +293,39 @@ void renderer::Renderer::doLightPasses(const scene::Scene& scene) const
         pointLightShader->setUniform(t.first, t.second);
     }
 
-    glDisable(GL_CULL_FACE);
+    glDisable(GL_DEPTH_TEST);
+    glDepthMask(GL_FALSE);
+
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE);
+
 //    for(;false;)
 //    {
-        glm::mat4 model = glm::translate(glm::sin(test) * 1000.0f, 50.0f, 450.0f);
+        glm::mat4 model = glm::translate(glm::sin(test) * 1000.0f, 50.0f, 0.0f);
         pointLightShader->setUniform("projectionMatrix", camera.projection());
         pointLightShader->setUniform("viewMatrix", camera.view());
         pointLightShader->setUniform("modelMatrix", model);
         pointLightShader->setUniform("viewProjectionInverse", glm::inverse(camera.viewProjection()));
 
+        if (glm::length(camera.position - glm::vec3(glm::sin(test) * 1000.0f, 50.0f, 0.0f)) < 300.0f)
+            glCullFace(GL_FRONT);
+        else
+            glCullFace(GL_BACK);
+
         // Set light parameters here
-        glutSolidSphere(200, 24, 24);
+        glutSolidSphere(300, 24, 24);
 //    }
 
-    glEnable(GL_CULL_FACE);
+    glDisable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
 
-    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
+
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 //            activeShader->setUniform("enableAmbientOcclusion", settings.ambientOcclusion);
 //            activeShader->setUniform("enableLighting", settings.lighting);
@@ -353,19 +369,17 @@ void renderer::Renderer::finalizeOutput(const scene::Scene& scene) const
     activeShader->setUniform("cameraPosition", camera.position);
 
     {
-        using OutputMode = Settings::OutputMode;
-
         switch (settings.output)
         {
-        case OutputMode::FULL:
+        case Settings::OutputMode::FULL:
             activeShader->setSubroutine("lightAccumulation", GL_FRAGMENT_SHADER); break;
-        case OutputMode::DEPTH_ONLY:
+        case Settings::OutputMode::DEPTH_ONLY:
             activeShader->setSubroutine("depth", GL_FRAGMENT_SHADER); break;
-        case OutputMode::NORMALS_ONLY:
+        case Settings::OutputMode::NORMALS_ONLY:
             activeShader->setSubroutine("normals", GL_FRAGMENT_SHADER); break;
-        case OutputMode::ALBEDO_ONLY:
+        case Settings::OutputMode::ALBEDO_ONLY:
             activeShader->setSubroutine("albedo", GL_FRAGMENT_SHADER); break;
-        case OutputMode::POSITIONS_ONLY:
+        case Settings::OutputMode::POSITIONS_ONLY:
             activeShader->setSubroutine("positions", GL_FRAGMENT_SHADER); break;
         default:
             break;

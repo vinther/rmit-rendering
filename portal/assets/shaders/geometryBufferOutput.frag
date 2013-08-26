@@ -15,7 +15,7 @@ out vec4 fragColor;
 uniform mat4 viewProjectionInverse;
 
 // http://aras-p.info/texts/CompactNormalStorage.html#method04spheremap
-vec3 decode (vec2 enc)
+vec3 decodeNormal (vec2 enc)
 {
     vec2 fenc = enc * 4.0f - 2.0f;
     float f = dot(fenc, fenc);
@@ -25,7 +25,7 @@ vec3 decode (vec2 enc)
 }
 
 // http://www.geeks3d.com/20091216/geexlab-how-to-visualize-the-depth-buffer-in-glsl/
-float LinearizeDepth(float zOverW, float near, float far)
+float linearizeDepth(float zOverW, float near, float far)
 {
   return (2.0 * near) / (far + near - zOverW * (far - near)); 
 }
@@ -33,10 +33,10 @@ float LinearizeDepth(float zOverW, float near, float far)
 // http://http.developer.nvidia.com/GPUGems3/gpugems3_ch27.html
 vec3 viewSpacePos(vec2 uv, float zOverW)
 { 
-    vec4 H = vec4(uv * 2.0f - 1.0f, zOverW, 1.0f);  
+    vec4 H = vec4(uv * 2.0f - 1.0f, 2.0 * zOverW - 1.0, 1.0f);  
     vec4 D = viewProjectionInverse * H;
 
-    return vec3(D / D.w);  
+    return (D / D.w).xyz;  
 }
 
 subroutine(textureOutputType)
@@ -44,48 +44,35 @@ subroutine(textureOutputType)
 vec3 depth(vec2 uv)
 {
     vec4 DS = texture2D(DSSampler, uv);
-    float depth = LinearizeDepth(DS.x, 1.0f, 4000.0f);
-
-    return vec3(depth, depth, depth);
+    return vec3(linearizeDepth(DS.x, 1.0f, 4000.0f));
 }
 
 subroutine(textureOutputType)
 
 vec3 lightAccumulation(vec2 uv)
 {
-    vec4 RT0 = texture2D(RT0Sampler, uv);
-
-    return vec3(RT0);
+    return texture2D(RT0Sampler, uv).xyz;
 }
 
 subroutine(textureOutputType)
 
 vec3 albedo(vec2 uv)
 {
-    vec4 RT3 = texture2D(RT3Sampler, uv);
-
-    return RT3.xyz;
+    return texture2D(RT3Sampler, uv).xyz;
 }
 
 subroutine(textureOutputType)
 
 vec3 normals(vec2 uv)
 {
-    vec4 RT1 = texture2D(RT1Sampler, uv);
-    vec2 packedNormal = RT1.rg;
-        
-    vec3 N = decode(packedNormal);
-
-    return decode(packedNormal);
+    return decodeNormal(texture2D(RT1Sampler, uv).rg);
 }
 
 subroutine(textureOutputType)
 
 vec3 positions(vec2 uv)
 {
-    vec4 DS = texture2D(DSSampler, uv);
-
-    return viewSpacePos(uv, DS.x);
+    return viewSpacePos(uv, texture2D(DSSampler, uv).x);
 }
 
 void main()
