@@ -1,14 +1,7 @@
-/*
- * Font.hpp
- *
- *  Created on: 06/08/2013
- *      Author: svp
- */
+#ifndef ASSETS_FONT_HPP_
+#define ASSETS_FONT_HPP_
 
-#ifndef FONT_HPP_
-#define FONT_HPP_
-
-#include "assets/Asset.hpp"
+#include "assets/asset.hpp"
 
 #include <memory>
 
@@ -17,20 +10,20 @@
 namespace assets
 {
 
-class Font: public asset
+class font: public asset
 {
 public:
-    Font(const std::string& name);
-    virtual ~Font();
+    font(const std::string& name);
+    virtual ~font();
 
     bool loadFromDisk(const std::string& path, unsigned int size);
 
     size_t reportSize() const;
     void reload();
 
-    TTF_Font* font;
+    TTF_Font* text_font;
 };
 
 }
 
-#endif /* FONT_HPP_ */
+#endif /* ASSETS_FONT_HPP_ */

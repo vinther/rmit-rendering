@@ -1,37 +1,30 @@
-/*
- * KeyboardHandler.cpp
- *
- *  Created on: 26/07/2013
- *      Author: svp
- */
-
 #include "input/KeyboardHandler.hpp"
 
 #include <glm/glm.hpp>
 
-#include "client/Client.hpp"
-#include "client/CameraController.hpp"
-#include "client/Interface.hpp"
+#include "client/client.hpp"
+#include "client/camera_controller.hpp"
+#include "client/interface.hpp"
 
-#include "scene/Scene.hpp"
+#include "scene/scene_graph.hpp"
 
-#include "renderer/Renderer.hpp"
-#include "renderer/DebugRenderer.hpp"
+#include "renderer/renderer.hpp"
+#include "renderer/debug_renderer.hpp"
 
-#include "assets/DataStore.hpp"
+#include "assets/asset_store.hpp"
 
 #include "shared/utilities.hpp"
 
-input::keyboard_handler::keyboard_handler(std::shared_ptr<client> client)
-    : client(client)
+input::keyboard_handler::keyboard_handler(std::shared_ptr<client> parent_client)
+    : parent_client(parent_client)
 {
     {
-        keydownMap[KeyModPair{'1', 0}] = [] (client& c) { c.renderer->settings.setOutput(renderer::Renderer::settings_t::FULL); };
-        keydownMap[KeyModPair{'2', 0}] = [] (client& c) { c.renderer->settings.setOutput(renderer::Renderer::settings_t::DEPTH_ONLY); };
-        keydownMap[KeyModPair{'3', 0}] = [] (client& c) { c.renderer->settings.setOutput(renderer::Renderer::settings_t::NORMALS_ONLY); };
-        keydownMap[KeyModPair{'4', 0}] = [] (client& c) { c.renderer->settings.setOutput(renderer::Renderer::settings_t::ALBEDO_ONLY); };
-        keydownMap[KeyModPair{'5', 0}] = [] (client& c) { c.renderer->settings.setOutput(renderer::Renderer::settings_t::AMBIENT_OCCLUSION_ONLY); };
-        keydownMap[KeyModPair{'6', 0}] = [] (client& c) { c.renderer->settings.setOutput(renderer::Renderer::settings_t::POSITIONS_ONLY); };
+        keydownMap[KeyModPair{'1', 0}] = [] (client& c) { c.renderer->settings.setOutput(renderer::renderer::settings_t::OUTPUT_MODE_FULL); };
+        keydownMap[KeyModPair{'2', 0}] = [] (client& c) { c.renderer->settings.setOutput(renderer::renderer::settings_t::OUTPUT_MODE_DEPTH_ONLY); };
+        keydownMap[KeyModPair{'3', 0}] = [] (client& c) { c.renderer->settings.setOutput(renderer::renderer::settings_t::OUTPUT_MODE_NORMALS_ONLY); };
+        keydownMap[KeyModPair{'4', 0}] = [] (client& c) { c.renderer->settings.setOutput(renderer::renderer::settings_t::OUTPUT_MODE_ALBEDO_ONLY); };
+        keydownMap[KeyModPair{'5', 0}] = [] (client& c) { c.renderer->settings.setOutput(renderer::renderer::settings_t::OUTPUT_MODE_AMBIENT_OCCLUSION_ONLY); };
+        keydownMap[KeyModPair{'6', 0}] = [] (client& c) { c.renderer->settings.setOutput(renderer::renderer::settings_t::OUTPUT_MODE_POSITIONS_ONLY); };
     }
 
     keydownMap[KeyModPair{'c', 0}] = [] (client& c) { c.debugRenderer->lines.clear(); };
@@ -87,16 +80,16 @@ void invoke_key_function(const T& keymap, Uint16 key, Uint16 mod, client& client
 
 void input::keyboard_handler::inject_key_down(SDL_Keycode key, Uint16 mod) const
 {
-    invoke_key_function(keydownMap, key, mod, *client);
+    invoke_key_function(keydownMap, key, mod, *parent_client);
 
-    client->cameraController->keyDown(key, mod);
+    parent_client->cameraController->on_key_down(key, mod);
 }
 
 void input::keyboard_handler::inject_key_up(SDL_Keycode key, Uint16 mod) const
 {
-    client->cameraController->keyUp(key, mod);
+    parent_client->cameraController->on_key_up(key, mod);
 
-    invoke_key_function(keyupMap, key, mod, *client);
+    invoke_key_function(keyupMap, key, mod, *parent_client);
 }
 
 

@@ -27,7 +27,7 @@
 
 #include "Utilities.hpp"
 
-Interface::Interface()
+interface_renderer::interface_renderer()
     : data()
     , settings()
     , surface(nullptr)
@@ -37,7 +37,7 @@ Interface::Interface()
     interface_console.state = console::State::HIDDEN;
 }
 
-Interface::~Interface()
+interface_renderer::~interface_renderer()
 {
     if (texture)
         glDeleteTextures(1, &texture);
@@ -45,7 +45,7 @@ Interface::~Interface()
     SDL_FreeSurface(surface);
 }
 
-Interface::settings_t::settings_t()
+interface_renderer::settings_t::settings_t()
     : width(640)
     , height(480)
     , ptSize(14)
@@ -55,7 +55,7 @@ Interface::settings_t::settings_t()
 {
 }
 
-Interface::console::console()
+interface_renderer::console::console()
     : state(State::HIDDEN)
     , transitionDirection(TransitionDirection::DOWN)
     , timeSinceStart(0.0f)
@@ -65,7 +65,7 @@ Interface::console::console()
 {
 }
 
-bool Interface::initialize(assets::asset_store& dataStore)
+bool interface_renderer::initialize(assets::asset_store& dataStore)
 {
     if (-1 == TTF_Init())
     {
@@ -112,7 +112,7 @@ bool Interface::initialize(assets::asset_store& dataStore)
     return true;
 }
 
-void Interface::update(Uint32 microseconds)
+void interface_renderer::update(Uint32 microseconds)
 {
     if (console::State::TRANSITION_SHOW == interface_console.state || console::State::TRANSITION_HIDE == interface_console.state)
     {
@@ -127,7 +127,7 @@ void Interface::update(Uint32 microseconds)
     }
 }
 
-void Interface::toggleConsole()
+void interface_renderer::toggleConsole()
 {
     switch (interface_console.state)
     {
@@ -154,7 +154,7 @@ void Interface::toggleConsole()
     }
 }
 
-inline Interface::console::Message buildMessage(
+inline interface_renderer::console::Message buildMessage(
         unsigned int category,
         SDL_LogPriority priority,
         const std::string& message,
@@ -198,10 +198,10 @@ inline Interface::console::Message buildMessage(
 
     ss << message;
 
-    return Interface::console::Message{ss.str(), color};
+    return interface_renderer::console::Message{ss.str(), color};
 }
 
-void Interface::render(render_results& results)
+void interface_renderer::render(render_results& results)
 {
     using namespace std::chrono;
     const auto timeBegin = high_resolution_clock::now();
@@ -341,7 +341,7 @@ void Interface::render(render_results& results)
     results.renderTime = duration_cast<microseconds>(high_resolution_clock::now() - timeBegin);
 }
 
-void Interface::scroll(int amount)
+void interface_renderer::scroll(int amount)
 {
     unsigned int& line = settings.consoleLine;
 
@@ -353,7 +353,7 @@ void Interface::scroll(int amount)
     line = glm::min(line, (unsigned int) interface_console.messages.size());
 }
 
-void Interface::scrollTo(int line)
+void interface_renderer::scrollTo(int line)
 {
     if (line < 0 && interface_console.messages.size() >= interface_console.linesPerPage)
         line = interface_console.messages.size() - interface_console.linesPerPage;
@@ -361,7 +361,7 @@ void Interface::scrollTo(int line)
     settings.consoleLine = glm::clamp((unsigned int) line, 0u, (unsigned int) interface_console.messages.size());
 }
 
-void Interface::writeText(const std::string& str, const SDL_Color& color, float x, float y)
+void interface_renderer::writeText(const std::string& str, const SDL_Color& color, float x, float y)
 {
     SDL_Surface* textSurface = TTF_RenderText_Blended(fontAsset->font, str.c_str(), color);
 
@@ -376,7 +376,7 @@ void Interface::writeText(const std::string& str, const SDL_Color& color, float 
     }
 }
 
-void Interface::addMessage(int category, SDL_LogPriority priority, const std::string& message)
+void interface_renderer::addMessage(int category, SDL_LogPriority priority, const std::string& message)
 {
     interface_console.messages.push_front(
             buildMessage(category, priority, message,
@@ -390,7 +390,7 @@ void Interface::addMessage(int category, SDL_LogPriority priority, const std::st
         interface_console.messages.resize(4096);
 }
 
-void Interface::addMessage(const std::string& message)
+void interface_renderer::addMessage(const std::string& message)
 {
     addMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, message);
 }

@@ -5,12 +5,15 @@
 
 #include <SDL2/SDL.h>
 
+namespace client
+{
 class client;
+}
 
 class camera_controller
 {
 public:
-    camera_controller(std::shared_ptr<client> client);
+    camera_controller(std::shared_ptr<client::client> parent_client);
     virtual ~camera_controller();
 
     void on_key_down(SDL_Keycode key, Uint16 mod);
@@ -35,7 +38,7 @@ public:
         float move_speed;
     } state;
 private:
-    std::shared_ptr<client> client;
+    std::shared_ptr<client::client> parent_client;
 };
 
 #endif /* CLIENT_CAMERA_CONTROLLER_HPP_ */

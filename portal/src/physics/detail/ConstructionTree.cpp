@@ -20,9 +20,9 @@ physics::detail::construction_tree::construction_tree(const scene::scene_node& n
     unsigned int totalNumFaces = 0;
     for (const auto& model: node.models)
     {
-        for (unsigned int i = 0; i < model->scene->mNumMeshes; ++i)
+        for (unsigned int i = 0; i < model->assimp_scene->mNumMeshes; ++i)
         {
-            const auto& mesh = *(model->scene->mMeshes[i]);
+            const auto& mesh = *(model->assimp_scene->mMeshes[i]);
 
             for (unsigned int j = 0; j < mesh.mNumVertices; ++j)
             {
@@ -47,9 +47,9 @@ physics::detail::construction_tree::construction_tree(const scene::scene_node& n
 
     for (const auto& model: node.models)
     {
-        for (unsigned int i = 0; i < model->scene->mNumMeshes; ++i)
+        for (unsigned int i = 0; i < model->assimp_scene->mNumMeshes; ++i)
         {
-            const auto& mesh = *(model->scene->mMeshes[i]);
+            const auto& mesh = *(model->assimp_scene->mMeshes[i]);
 
             insertMesh(mesh);
         }

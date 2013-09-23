@@ -27,7 +27,7 @@ bool threading::thread_pool::initialize()
         workerThread.join();
     }
 
-    for (unsigned int i = 0; i < settings.numThreads; ++i)
+    for (unsigned int i = 0; i < settings.num_threads; ++i)
     {
         workerThreads.push_back(std::thread(worker_thread(*this)));
     }

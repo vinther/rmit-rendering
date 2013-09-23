@@ -36,9 +36,11 @@ class thread_pool;
 
 class camera_controller;
 
-
 struct SDL_Surface;
 union SDL_Event;
+
+namespace client
+{
 
 class client : public std::enable_shared_from_this<client>
 {
@@ -80,5 +82,7 @@ private:
 
 	SDL_LogOutputFunction defaultLogOutputFunction;
 };
+
+}
 
 #endif /* DEMO_CLIENT_HPP_ */

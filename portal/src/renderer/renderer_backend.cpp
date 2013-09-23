@@ -1,10 +1,3 @@
-/*
- * GLResourceManager.cpp
- *
- *  Created on: 01/08/2013
- *      Author: svp
- */
-
 #include <stdexcept>
 #include <array>
 #include <tuple>
@@ -13,11 +6,11 @@
 #include <GL/gl.h>
 #include <assimp/scene.h>
 
-#include "scene/Scene.hpp"
+#include "scene/scene_graph.hpp"
 
-#include "assets/DataStore.hpp"
-#include "assets/Model.hpp"
-#include "assets/Texture.hpp"
+#include "assets/asset_store.hpp"
+#include "assets/scene.hpp"
+#include "assets/image.hpp"
 
 #include "renderer/resources/Model.hpp"
 #include "renderer/resources/Texture.hpp"

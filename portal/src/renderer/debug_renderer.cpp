@@ -26,20 +26,20 @@
 namespace renderer
 {
 
-renderer::DebugRenderer::DebugRenderer()
+renderer::debug_renderer::debug_renderer()
 {
     // TODO Auto-generated constructor stub
 
 }
 
-renderer::DebugRenderer::~DebugRenderer()
+renderer::debug_renderer::~debug_renderer()
 {
     // TODO Auto-generated destructor stub
 }
 
 void drawAABBs(
         const std::array<physics::SIMDAABB, 8>& aabbs,
-        const renderer::DebugRenderer::Settings& settings)
+        const renderer::debug_renderer::settings_t& settings)
 {
     UNUSED(settings);
 
@@ -85,7 +85,7 @@ void drawAABBs(
     }
 }
 
-void DebugRenderer::initialize()
+void debug_renderer::initialize()
 {
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
@@ -103,7 +103,7 @@ void DebugRenderer::initialize()
     glCullFace(GL_BACK);
 }
 
-void DebugRenderer::render(const scene_graph::scene_graph& scene)
+void debug_renderer::render(const scene_graph::scene_graph& scene)
 {
     const auto& camera = *(scene.camera);
     const glm::mat4 viewProjectionMatrix = camera.viewProjection();

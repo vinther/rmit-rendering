@@ -62,9 +62,9 @@ public:
         SHADER_TYPE_SIZE
     };
 
-    void attachShader(ShaderType type, std::shared_ptr<assets::DiskFile> asset);
+    void attachShader(ShaderType type, std::shared_ptr<assets::file> asset);
 
-    std::array<std::shared_ptr<assets::DiskFile>, SHADER_TYPE_SIZE> assets;
+    std::array<std::shared_ptr<assets::file>, SHADER_TYPE_SIZE> assets;
 };
 
 }

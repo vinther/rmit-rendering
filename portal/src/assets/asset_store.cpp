@@ -1,22 +1,15 @@
-/*
- * AssetManager.cpp
- *
- *  Created on: 28/07/2013
- *      Author: svp
- */
-
-#include "assets/DataStore.hpp"
+#include "assets/asset_store.hpp"
 
 #include <iostream>
 
 #include "assets/asset.hpp"
-#include "assets/FileWatcher.hpp"
+#include "assets/file_watcher.hpp"
 
-#include "Utilities.hpp"
+#include "shared/utilities.hpp"
 
 assets::asset_store::asset_store()
-    : fileWatcher(std::make_unique<file_watcher>())
-    , cachedAssets()
+    : asset_file_watcher()
+    , contents()
 {
 }
 
@@ -28,24 +21,24 @@ void assets::asset_store::initialize()
 {
 }
 
-void assets::asset_store::addToCache(std::string name, std::shared_ptr<asset> asset)
-{
-    cachedAssets[name] = asset;
+//void assets::asset_store::addToCache(std::string name, std::shared_ptr<asset> asset)
+//{
+//    cachedAssets[name] = asset;
+//
+//#ifdef linux
+//    for (const auto& path: asset->assetFilePaths)
+//    {
+//        fileWatcher->addWatchDescriptor(path, asset);
+//    }
+//#endif
+//}
+//
+//std::shared_ptr<assets::asset> assets::asset_store::fetchFromCache(const std::string& name)
+//{
+//    return cachedAssets[name];
+//}
 
-#ifdef linux
-    for (const auto& path: asset->assetFilePaths)
-    {
-        fileWatcher->addWatchDescriptor(path, asset);
-    }
-#endif
-}
-
-std::shared_ptr<assets::asset> assets::asset_store::fetchFromCache(const std::string& name)
-{
-    return cachedAssets[name];
-}
-
-void assets::asset_store::reportCacheContents() const
+void assets::asset_store::report_contents() const
 {
     auto getTypeName = [](asset::Type type) -> std::string {
         switch (type)
@@ -63,11 +56,11 @@ void assets::asset_store::reportCacheContents() const
     };
 
     SDL_LogDebug(client::PORTAL_LOG_CATEGORY_ASSETS, "Cached assets: ");
-    for (auto it = cachedAssets.cbegin(); it != cachedAssets.cend(); ++it)
+    for (const auto& item: contents)
     {
-        const auto& asset = *(it->second);
+        const auto& asset = *(item.second);
 
         SDL_LogDebug(client::PORTAL_LOG_CATEGORY_ASSETS,
-                "[%s] \"%s\" (%d bytes)", getTypeName(asset.type).c_str(), asset.name.c_str(), asset.report_size());
+                "[%s] \"%s\" (%d bytes)", getTypeName(asset.type).c_str(), asset.identifier.c_str(), asset.report_size());
     }
 }

@@ -22,7 +22,7 @@ public:
     {
         TYPE_NONE = 0,
         TYPE_MODEL,
-        TYPE_SHADER,
+        TYPE_TEXT_FILE,
         TYPE_SOUND,
         TYPE_TEXTURE,
         TYPE_MATERIAL,
@@ -36,7 +36,7 @@ public:
     virtual void reload() = 0;
     virtual size_t report_size() const = 0;
 
-    std::string name;
+    std::string identifier;
     size_t hash;
     Type type;
 

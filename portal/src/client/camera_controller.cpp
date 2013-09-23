@@ -1,10 +1,3 @@
-/*
- * CameraController.cpp
- *
- *  Created on: 30/07/2013
- *      Author: svp
- */
-
 #include "client/camera_controller.hpp"
 
 #include "client/client.hpp"
@@ -13,9 +6,9 @@
 
 #include "shared/utilities.hpp"
 
-camera_controller::camera_controller(std::shared_ptr<client> client)
+camera_controller::camera_controller(std::shared_ptr<client> parent_client)
     : state()
-    , client(client)
+    , parent_client(parent_client)
 {
 }
 
@@ -93,12 +86,12 @@ void camera_controller::on_mouse_move(Uint16 x, Uint16 y, Sint16 xrel, Sint16 yr
     UNUSED(x);
     UNUSED(y);
 
-    client->scene->camera->rotate(xrel * 0.01f, yrel * 0.01f);
+    parent_client->scene->main_camera->rotate(xrel * 0.01f, yrel * 0.01f);
 }
 
 void camera_controller::update(Uint32 microseconds)
 {
-    auto& camera = *(client->scene->camera);
+    auto& camera = *(parent_client->scene->main_camera);
 
     const float f = (float) microseconds * 0.001f;
 

@@ -1,12 +1,5 @@
-/*
- * Utilities.hpp
- *
- *  Created on: 30/07/2013
- *      Author: svp
- */
-
-#ifndef UTILITIES_HPP_
-#define UTILITIES_HPP_
+#ifndef SHARED_UTILITIES_HPP_
+#define SHARED_UTILITIES_HPP_
 
 #include <memory>
 
@@ -42,4 +35,4 @@ enum LogCategories: int
 }
 
 
-#endif /* UTILITIES_HPP_ */
+#endif /* SHARED_UTILITIES_HPP_ */

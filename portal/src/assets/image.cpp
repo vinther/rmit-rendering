@@ -52,7 +52,7 @@ size_t assets::image::report_size() const
 
 void assets::image::reload()
 {
-    SDL_LogDebug(client::PORTAL_LOG_CATEGORY_ASSETS, "Reloading texture: \"%s\"", name.c_str());
+    SDL_LogDebug(client::PORTAL_LOG_CATEGORY_ASSETS, "Reloading texture: \"%s\"", identifier.c_str());
 
     from_disk(path);
 }

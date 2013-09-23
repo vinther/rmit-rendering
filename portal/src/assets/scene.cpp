@@ -1,11 +1,4 @@
-/*
-R * Model.cpp
- *
- *  Created on: 30/07/2013
- *      Author: svp
- */
-
-#include "assets/Model.hpp"
+#include "assets/scene.hpp"
 
 #include <iostream>
 #include <stdexcept>
@@ -17,14 +10,14 @@ R * Model.cpp
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include "assets/DataStore.hpp"
-#include "assets/Material.hpp"
+#include "assets/asset_store.hpp"
+#include "assets/material.hpp"
 
-#include "Utilities.hpp"
+#include "shared/utilities.hpp"
 
 assets::scene::scene(const std::string& name)
     : assets::asset(name, Type::TYPE_MODEL)
-    , scene()
+    , assimp_scene()
 	, importer()
 {
 }
@@ -36,19 +29,19 @@ assets::scene::~scene()
 
 bool assets::scene::loadFromDisk()
 {
-    auto scene = importer.ReadFile("assets/" + name,
+    auto temp_scene = importer.ReadFile("assets/" + identifier,
     		aiProcessPreset_TargetRealtime_Quality ^ (aiProcess_JoinIdenticalVertices | aiProcess_GenUVCoords) );
 
-    if (scene && !(scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE))
+    if (temp_scene && !(temp_scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE))
     {
-        this->scene = decltype(this->scene)(scene, [](const aiScene*){});
+        this->assimp_scene = decltype(this->assimp_scene)(temp_scene, [](const aiScene*){});
 
         assetFilePaths.clear();
-        assetFilePaths.push_back(name);
+        assetFilePaths.push_back(identifier);
 
-        path = name;
+        path = identifier;
 
-        SDL_LogDebug(client::PORTAL_LOG_CATEGORY_ASSETS, "Added model with %d meshes (%s)", scene->mNumMeshes, name.c_str());
+        SDL_LogDebug(client::PORTAL_LOG_CATEGORY_ASSETS, "Added model with %d meshes (%s)", temp_scene->mNumMeshes, identifier.c_str());
 
 #ifdef linux
         const std::string pathCopy = path.c_str();
@@ -57,12 +50,10 @@ bool assets::scene::loadFromDisk()
         assert(pathCopy.data() != path.data());
 #endif
 
-        ++version;
-
         return true;
     } else
     {
-        SDL_LogError(client::PORTAL_LOG_CATEGORY_ASSETS, "Failed to load model: %s", name.c_str());
+        SDL_LogError(client::PORTAL_LOG_CATEGORY_ASSETS, "Failed to load model: %s", identifier.c_str());
     }
 
     return false;
@@ -74,14 +65,14 @@ bool assets::scene::loadFromDisk(assets::asset_store& dataStore)
         return false;
 
     materials.clear();
-    for(unsigned int i = 0; i < scene->mNumMaterials; ++i)
+    for(unsigned int i = 0; i < assimp_scene->mNumMaterials; ++i)
     {
-        const auto& material = *(scene->mMaterials[i]);
+        const auto& material = *(assimp_scene->mMaterials[i]);
         aiString materialName;
 
         material.Get(AI_MATKEY_NAME, materialName);
 
-        materials.push_back(assetManager.getOrCreate<Material>(materialName.C_Str(), basePath, std::ref(material), std::ref(assetManager)));
+        materials.push_back(dataStore.create<material>(materialName.C_Str(), basePath, std::ref(material), std::ref(dataStore)));
     }
 
     return true;
@@ -97,7 +88,7 @@ size_t assets::scene::reportSize() const
 
 void assets::scene::reload()
 {
-    SDL_LogDebug(client::PORTAL_LOG_CATEGORY_ASSETS, "Reloading model: \"%s\"", name.c_str());
+    SDL_LogDebug(client::PORTAL_LOG_CATEGORY_ASSETS, "Reloading model: \"%s\"", identifier.c_str());
 
     importer.FreeScene();
     loadFromDisk();

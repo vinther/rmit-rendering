@@ -1,36 +1,27 @@
-/*
- * Font.cpp
- *
- *  Created on: 06/08/2013
- *      Author: svp
- */
+#include "assets/font.hpp"
 
-#include "assets/Font.hpp"
-
-
-
-assets::Font::Font(const std::string& name)
+assets::font::font(const std::string& name)
     : asset(name, asset::Type::TYPE_FONT)
-    , font(nullptr)
+    , text_font(nullptr)
 {
 }
 
-assets::Font::~Font()
+assets::font::~font()
 {
 }
 
-bool assets::Font::loadFromDisk(const std::string& path, unsigned int size)
+bool assets::font::loadFromDisk(const std::string& path, unsigned int size)
 {
-    font = TTF_OpenFont(("assets/" + path).c_str(), size);
+    text_font = TTF_OpenFont(("assets/" + path).c_str(), size);
 
     return (font);
 }
 
-size_t assets::Font::reportSize() const
+size_t assets::font::reportSize() const
 {
     return 0;
 }
 
-void assets::Font::reload()
+void assets::font::reload()
 {
 }

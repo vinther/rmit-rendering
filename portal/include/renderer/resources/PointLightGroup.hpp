@@ -12,7 +12,7 @@
 
 #include <glm/glm.hpp>
 
-#include "assets/Model.hpp"
+#include "assets/scene.hpp"
 
 #include "renderer/resources/UniformBuffer.hpp"
 

@@ -29,7 +29,7 @@ public:
     material(const std::string& name);
     virtual ~material();
 
-	std::array<std::shared_ptr<assets::image>, 5> textures;
+	std::array<handle<image>, 5> textures;
 
 	glm::vec4 emission;
 	glm::vec4 ambient;

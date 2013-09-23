@@ -1,11 +1,4 @@
-/*
- * Renderer.cpp
- *
- *  Created on: 30/07/2013
- *      Author: svp
- */
-
-#include "renderer/Renderer.hpp"
+#include "renderer/renderer.hpp"
 
 #include <stdexcept>
 #include <chrono>
@@ -18,15 +11,14 @@
 #include <glm/ext.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "scene/Scene.hpp"
-#include "scene/SceneNode.hpp"
-#include "scene/Camera.hpp"
+#include "scene/scene_graph.hpp"
+#include "scene/camera.hpp"
 
-#include "assets/DataStore.hpp"
+#include "assets/asset_store.hpp"
 
-#include "threading/ThreadPool.hpp"
+#include "threading/thread_pool.hpp"
 
-#include "Utilities.hpp"
+#include "shared/utilities.hpp"
 
 #define printOpenGLError() printOglError(__FILE__, __LINE__)
 
@@ -41,18 +33,18 @@ void printOglError(const char *file, int line)
     }
 }
 
-renderer::Renderer::Renderer()
+renderer::renderer::renderer()
     : resourceManager(std::make_unique<storage_backend>())
     , geometryBuffer()
 {
 
 }
 
-renderer::Renderer::~Renderer()
+renderer::renderer::~renderer()
 {
 }
 
-void renderer::Renderer::initialize(SDL_Window* window, SDL_GLContext context, assets::asset_store& assetManager)
+void renderer::renderer::initialize(SDL_Window* window, SDL_GLContext context, assets::asset_store& assetManager)
 {
     glewInit();
 
@@ -146,7 +138,7 @@ float test = 0.0f;
 unsigned int testInt = 0;
 
 
-void renderer::Renderer::render(const scene_graph::scene_graph& scene, render_results& results)
+void renderer::renderer::render(const scene::scene_graph& scene, render_results& results)
 {
     using namespace std::chrono;
     const auto timeBegin = high_resolution_clock::now();
@@ -167,7 +159,7 @@ void renderer::Renderer::render(const scene_graph::scene_graph& scene, render_re
     results.renderTime = duration_cast<microseconds>(high_resolution_clock::now() - timeBegin);
 }
 
-void renderer::Renderer::renderNode(const scene_graph::scene_node& node, render_state& state) const
+void renderer::renderer::renderNode(const scene::scene_node& node, render_state& state) const
 {
     const glm::mat4 modelMatrix = state.modelMatrix;
 
@@ -189,7 +181,7 @@ void renderer::Renderer::renderNode(const scene_graph::scene_node& node, render_
     state.modelMatrix = modelMatrix;
 }
 
-void renderer::Renderer::renderModel(const resources::Mesh& model, render_state& state) const
+void renderer::renderer::renderModel(const resources::Mesh& model, render_state& state) const
 {
     if (!(model.state & resources::Mesh::State::READY))
         return;
@@ -210,7 +202,7 @@ void renderer::Renderer::renderModel(const resources::Mesh& model, render_state&
     glBindVertexArray(0);
 }
 
-void renderer::Renderer::doGeometryPass(const scene_graph::scene_graph& scene) const
+void renderer::renderer::doGeometryPass(const scene_graph::scene_graph& scene) const
 {
     const auto& camera = *(scene.camera);
 
@@ -257,7 +249,7 @@ void renderer::Renderer::doGeometryPass(const scene_graph::scene_graph& scene) c
 
 #include <GL/glut.h>
 
-void renderer::Renderer::doLightPasses(const scene_graph::scene_graph& scene) const
+void renderer::renderer::doLightPasses(const scene_graph::scene_graph& scene) const
 {
     const auto& camera = *(scene.camera);
 
@@ -343,12 +335,12 @@ void renderer::Renderer::doLightPasses(const scene_graph::scene_graph& scene) co
     geometryBuffer->disable();
 }
 
-void renderer::Renderer::doPostProcessing(const scene_graph::scene_graph& scene) const
+void renderer::renderer::doPostProcessing(const scene_graph::scene_graph& scene) const
 {
     UNUSED(scene);
 }
 
-void renderer::Renderer::finalizeOutput(const scene_graph::scene_graph& scene) const
+void renderer::renderer::finalizeOutput(const scene_graph::scene_graph& scene) const
 {
     const auto& camera = *(scene.camera);
 
@@ -400,7 +392,7 @@ void renderer::Renderer::finalizeOutput(const scene_graph::scene_graph& scene) c
     activeShader->disable();
 }
 
-void renderer::Renderer::renderFullscreenScreenQuad() const
+void renderer::renderer::renderFullscreenScreenQuad() const
 {
     glMatrixMode(GL_PROJECTION);
     glLoadMatrixf(glm::value_ptr(glm::ortho(0.0f, (float) settings.width, 0.0f, (float) settings.height)));
@@ -416,7 +408,7 @@ void renderer::Renderer::renderFullscreenScreenQuad() const
     glEnd();
 }
 
-void renderer::Renderer::prepareFrame(threading::thread_pool& threadPool, SDL_Window* window, SDL_GLContext context)
+void renderer::renderer::prepareFrame(threading::thread_pool& threadPool, SDL_Window* window, SDL_GLContext context)
 {
 	UNUSED(threadPool);
 
@@ -424,25 +416,25 @@ void renderer::Renderer::prepareFrame(threading::thread_pool& threadPool, SDL_Wi
 	resourceManager->updateResources();
 }
 
-void renderer::Renderer::settings_t::toggleBumpMapping()
+void renderer::renderer::settings_t::toggleBumpMapping()
 {
     bump_mapping = !bump_mapping;
     SDL_LogDebug(client::PORTAL_LOG_CATEGORY_RENDERER, "Bump mapping %s", bump_mapping ? "ON" : "OFF");
 }
 
-void renderer::Renderer::settings_t::toggleAmbientOcclusion()
+void renderer::renderer::settings_t::toggleAmbientOcclusion()
 {
     ambient_occlusion = !ambient_occlusion;
     SDL_LogDebug(client::PORTAL_LOG_CATEGORY_RENDERER, "SSAO %s", ambient_occlusion ? "ON" : "OFF");
 }
 
-void renderer::Renderer::settings_t::toggleLighting()
+void renderer::renderer::settings_t::toggleLighting()
 {
     lighting = !lighting;
     SDL_LogDebug(client::PORTAL_LOG_CATEGORY_RENDERER, "Lighting %s", lighting ? "ON" : "OFF");
 }
 
-void renderer::Renderer::settings_t::setOutput(OutputMode output)
+void renderer::renderer::settings_t::setOutput(OutputMode output)
 {
     this->output = output;
 

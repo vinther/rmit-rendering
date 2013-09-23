@@ -1,10 +1,3 @@
-/*
- * DebugRenderer.hpp
- *
- *  Created on: 08/08/2013
- *      Author: svp
- */
-
 #ifndef RENDERER_DEBUG_RENDERER_HPP_
 #define RENDERER_DEBUG_RENDERER_HPP_
 
@@ -15,23 +8,20 @@
 
 #include "physics/Types.hpp"
 
-namespace scene
-{
-class scene_graph;
-}
+#include "scene/scene_graph.hpp"
 
 namespace renderer
 {
 
-class DebugRenderer
+class debug_renderer
 {
 public:
-    DebugRenderer();
-    virtual ~DebugRenderer();
+    debug_renderer();
+    virtual ~debug_renderer();
 
-    struct Settings
+    struct settings_t
     {
-        Settings()
+        settings_t()
             : width(640), height(480)
             , drawBVH(false), drawCrosshair(false), drawRays(false)
         {}
@@ -46,5 +36,6 @@ public:
     std::vector<physics::Line> lines;
 };
 
-} /* namespace threading */
+} /* namespace renderer */
+
 #endif /* RENDERER_DEBUG_RENDERER_HPP_ */

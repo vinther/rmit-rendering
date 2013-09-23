@@ -10,22 +10,18 @@
 #include <SDL2/SDL.h>
 #include <glm/glm.hpp>
 
-class client;
-
-namespace assets
-{
-class Font;
-}
+#include "assets/asset_store.hpp"
+#include "assets/font.hpp"
 
 typedef unsigned int GLuint;
 
-class Interface
+class interface_renderer
 {
 public:
-    Interface();
-    ~Interface();
+    interface_renderer();
+    ~interface_renderer();
 
-    bool initialize(DataStore& dataStore);
+    bool initialize(assets::asset_store& dataStore);
 
 	struct Data
 	{
@@ -95,7 +91,7 @@ public:
         std::deque<Message> messages;
     } interface_console;
 private:
-    handle<assets::Font> fontAsset;
+    handle<assets::font> fontAsset;
 
     SDL_Surface* surface;
     GLuint texture;

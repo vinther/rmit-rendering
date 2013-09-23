@@ -23,7 +23,7 @@
 #include "client/camera_controller.hpp"
 
 #include "assets/scene.hpp"
-#include "assets/DiskFile.hpp"
+#include "assets/file.hpp"
 #include "assets/file_watcher.hpp"
 
 #include "threading/thread_pool.hpp"
@@ -35,15 +35,18 @@
 
 static struct global_data_t
 {
-    std::shared_ptr<client> client;
+    std::shared_ptr<client::client> global_client_instance;
 } global_data;
 
 
 static void globalLogFunction(void *userdata, int category, SDL_LogPriority priority, const char *message)
 {
-    if (globals.client)
-        globals.client->logFunction(userdata, category, priority, message);
+    if (global_data.global_client_instance)
+        global_data.global_client_instance->logFunction(userdata, category, priority, message);
 }
+
+namespace client
+{
 
 client::client(int argc, char** argv)
     : keyboardHandler(), mouseHandler()
@@ -66,7 +69,7 @@ void client::initialize(SDL_Window* window, SDL_GLContext context)
 {
     cleanup();
 
-    globals.client = shared_from_this();
+    global_data.global_client_instance = shared_from_this();
 
     void* defaultUserData;
 
@@ -77,7 +80,7 @@ void client::initialize(SDL_Window* window, SDL_GLContext context)
         interface->addMessage(category, priority, message);
     };
 
-    interface = std::make_unique<Interface>(shared_from_this());
+    interface = std::make_unique<interface>(shared_from_this());
 
     SDL_LogSetOutputFunction(globalLogFunction, nullptr);
     SDL_LogDebug(client::PORTAL_LOG_CATEGORY_CLIENT, "Initializing client");
@@ -87,8 +90,8 @@ void client::initialize(SDL_Window* window, SDL_GLContext context)
     cameraController = std::make_unique<camera_controller>(shared_from_this());
     scene = std::make_unique<scene_graph::scene_graph>();
     assetManager = std::make_unique<assets::asset_store>();
-    renderer = std::make_unique<renderer::Renderer>();
-    debugRenderer = std::make_unique<renderer::DebugRenderer>();
+    renderer = std::make_unique<renderer::renderer>();
+    debugRenderer = std::make_unique<renderer::debug_renderer>();
     threadPool = std::make_unique<threading::thread_pool>();
 
     threadPool->settings.numThreads = SDL_GetCPUCount() - 1;
@@ -194,7 +197,7 @@ void client::finalizeFrame(SDL_Window* window, SDL_GLContext context)
 	UNUSED(window);
 	UNUSED(context);
 
-    renderer::Renderer::render_results results;
+    renderer::renderer::render_results results;
     renderer->render(*scene, results);
 
     debugRenderer->render(*scene);
@@ -202,7 +205,7 @@ void client::finalizeFrame(SDL_Window* window, SDL_GLContext context)
     interface->data.cameraPosition = scene->camera->position;
     interface->data.cameraDirection = scene->camera->forward();
 
-    Interface::render_results interfaceRenderResults;
+    interface::render_results interfaceRenderResults;
     interface->data.renderTime = results.renderTime.count();
     interface->render(interfaceRenderResults);
 
@@ -267,5 +270,7 @@ void client::cleanup()
 
     if (defaultLogOutputFunction)
         SDL_LogSetOutputFunction(defaultLogOutputFunction, nullptr);
+}
+
 }
 

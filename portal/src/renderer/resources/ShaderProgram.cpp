@@ -110,7 +110,7 @@ void ShaderProgram::setSubroutine(const std::string& name, GLenum type) const
     glUniformSubroutinesuiv(type, 1, &index);
 }
 
-void ShaderProgram::attachShader(ShaderType type, std::shared_ptr<assets::DiskFile> asset)
+void ShaderProgram::attachShader(ShaderType type, std::shared_ptr<assets::file> asset)
 {
     assets[type] = asset;
 

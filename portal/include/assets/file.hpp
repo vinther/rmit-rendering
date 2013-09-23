@@ -8,11 +8,11 @@
 namespace assets
 {
 
-class DiskFile: public asset
+class file: public asset
 {
 public:
-    DiskFile(const std::string& name);
-    virtual ~DiskFile();
+    file(const std::string& name);
+    virtual ~file();
 
     bool loadFromDisk(const std::string& path);
 

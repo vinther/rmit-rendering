@@ -1,17 +1,10 @@
-/*
- * Texture.hpp
- *
- *  Created on: 31/07/2013
- *      Author: svp
- */
-
-#ifndef TEXTURE_HPP_
-#define TEXTURE_HPP_
+#ifndef ASSETS_IMAGE_HPP_
+#define ASSETS_IMAGE_HPP_
 
 #include <string>
 #include <memory>
 
-#include "assets/Asset.hpp"
+#include "assets/asset.hpp"
 
 class SDL_Surface;
 
@@ -37,4 +30,4 @@ public:
 
 }
 
-#endif /* TEXTURE_HPP_ */
+#endif /* ASSETS_IMAGE_HPP_ */

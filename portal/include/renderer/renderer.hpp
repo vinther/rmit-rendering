@@ -1,10 +1,3 @@
-/*
- * Renderer.hpp
- *
- *  Created on: 30/07/2013
- *      Author: svp
- */
-
 #ifndef RENDERER_HPP_
 #define RENDERER_HPP_
 
@@ -27,7 +20,6 @@
 
 #include "scene/scene_graph.hpp"
 
-
 namespace threading
 {
 class thread_pool;
@@ -38,11 +30,11 @@ typedef unsigned int GLuint;
 namespace renderer
 {
 
-class Renderer
+class renderer
 {
 public:
-    Renderer();
-    virtual ~Renderer();
+    renderer();
+    virtual ~renderer();
 
     struct settings_t
     {
@@ -132,7 +124,7 @@ private:
     frame_buffer_handle geometryBuffer;
     uniform_buffer_handle materialBuffer;
     uniform_buffer_handle geometryBufferSetup;
-    std::unique_ptr<resources::PointLightGroup> pointLights;
+//    std::unique_ptr<resources::PointLightGroup> pointLights;
 
     storage_backend backend;
 };

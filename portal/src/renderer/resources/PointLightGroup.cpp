@@ -1,10 +1,3 @@
-/*
- * PointLightGroup.cpp
- *
- *  Created on: 26/08/2013
- *      Author: svp
- */
-
 #include "renderer/resources/PointLightGroup.hpp"
 
 #include <GL/glew.h>
@@ -12,7 +5,7 @@
 
 #include "assimp/scene.h"
 
-#include "Utilities.hpp"
+#include "shared/utilities.hpp"
 
 renderer::resources::PointLightGroup::PointLightGroup()
     : meshData({0, 0})

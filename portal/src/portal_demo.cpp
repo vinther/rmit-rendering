@@ -2,24 +2,24 @@
 
 #include <SDL2/SDL.h>
 
-#include "assets/AssetManager.hpp"
+#include "assets/asset_store.hpp"
 
-#include "client/Client.hpp"
-#include "client/Interface.hpp"
-#include "client/CameraController.hpp"
+#include "client/client.hpp"
+#include "client/camera_controller.hpp"
 
 #include "input/KeyboardHandler.hpp"
 #include "input/MouseHandler.hpp"
 
-#include "scene/Scene.hpp"
+#include "scene/scene_graph.hpp"
 
-#include "renderer/Renderer.hpp"
-#include "renderer/DebugRenderer.hpp"
+#include "renderer/renderer.hpp"
+#include "renderer/debug_renderer.hpp"
+#include "renderer/interface_renderer.hpp"
 
-#include "threading/ThreadPool.hpp"
+#include "threading/thread_pool.hpp"
 
-#include "Utilities.hpp"
-#include "Config.hpp"
+#include "shared/utilities.hpp"
+#include "config.hpp"
 
 const int DEFAULT_WIDTH = 1280;
 const int DEFAULT_HEIGHT = 720;
@@ -34,7 +34,7 @@ void quit()
 
 int main(int argc, char **argv)
 {
-    std::shared_ptr<client> client;
+    std::shared_ptr<client> demo_client;
 
     Uint16 windowWidth, windowHeight;
 
@@ -92,9 +92,9 @@ int main(int argc, char **argv)
     SDL_SetWindowGrab(window, SDL_FALSE);
     SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG);
 
-    client = std::make_shared<client>(argc, argv);
-    client->initialize(window, glContext);
-    client->reshape(windowWidth, windowHeight);
+    demo_client = std::make_shared<client>(argc, argv);
+    demo_client->initialize(window, glContext);
+    demo_client->reshape(windowWidth, windowHeight);
 
     SDL_Log("Build %d (%s)", config::build::buildNumber(), config::build::type());
     SDL_Log("Platform: %s (%d logical CPU cores)", SDL_GetPlatform(), SDL_GetCPUCount());
@@ -116,7 +116,7 @@ int main(int argc, char **argv)
                 switch (ev.window.event)
                 {
                 case SDL_WINDOWEVENT_RESIZED:
-                    client->reshape(ev.window.data1, ev.window.data2);
+                    demo_client->reshape(ev.window.data1, ev.window.data2);
                     break;
                 case SDL_WINDOWEVENT_FOCUS_LOST:
                     windowFocus = false;
@@ -138,10 +138,10 @@ int main(int argc, char **argv)
                     ev.motion.yrel = -(windowHeight / 2 - ev.motion.y);
                 }
 
-                client->event(&ev);
+                demo_client->event(&ev);
                 break;
             default:
-                client->event(&ev);
+                demo_client->event(&ev);
                 break;
             }
         }
@@ -150,15 +150,15 @@ int main(int argc, char **argv)
         if (windowFocus)
             SDL_WarpMouseInWindow(window, windowWidth / 2, windowHeight / 2);
 
-        client->prepareFrame(window, glContext);
-        client->finalizeFrame(window, glContext);
+        demo_client->prepareFrame(window, glContext);
+        demo_client->finalizeFrame(window, glContext);
 
         SDL_GL_SwapWindow(window);
     }
 
-    client->cleanup();
+    demo_client->cleanup();
 
-    if (1 != client.use_count())
+    if (1 != demo_client.use_count())
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Client ptr use count is not 1; cleanup is not working properly!");
 
     SDL_GL_DeleteContext(glContext);

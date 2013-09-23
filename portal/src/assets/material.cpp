@@ -5,12 +5,12 @@
  *      Author: svp
  */
 
-#include "assets/Material.hpp"
+#include "assets/material.hpp"
 
 #include <assimp/material.h>
 
-#include "assets/DataStore.hpp"
-#include "assets/Texture.hpp"
+#include "assets/asset_store.hpp"
+#include "assets/image.hpp"
 
 assets::material::material(const std::string& name)
     : asset(name, asset::Type::TYPE_MATERIAL)
@@ -39,7 +39,7 @@ bool assets::material::loadFromDisk(const std::string& basePath, const aiMateria
 
 		if (0 < texturePath.length)
 			textures[pair.first] =
-					assetManager.getOrCreate<Texture>(std::string(texturePath.C_Str()), fullPath.c_str());
+					assetManager.create<image>(std::string(texturePath.C_Str()), fullPath.c_str());
 	}
 
     aiColor3D emissive, ambient, diffuse, specular;
@@ -57,8 +57,8 @@ bool assets::material::loadFromDisk(const std::string& basePath, const aiMateria
     this->specular = glm::vec4(specular.r, specular.g, specular.b, 1.0f);
     this->shininess = shininess;
 
-    if (textures[2] && textures[2]->surface)
-        translucent = textures[2]->surface->format->BytesPerPixel == 4;
+    if (textures[2] && assetManager(textures[2]).surface)
+        translucent = assetManager(textures[2]).surface->format->BytesPerPixel == 4;
 
     return true;
 }

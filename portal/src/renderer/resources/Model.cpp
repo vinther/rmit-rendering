@@ -1,11 +1,4 @@
-/*
- * GLBufferedModel.hpp
- *
- *  Created on: 04/08/2013
- *      Author: svp
- */
-
-#include "renderer/resources/Model.hpp"
+#include "renderer/resources/scene.hpp"
 
 #include <stdexcept>
 #include <unordered_map>
@@ -17,7 +10,7 @@
 
 #include "renderer/ResourceManager.hpp"
 #include "renderer/resources/Material.hpp"
-#include "Utilities.hpp"
+#include "shared/utilities.hpp"
 
 struct MeshData
 {
