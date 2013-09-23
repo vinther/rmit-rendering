@@ -16,6 +16,6 @@ void main()
 {
     vec4 RT3 = texture2D(RT3Sampler, texCoord);
 
-    RT0 = 0.1f * RT3;
+    RT0 = 0.0f * RT3;
     RT0.w = 1.0f;
 }	

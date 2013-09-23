@@ -33,6 +33,12 @@
 renderer::ResourceManager::ResourceManager()
     : models()
 {
+//    FrameBufferHandle h1;
+//    TextureHandle h2;
+//    FrameBufferHandle h3;
+//
+//    h1 = h3;
+
 }
 
 renderer::ResourceManager::~ResourceManager()

@@ -12,9 +12,12 @@
 #include <unordered_map>
 
 #include "Utilities.hpp"
+#include "Handle.hpp"
 
 namespace renderer
 {
+
+
 
 namespace resources
 {
@@ -24,6 +27,12 @@ class Material;
 class ShaderProgram;
 class FrameBuffer;
 }
+
+typedef Handle<resources::Model> ModelHandle;
+typedef Handle<resources::Texture> TextureHandle;
+typedef Handle<resources::Material> MaterialHandle;
+typedef Handle<resources::ShaderProgram> ShaderProgramHandle;
+typedef Handle<resources::FrameBuffer> FrameBufferHandle;
 
 class ResourceManager
 {
