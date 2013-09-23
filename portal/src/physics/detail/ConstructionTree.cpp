@@ -15,7 +15,7 @@
 
 #include "Utilities.hpp"
 
-physics::detail::ConstructionTree::ConstructionTree(const scene::SceneNode& node, unsigned int bucketSize)
+physics::detail::ConstructionTree::ConstructionTree(const scene::scene_node& node, unsigned int bucketSize)
 	: bucketSize(bucketSize)
 {
     const float limitMin = std::numeric_limits<float>::min();

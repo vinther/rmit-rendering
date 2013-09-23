@@ -14,7 +14,7 @@
 #include "renderer/resources/Texture.hpp"
 
 #include "assets/Texture.hpp"
-#include "assets/Shader.hpp"
+#include "assets/DiskFile.hpp"
 
 #include "Utilities.hpp"
 

@@ -13,7 +13,7 @@
 
 namespace scene
 {
-class SceneNode;
+class scene_node;
 }
 
 namespace physics
@@ -25,7 +25,7 @@ namespace detail
 class ConstructionTree
 {
 public:
-	ConstructionTree(const scene::SceneNode& sceneRoot, unsigned int bucketSize);
+	ConstructionTree(const scene::scene_node& sceneRoot, unsigned int bucketSize);
 
 	struct ConstructionNode
 	{

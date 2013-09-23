@@ -23,10 +23,10 @@ renderer::resources::PointLightGroup::PointLightGroup()
 }
 
 renderer::resources::PointLightGroup::PointLightGroup(
-        const std::shared_ptr<const assets::Model> geometry,
+        const std::shared_ptr<const assets::scene> geometry,
         const std::initializer_list<LightData>& data)
-    : PointLightGroup()
 {
+    glGenVertexArrays(1, &meshData.vao);
     create(geometry, data);
 }
 
@@ -36,7 +36,7 @@ renderer::resources::PointLightGroup::~PointLightGroup()
 }
 
 void renderer::resources::PointLightGroup::create(
-        const std::shared_ptr<const assets::Model> geometry,
+        const std::shared_ptr<const assets::scene> geometry,
         const std::vector<LightData>& data)
 {
     buffer->enable();

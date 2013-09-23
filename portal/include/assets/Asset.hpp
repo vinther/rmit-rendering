@@ -15,7 +15,7 @@
 namespace assets
 {
 
-class Asset
+class asset
 {
 public:
     enum Type
@@ -31,10 +31,10 @@ public:
         TYPE_CUSTOM=255
     };
 
-    virtual ~Asset();
+    virtual ~asset();
 
     virtual void reload() = 0;
-    virtual size_t reportSize() const = 0;
+    virtual size_t report_size() const = 0;
 
     std::string name;
     size_t hash;
@@ -48,7 +48,7 @@ public:
     std::vector<std::string> assetFilePaths;
     size_t version;
 protected:
-    Asset(const std::string& name, Type type);
+    asset(const std::string& name, Type type);
 
     std::string getStringFromFile(const std::string& path) const;
 };

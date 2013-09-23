@@ -21,7 +21,7 @@
 namespace threading
 {
 
-class ThreadPool
+class thread_pool
 {
 public:
     struct Settings
@@ -29,8 +29,8 @@ public:
         unsigned int numThreads;
     } settings;
 
-    ThreadPool();
-    virtual ~ThreadPool();
+    thread_pool();
+    virtual ~thread_pool();
 
     bool initialize();
     void enqueue(Task&& task);
@@ -42,14 +42,14 @@ public:
         return taskQueue.size();
     }
 
-    const std::vector<std::shared_ptr<WorkerThread>>& getWorkers() const
+    const std::vector<std::shared_ptr<worker_thread>>& getWorkers() const
     {
         return workerThreadObjects;
     }
 private:
-    friend class WorkerThread;
+    friend class worker_thread;
 
-    void registerWorker(std::shared_ptr<WorkerThread> worker)
+    void registerWorker(std::shared_ptr<worker_thread> worker)
     {
         std::unique_lock<std::mutex> lock(registerMutex);
 
@@ -59,7 +59,7 @@ private:
     std::mutex registerMutex;
 
     std::vector<std::thread> workerThreads;
-    std::vector<std::shared_ptr<WorkerThread>> workerThreadObjects;
+    std::vector<std::shared_ptr<worker_thread>> workerThreadObjects;
 
     struct TaskCompare
     {

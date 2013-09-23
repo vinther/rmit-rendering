@@ -12,7 +12,7 @@
 
 #include <SDL2/SDL.h>
 
-class Client;
+class client;
 
 struct SDL_MouseButtonEvent;
 struct SDL_MouseMotionEvent;
@@ -20,10 +20,10 @@ struct SDL_MouseMotionEvent;
 namespace input
 {
 
-class MouseHandler
+class mouse_handler
 {
 public:
-    MouseHandler(std::shared_ptr<Client> client);
+    mouse_handler(std::shared_ptr<client> client);
 
     void event(const SDL_MouseButtonEvent& event);
     void event(const SDL_MouseMotionEvent& event);
@@ -32,7 +32,7 @@ public:
     void mouseUp(Uint8 button, Uint16 x, Uint16 y);
     void mouseMove(Uint16 x, Uint16 y, Sint16 xrel, Sint16 yrel);
 
-    std::shared_ptr<Client> client;
+    std::shared_ptr<client> client;
 };
 
 }

@@ -11,7 +11,7 @@
 
 #include <SDL2/SDL_log.h>
 
-#include "scene/SceneNode.hpp"
+#include "scene/scene_graph.hpp"
 
 #include "physics/Octree.hpp"
 #include "physics/detail/ConstructionTree.hpp"

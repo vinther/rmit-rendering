@@ -12,7 +12,7 @@
 
 #include "physics/Types.hpp"
 
-#include "Utilities.hpp"
+#include "shared/utilities.hpp"
 
 namespace physics
 {

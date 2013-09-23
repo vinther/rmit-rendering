@@ -1,12 +1,5 @@
-/*
- * WorkerThread.hpp
- *
- *  Created on: 07/08/2013
- *      Author: svp
- */
-
-#ifndef WORKERTHREAD_HPP_
-#define WORKERTHREAD_HPP_
+#ifndef THREADING_WORKER_THREAD_HPP_
+#define THREADING_WORKER_THREAD_HPP_
 
 #include <chrono>
 #include <memory>
@@ -14,21 +7,21 @@
 namespace threading
 {
 
-class ThreadPool;
+class thread_pool;
 
-class WorkerThread
+class worker_thread
 {
 public:
-    WorkerThread(ThreadPool& threadPool);
+    worker_thread(thread_pool& threadPool);
 
     void operator()();
 
     std::chrono::microseconds workTime;
     std::chrono::high_resolution_clock::time_point timeStarted;
 private:
-    ThreadPool& threadPool;
+    thread_pool& parent_pool;
 };
 
 }
 
-#endif /* WORKERTHREAD_HPP_ */
+#endif /* THREADING_WORKER_THREAD_HPP_ */

@@ -35,10 +35,10 @@ public:
     };
 
     PointLightGroup();
-    PointLightGroup(const std::shared_ptr<const assets::Model> geometry, const std::initializer_list<LightData>& data);
+    PointLightGroup(const std::shared_ptr<const assets::scene> geometry, const std::initializer_list<LightData>& data);
     ~PointLightGroup();
 
-    void create(const std::shared_ptr<const assets::Model> geometry, const std::vector<LightData>& data);
+    void create(const std::shared_ptr<const assets::scene> geometry, const std::vector<LightData>& data);
 
     struct MeshData
     {

@@ -71,8 +71,8 @@ int main(int argc, char** argv)
     }
 
 
-    auto scene = std::make_unique<scene::Scene>();
-    auto model = std::make_unique<assets::Model>(sceneAssetPath);
+    auto scene = std::make_unique<scene::scene>();
+    auto model = std::make_unique<assets::scene>(sceneAssetPath);
 
     if (!model->loadFromDisk())
         throw runtime_error("Error loading model from disk!");

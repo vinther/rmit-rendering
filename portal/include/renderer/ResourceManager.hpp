@@ -11,13 +11,11 @@
 #include <memory>
 #include <unordered_map>
 
-#include "Utilities.hpp"
-#include "Handle.hpp"
+#include "shared/utilities.hpp"
+#include "shared/handle.hpp"
 
 namespace renderer
 {
-
-
 
 namespace resources
 {

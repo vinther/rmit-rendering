@@ -24,7 +24,7 @@ class ResourceManager;
 namespace resources
 {
 
-class Texture: public AssetResource<assets::Texture>
+class Texture: public AssetResource<assets::image>
 {
 public:
     Texture(std::shared_ptr<const asset_type> asset);

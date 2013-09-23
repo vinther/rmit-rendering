@@ -24,7 +24,7 @@ namespace resources
 
 class Material;
 
-class Model: public AssetResource<assets::Model>
+class Model: public AssetResource<assets::scene>
 {
 public:
     Model(std::shared_ptr<const asset_type> asset);

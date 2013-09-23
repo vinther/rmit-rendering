@@ -13,26 +13,26 @@
 
 #include <SDL2/SDL.h>
 
-class Client;
+class client;
 class CommandSet;
 
 namespace input
 {
 
-class KeyboardHandler
+class keyboard_handler
 {
 public:
     typedef std::pair<Uint16, Uint16> KeyModPair;
 
-    KeyboardHandler(std::shared_ptr<Client> client);
-    ~KeyboardHandler();
+    keyboard_handler(std::shared_ptr<client> client);
+    ~keyboard_handler();
 
-    void event(const SDL_KeyboardEvent& event) const;
+    void handle_event(const SDL_KeyboardEvent& event) const;
 
-    void keydown(SDL_Keycode key, Uint16 mod) const;
-    void keyup(SDL_Keycode key, Uint16 mod) const;
+    void inject_key_down(SDL_Keycode key, Uint16 mod) const;
+    void inject_key_up(SDL_Keycode key, Uint16 mod) const;
 private:
-    std::shared_ptr<Client> client;
+    std::shared_ptr<client> client;
 
     struct KeyHasher
     {
@@ -44,8 +44,8 @@ private:
         std::hash<Uint32> hasher;
     };
 
-    std::unordered_map<KeyModPair, std::function<void(Client&)>, KeyHasher> keydownMap;
-    std::unordered_map<KeyModPair, std::function<void(Client&)>, KeyHasher> keyupMap;
+    std::unordered_map<KeyModPair, std::function<void(client&)>, KeyHasher> keydownMap;
+    std::unordered_map<KeyModPair, std::function<void(client&)>, KeyHasher> keyupMap;
 };
 
 }

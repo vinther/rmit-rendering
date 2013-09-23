@@ -32,7 +32,7 @@ physics::Octree::~Octree()
 }
 
 template <class MemoryLayoutPolicy>
-void physics::Octree::createFromNode(const scene::SceneNode& node, unsigned int bucketSize)
+void physics::Octree::createFromNode(const scene::scene_node& node, unsigned int bucketSize)
 {
 	detail::ConstructionTree constructionTree(node, bucketSize);
 
@@ -152,7 +152,7 @@ bool physics::Octree::trace(const Ray& ray, const glm::mat4 transformation, Inte
 
 namespace physics
 {
-template void Octree::createFromNode<detail::BFSLayoutPolicy>(const scene::SceneNode&, unsigned int);
+template void Octree::createFromNode<detail::BFSLayoutPolicy>(const scene::scene_node&, unsigned int);
 //template void Octree::createFromNode<detail::DFSLayoutPolicy>(const scene::SceneNode&, unsigned int);
 }
 

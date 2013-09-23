@@ -59,10 +59,8 @@ ENDMACRO (TODAY)
 TODAY(RESULT)
 message(STATUS "Compilation date = ${RESULT}")
 
-
-
 include_directories(${PROJECT_SOURCE_DIR}/include)
-configure_file(${PROJECT_SOURCE_DIR}/include/Config.cmake.hpp ${PROJECT_SOURCE_DIR}/include/Config.hpp)
+configure_file(${PROJECT_SOURCE_DIR}/include/config.cmake.hpp ${PROJECT_SOURCE_DIR}/include/config.hpp)
 
 file(GLOB_RECURSE CLIENT_SOURCES src/*/*.c src/*/*.cpp src/*/*.cxx)
 
@@ -80,9 +78,9 @@ target_link_libraries(
 	${ASSIMP_LIBRARIES})
 	
 	
-file(GLOB_RECURSE PORTAL_SOURCES src/Portal.cpp)	
+file(GLOB_RECURSE PORTAL_SOURCES src/portal_demo.cpp)	
 
-add_executable (portal src/Portal.cpp)
+add_executable (portal src/portal_demo.cpp)
 
 target_link_libraries(portal client)
 

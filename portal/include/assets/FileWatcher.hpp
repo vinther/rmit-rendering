@@ -22,24 +22,24 @@
 namespace assets
 {
 
-class Asset;
+class asset;
 
-class FileWatcher
+class file_watcher
 {
 public:
-    FileWatcher();
-    virtual ~FileWatcher();
+    file_watcher();
+    virtual ~file_watcher();
 
     void update();
 
-    void addWatchDescriptor(const std::string& path, std::shared_ptr<Asset> asset);
+    void addWatchDescriptor(const std::string& path, std::shared_ptr<asset> asset);
     void removeWatchDescriptor(const std::string& name);
 
 #ifdef linux
 private:
     int inotifyFileDescriptor;
     std::array<char, 1024 * sizeof(inotify_event)> inotifyBuffer;
-    std::unordered_map<int, std::tuple<std::string, std::shared_ptr<Asset>>> inotifyWatchDescriptors;
+    std::unordered_map<int, std::tuple<std::string, std::shared_ptr<asset>>> inotifyWatchDescriptors;
 #endif
 };
 
