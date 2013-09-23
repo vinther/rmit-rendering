@@ -17,24 +17,24 @@
 #include "physics/Intersections.hpp"
 #include "physics/detail/ConstructionTree.hpp"
 
-#include "assets/Model.hpp"
-#include "scene/SceneNode.hpp"
+#include "assets/scene.hpp"
+#include "scene/scene_graph.hpp"
 
-#include "Utilities.hpp"
+#include "shared/utilities.hpp"
 
-physics::Octree::Octree()
-    : nodeRoot(0)
+physics::octree::octree()
+    : root(0)
 {
 }
 
-physics::Octree::~Octree()
+physics::octree::~octree()
 {
 }
 
 template <class MemoryLayoutPolicy>
-void physics::Octree::createFromNode(const scene::scene_node& node, unsigned int bucketSize)
+void physics::octree::from_node(const scene::scene_node& node, unsigned int bucketSize)
 {
-	detail::ConstructionTree constructionTree(node, bucketSize);
+	detail::construction_tree constructionTree(node, bucketSize);
 
 	MemoryLayoutPolicy mlp;
 	mlp.layout(constructionTree, data);
@@ -44,9 +44,9 @@ void physics::Octree::createFromNode(const scene::scene_node& node, unsigned int
 
 inline void getDescriptors(
         const physics::SIMDRay ray,
-        const physics::Octree::Data& data,
+        const physics::octree::Data& data,
 
-        std::vector<physics::detail::BucketDescriptor>& descriptors)
+        std::vector<physics::detail::bucket_descriptor>& descriptors)
 {
     const glm::simdVec4 directionRec = 1.0f / ray.direction;
 
@@ -75,7 +75,7 @@ inline void getDescriptors(
     }
 }
 
-bool physics::Octree::trace(const Ray& ray, IntersectionPoint& result)
+bool physics::octree::trace(const Ray& ray, IntersectionPoint& result)
 {
     float shortestDist = std::numeric_limits<float>::max();
 
@@ -98,7 +98,7 @@ bool physics::Octree::trace(const Ray& ray, IntersectionPoint& result)
 //    	sumBufferSize += bucketDescriptorBuffer[i].size;
         for (unsigned int j = 0; j < bucketDescriptorBuffer[i].size; ++j)
         {
-            const SIMDTriangle& tri = data.objects[bucketDescriptorBuffer[i].offset + j];
+            const SIMD_triangle& tri = data.objects[bucketDescriptorBuffer[i].offset + j];
 
             float t;
             if (lineTriangleIntersection(
@@ -128,7 +128,7 @@ bool physics::Octree::trace(const Ray& ray, IntersectionPoint& result)
     return intersection;
 }
 
-bool physics::Octree::trace(const Ray& ray, const glm::mat4 transformation, IntersectionPoint& result)
+bool physics::octree::trace(const Ray& ray, const glm::mat4 transformation, IntersectionPoint& result)
 {
     const glm::mat4 invTransformation = glm::inverse(transformation);
 
@@ -152,7 +152,7 @@ bool physics::Octree::trace(const Ray& ray, const glm::mat4 transformation, Inte
 
 namespace physics
 {
-template void Octree::createFromNode<detail::BFSLayoutPolicy>(const scene::scene_node&, unsigned int);
+template void octree::from_node<detail::BFSLayoutPolicy>(const scene::scene_node&, unsigned int);
 //template void Octree::createFromNode<detail::DFSLayoutPolicy>(const scene::SceneNode&, unsigned int);
 }
 

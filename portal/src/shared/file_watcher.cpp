@@ -5,13 +5,13 @@
  *      Author: svp
  */
 
-#include "assets/FileWatcher.hpp"
+#include "assets/file_watcher.hpp"
 
 #include <unordered_set>
 
-#include <SDL2/SDL.h>
+#include <SDL2/SDL_log.h>
 
-#include "assets/Asset.hpp"
+#include "assets/asset.hpp"
 
 assets::file_watcher::file_watcher()
 {

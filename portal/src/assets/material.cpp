@@ -12,17 +12,17 @@
 #include "assets/DataStore.hpp"
 #include "assets/Texture.hpp"
 
-assets::Material::Material(const std::string& name)
+assets::material::material(const std::string& name)
     : asset(name, asset::Type::TYPE_MATERIAL)
     , translucent(false)
 {
 }
 
-assets::Material::~Material()
+assets::material::~material()
 {
 }
 
-bool assets::Material::loadFromDisk(const std::string& basePath, const aiMaterial& material, data_store& assetManager)
+bool assets::material::loadFromDisk(const std::string& basePath, const aiMaterial& material, asset_store& assetManager)
 {
 	for (const auto& pair: {
 			std::make_pair(0u, aiTextureType_EMISSIVE),
@@ -63,11 +63,11 @@ bool assets::Material::loadFromDisk(const std::string& basePath, const aiMateria
     return true;
 }
 
-size_t assets::Material::reportSize() const
+size_t assets::material::reportSize() const
 {
     return 0;
 }
 
-void assets::Material::reload()
+void assets::material::reload()
 {
 }

@@ -11,14 +11,14 @@
 
 #include <SDL2/SDL_log.h>
 
-#include "scene/SceneNode.hpp"
+#include "scene/scene_graph.hpp"
 
 #include "physics/Octree.hpp"
 #include "physics/detail/ConstructionTree.hpp"
 
 void physics::detail::BFSLayoutPolicy::layout(
-		const ConstructionTree& cTree,
-		Octree::Data& data)
+		const construction_tree& cTree,
+		octree::Data& data)
 {
 	unsigned int internalNodes = 0, leaves = 0;
 	cTree.countNodes(internalNodes, leaves);
@@ -30,11 +30,11 @@ void physics::detail::BFSLayoutPolicy::layout(
 	data.descriptors.clear();
 	data.objects.clear();
 
-	std::queue<std::tuple<unsigned int, unsigned int, ConstructionTree::ConstructionNode const *>> q;
+	std::queue<std::tuple<unsigned int, unsigned int, construction_tree::ConstructionNode const *>> q;
 
 	unsigned int nodeIdx = 0;
 	unsigned int parentIdx, childIdx;
-	ConstructionTree::ConstructionNode const * nodePtr = nullptr;
+	construction_tree::ConstructionNode const * nodePtr = nullptr;
 
 	for (unsigned int i = 0; i < 8 ; ++i)
 	{
@@ -69,7 +69,7 @@ void physics::detail::BFSLayoutPolicy::layout(
 					continue;
 				}
 
-				BucketDescriptor descriptor;
+				bucket_descriptor descriptor;
 
 				descriptor.size = nodePtr->children[i]->bucket.size();
 				descriptor.offset = data.objects.size();

@@ -22,10 +22,10 @@ namespace physics
 namespace detail
 {
 
-class ConstructionTree
+class construction_tree
 {
 public:
-	ConstructionTree(const scene::scene_node& sceneRoot, unsigned int bucketSize);
+	construction_tree(const scene::scene_node& sceneRoot, unsigned int bucketSize);
 
 	struct ConstructionNode
 	{

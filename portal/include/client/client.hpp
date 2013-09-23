@@ -26,7 +26,7 @@ class scene_graph;
 
 namespace assets
 {
-class data_store;
+class asset_store;
 }
 
 namespace threading
@@ -61,7 +61,7 @@ public:
 	std::unique_ptr<scene::scene_graph> scene;
 
 	std::unique_ptr<camera_controller> cameraController;
-    std::unique_ptr<assets::data_store> assetManager;
+    std::unique_ptr<assets::asset_store> assetManager;
 	std::unique_ptr<renderer::renderer> renderer;
 	std::unique_ptr<renderer::interface_renderer> interface;
 	std::unique_ptr<renderer::debug_renderer> debugRenderer;

@@ -1,19 +1,12 @@
-/*
- * Task.hpp
- *
- *  Created on: 07/08/2013
- *      Author: svp
- */
-
-#ifndef TASK_HPP_
-#define TASK_HPP_
+#ifndef THREADING_TASK_HPP_
+#define THREADING_TASK_HPP_
 
 #include <functional>
 
 namespace threading
 {
 
-class Task
+class task
 {
 public:
     typedef std::function<void()> function_type;
@@ -41,8 +34,8 @@ public:
         ALL_FLAGS = ~0x0
     } flags;
 
-    Task();
-    Task(function_type f, Priority = Priority::PRIOTIRY_MID, Flags = Flags::SYNCHRONIZE_FRAME);
+    task();
+    task(function_type f, Priority = Priority::PRIOTIRY_MID, Flags = Flags::SYNCHRONIZE_FRAME);
 
     inline void operator()() const
     {
@@ -52,4 +45,4 @@ public:
 
 }
 
-#endif /* TASK_HPP_ */
+#endif /* THREADING_TASK_HPP_ */

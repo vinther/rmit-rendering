@@ -1,21 +1,14 @@
-/*
- * ConstructionTree.cpp
- *
- *  Created on: 12/08/2013
- *      Author: svp
- */
-
 #include "physics/detail/ConstructionTree.hpp"
 
 #include "physics/Intersections.hpp"
 
-#include "scene/SceneNode.hpp"
+#include "scene/scene_graph.hpp"
 
-#include "assets/Model.hpp"
+#include "assets/scene.hpp"
 
-#include "Utilities.hpp"
+#include "shared/utilities.hpp"
 
-physics::detail::ConstructionTree::ConstructionTree(const scene::scene_node& node, unsigned int bucketSize)
+physics::detail::construction_tree::construction_tree(const scene::scene_node& node, unsigned int bucketSize)
 	: bucketSize(bucketSize)
 {
     const float limitMin = std::numeric_limits<float>::min();
@@ -63,7 +56,7 @@ physics::detail::ConstructionTree::ConstructionTree(const scene::scene_node& nod
     }
 }
 
-void physics::detail::ConstructionTree::insertTriangleIndex(
+void physics::detail::construction_tree::insertTriangleIndex(
 		unsigned int idx,
 		const Triangle& triangle,
 		ConstructionNode& node)
@@ -116,7 +109,7 @@ void physics::detail::ConstructionTree::insertTriangleIndex(
 	}
 }
 
-void physics::detail::ConstructionTree::insertFace(const aiFace& face, const aiVector3D* vertices)
+void physics::detail::construction_tree::insertFace(const aiFace& face, const aiVector3D* vertices)
 {
     physics::Triangle triangle;
 
@@ -134,7 +127,7 @@ void physics::detail::ConstructionTree::insertFace(const aiFace& face, const aiV
     insertTriangleIndex(idx, triangle, *(root));
 }
 
-void physics::detail::ConstructionTree::insertMesh(const aiMesh& mesh)
+void physics::detail::construction_tree::insertMesh(const aiMesh& mesh)
 {
     for (unsigned int i = 0; i < mesh.mNumFaces; ++i)
     {
@@ -145,7 +138,7 @@ void physics::detail::ConstructionTree::insertMesh(const aiMesh& mesh)
 
 
 void countNodesRecursive(
-		const std::unique_ptr<physics::detail::ConstructionTree::ConstructionNode>& node,
+		const std::unique_ptr<physics::detail::construction_tree::ConstructionNode>& node,
 		unsigned int& internalNodes,
 		unsigned int& leaves)
 {
@@ -163,7 +156,7 @@ void countNodesRecursive(
 	}
 }
 
-void physics::detail::ConstructionTree::countNodes(unsigned int& internalNodes, unsigned int& leaves) const
+void physics::detail::construction_tree::countNodes(unsigned int& internalNodes, unsigned int& leaves) const
 {
 	countNodesRecursive(root, internalNodes, leaves);
 }

@@ -12,37 +12,32 @@
 #include "input/KeyboardHandler.hpp"
 #include "input/MouseHandler.hpp"
 
-#include "scene/Scene.hpp"
-#include "scene/SceneNode.hpp"
-#include "scene/Camera.hpp"
+#include "scene/scene_graph.hpp"
+#include "scene/scene_node.hpp"
+#include "scene/camera.hpp"
 
-#include "renderer/Renderer.hpp"
-#include "renderer/DebugRenderer.hpp"
-#include "renderer/ResourceManager.hpp"
-#include "renderer/resources/ShaderProgram.hpp"
+#include "renderer/renderer.hpp"
+#include "renderer/debug_renderer.hpp"
+#include "renderer/interface_renderer.hpp"
 
-#include "client/Interface.hpp"
-#include "client/CameraController.hpp"
-#include "client/Interface.hpp"
+#include "client/camera_controller.hpp"
 
-#include "assets/DataStore.hpp"
-#include "assets/Model.hpp"
+#include "assets/scene.hpp"
 #include "assets/DiskFile.hpp"
-#include "assets/FileWatcher.hpp"
+#include "assets/file_watcher.hpp"
 
-#include "threading/ThreadPool.hpp"
+#include "threading/thread_pool.hpp"
 
 #include "physics/Octree.hpp"
 
-#include "Config.hpp"
-#include "Utilities.hpp"
+#include "config.hpp"
+#include "shared/utilities.hpp"
 
-struct Globals
+static struct global_data_t
 {
     std::shared_ptr<client> client;
-};
+} global_data;
 
-static Globals globals;
 
 static void globalLogFunction(void *userdata, int category, SDL_LogPriority priority, const char *message)
 {
@@ -91,7 +86,7 @@ void client::initialize(SDL_Window* window, SDL_GLContext context)
     mouseHandler = std::make_unique<input::mouse_handler>(shared_from_this());
     cameraController = std::make_unique<camera_controller>(shared_from_this());
     scene = std::make_unique<scene_graph::scene_graph>();
-    assetManager = std::make_unique<assets::data_store>();
+    assetManager = std::make_unique<assets::asset_store>();
     renderer = std::make_unique<renderer::Renderer>();
     debugRenderer = std::make_unique<renderer::DebugRenderer>();
     threadPool = std::make_unique<threading::thread_pool>();
@@ -189,9 +184,9 @@ void client::prepareFrame(SDL_Window* window, SDL_GLContext context)
 //        threadPool->enqueue(tasks);
 //    }
 
-    threadPool->synchronize(threading::Task::Flags::ALL_FLAGS);
+    threadPool->synchronize(threading::task::Flags::ALL_FLAGS);
 
-    assert(threadPool->getNumTasks() == 0);
+    assert(threadPool->num_tasks() == 0);
 }
 
 void client::finalizeFrame(SDL_Window* window, SDL_GLContext context)
@@ -199,7 +194,7 @@ void client::finalizeFrame(SDL_Window* window, SDL_GLContext context)
 	UNUSED(window);
 	UNUSED(context);
 
-    renderer::Renderer::RenderResults results;
+    renderer::Renderer::render_results results;
     renderer->render(*scene, results);
 
     debugRenderer->render(*scene);
@@ -207,7 +202,7 @@ void client::finalizeFrame(SDL_Window* window, SDL_GLContext context)
     interface->data.cameraPosition = scene->camera->position;
     interface->data.cameraDirection = scene->camera->forward();
 
-    Interface::RenderResults interfaceRenderResults;
+    Interface::render_results interfaceRenderResults;
     interface->data.renderTime = results.renderTime.count();
     interface->render(interfaceRenderResults);
 
@@ -255,7 +250,7 @@ void client::cleanup()
     SDL_LogDebug(client::PORTAL_LOG_CATEGORY_CLIENT, "Cleaning up client resources");
 
     if (threadPool)
-        threadPool->synchronize(threading::Task::Flags::ALL_FLAGS);
+        threadPool->synchronize(threading::task::Flags::ALL_FLAGS);
 
     keyboardHandler.reset();
     mouseHandler.reset();

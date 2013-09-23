@@ -14,21 +14,21 @@
 
 #include "Utilities.hpp"
 
-assets::data_store::data_store()
+assets::asset_store::asset_store()
     : fileWatcher(std::make_unique<file_watcher>())
     , cachedAssets()
 {
 }
 
-assets::data_store::~data_store()
+assets::asset_store::~asset_store()
 {
 }
 
-void assets::data_store::initialize()
+void assets::asset_store::initialize()
 {
 }
 
-void assets::data_store::addToCache(std::string name, std::shared_ptr<asset> asset)
+void assets::asset_store::addToCache(std::string name, std::shared_ptr<asset> asset)
 {
     cachedAssets[name] = asset;
 
@@ -40,12 +40,12 @@ void assets::data_store::addToCache(std::string name, std::shared_ptr<asset> ass
 #endif
 }
 
-std::shared_ptr<assets::asset> assets::data_store::fetchFromCache(const std::string& name)
+std::shared_ptr<assets::asset> assets::asset_store::fetchFromCache(const std::string& name)
 {
     return cachedAssets[name];
 }
 
-void assets::data_store::reportCacheContents() const
+void assets::asset_store::reportCacheContents() const
 {
     auto getTypeName = [](asset::Type type) -> std::string {
         switch (type)

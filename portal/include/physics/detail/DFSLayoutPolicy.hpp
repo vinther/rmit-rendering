@@ -13,10 +13,10 @@
 namespace physics {
 namespace detail {
 
-class ConstructionTree;
+class construction_tree;
 
 struct DFSLayoutPolicy {
-	void layout(const ConstructionTree& cTree, Octree::Data& data);
+	void layout(const construction_tree& cTree, octree::Data& data);
 };
 
 } /* namespace detail */

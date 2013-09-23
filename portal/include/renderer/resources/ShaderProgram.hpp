@@ -22,7 +22,7 @@ typedef unsigned int GLenum;
 namespace renderer
 {
 
-class ResourceManager;
+class storage_backend;
 
 namespace resources
 {

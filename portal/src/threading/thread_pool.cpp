@@ -1,13 +1,6 @@
-/*
- * ThreadPool.cpp
- *
- *  Created on: 07/08/2013
- *      Author: svp
- */
+#include "threading/thread_pool.hpp"
 
-#include "threading/ThreadPool.hpp"
-
-#include "threading/WorkerThread.hpp"
+#include "threading/worker_thread.hpp"
 
 #include "shared/utilities.hpp"
 
@@ -42,7 +35,7 @@ bool threading::thread_pool::initialize()
     return true;
 }
 
-void threading::thread_pool::enqueue(Task&& task)
+void threading::thread_pool::enqueue(task&& task)
 {
     {
         std::unique_lock<std::mutex> lock(queueMutex);
@@ -53,19 +46,19 @@ void threading::thread_pool::enqueue(Task&& task)
     waitCondition.notify_one();
 }
 
-void threading::thread_pool::enqueue(std::vector<Task>& tasks)
+void threading::thread_pool::enqueue(std::vector<task>& tasks)
 {
     {
         std::unique_lock<std::mutex> lock(queueMutex);
 
-        for (Task task: tasks)
+        for (task task: tasks)
             taskQueue.push(std::move(task));
     }
 
     waitCondition.notify_all();
 }
 
-void threading::thread_pool::synchronize(Task::Flags flags)
+void threading::thread_pool::synchronize(task::Flags flags)
 {
     UNUSED(flags);
     // TODO Enable use of synchronization flags

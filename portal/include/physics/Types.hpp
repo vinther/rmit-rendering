@@ -31,7 +31,7 @@ struct TriangleT
 };
 
 typedef TriangleT<glm::vec3> Triangle;
-typedef TriangleT<glm::simdVec4> SIMDTriangle;
+typedef TriangleT<glm::simdVec4> SIMD_triangle;
 
 template <typename T>
 struct RayT

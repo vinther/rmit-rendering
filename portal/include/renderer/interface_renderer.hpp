@@ -35,9 +35,9 @@ public:
 	    glm::vec3 cameraPosition, cameraDirection;
 	} data;
 
-	struct Settings
+	struct settings_t
 	{
-	    Settings();
+	    settings_t();
 
 	    Uint16 width, height;
 	    Uint16 ptSize;
@@ -48,31 +48,31 @@ public:
 	    unsigned int consoleLine;
 	} settings;
 
-    struct RenderResults
+    struct render_results
     {
-        RenderResults()
+        render_results()
             : settings()
             , renderTime(0)
         {}
 
-        Settings settings;
+        settings_t settings;
         std::chrono::microseconds renderTime;
     };
 
 	void toggleConsole();
 
-	void render(RenderResults& results);
+	void render(render_results& results);
 	void update(Uint32 microseconds);
     void addMessage(const std::string& message);
     void addMessage(int category, SDL_LogPriority priority, const std::string& message);
     void scroll(int amount);
     void scrollTo(int line);
 
-    struct Console
+    struct console
     {
         typedef std::tuple<std::string, SDL_Color> Message;
 
-        Console();
+        console();
 
         enum class State : unsigned char
         {
@@ -93,9 +93,9 @@ public:
         unsigned int linesPerPage;
 
         std::deque<Message> messages;
-    } console;
+    } interface_console;
 private:
-    Handle<assets::Font> fontAsset;
+    handle<assets::Font> fontAsset;
 
     SDL_Surface* surface;
     GLuint texture;

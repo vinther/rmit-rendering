@@ -27,7 +27,7 @@ renderer::resources::Texture::~Texture()
     glDeleteTextures(1, &buffer);
 }
 
-void renderer::resources::Texture::loadFromAsset(ResourceManager& resourceManager)
+void renderer::resources::Texture::loadFromAsset(storage_backend& resourceManager)
 {
     UNUSED(resourceManager);
 

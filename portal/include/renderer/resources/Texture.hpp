@@ -8,7 +8,7 @@
 #ifndef RENDERER_RESOURCES_TEXTURE_HPP_
 #define RENDERER_RESOURCES_TEXTURE_HPP_
 
-#include "assets/Texture.hpp"
+#include "assets/image.hpp"
 
 #include "renderer/resources/AssetResource.hpp"
 
@@ -19,7 +19,7 @@ typedef unsigned int GLenum;
 namespace renderer
 {
 
-class ResourceManager;
+class storage_backend;
 
 namespace resources
 {
@@ -38,7 +38,7 @@ public:
 
     GLuint buffer;
 
-    void loadFromAsset(ResourceManager& resourceManager);
+    void loadFromAsset(storage_backend& resourceManager);
 
     void createFromData(void* data, unsigned int width, unsigned int height, unsigned int bytesPerPixel);
     void createBlank(GLint internalFormat, unsigned int width, unsigned int height, GLenum format, GLenum type, MipMapMode mipMapMode);

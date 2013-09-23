@@ -20,14 +20,14 @@ class aiMaterial;
 namespace assets
 {
 
-class data_store;
+class asset_store;
 class image;
 
-class Material: public asset
+class material: public asset
 {
 public:
-    Material(const std::string& name);
-    virtual ~Material();
+    material(const std::string& name);
+    virtual ~material();
 
 	std::array<std::shared_ptr<assets::image>, 5> textures;
 
@@ -39,7 +39,7 @@ public:
 
 	bool translucent;
 
-    bool loadFromDisk(const std::string& basePath, const aiMaterial& material, data_store& assetManager);
+    bool loadFromDisk(const std::string& basePath, const aiMaterial& material, asset_store& assetManager);
 
     size_t reportSize() const;
     void reload();

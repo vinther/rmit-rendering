@@ -34,7 +34,7 @@ Interface::Interface()
     , texture(0)
     , startTime(std::chrono::high_resolution_clock::now())
 {
-    console.state = Console::State::HIDDEN;
+    interface_console.state = console::State::HIDDEN;
 }
 
 Interface::~Interface()
@@ -45,7 +45,7 @@ Interface::~Interface()
     SDL_FreeSurface(surface);
 }
 
-Interface::Settings::Settings()
+Interface::settings_t::settings_t()
     : width(640)
     , height(480)
     , ptSize(14)
@@ -55,7 +55,7 @@ Interface::Settings::Settings()
 {
 }
 
-Interface::Console::Console()
+Interface::console::console()
     : state(State::HIDDEN)
     , transitionDirection(TransitionDirection::DOWN)
     , timeSinceStart(0.0f)
@@ -65,7 +65,7 @@ Interface::Console::Console()
 {
 }
 
-bool Interface::initialize(assets::data_store& dataStore)
+bool Interface::initialize(assets::asset_store& dataStore)
 {
     if (-1 == TTF_Init())
     {
@@ -107,54 +107,54 @@ bool Interface::initialize(assets::data_store& dataStore)
         glGenTextures(1, &texture);
     }
 
-    console.linesPerPage = (0.666f * settings.height - 24.0f) / TTF_FontHeight(fontAsset->font) + 1;
+    interface_console.linesPerPage = (0.666f * settings.height - 24.0f) / TTF_FontHeight(fontAsset->font) + 1;
 
     return true;
 }
 
 void Interface::update(Uint32 microseconds)
 {
-    if (Console::State::TRANSITION_SHOW == console.state || Console::State::TRANSITION_HIDE == console.state)
+    if (console::State::TRANSITION_SHOW == interface_console.state || console::State::TRANSITION_HIDE == interface_console.state)
     {
-        console.timeSinceStart += -((float) console.transitionDirection) * (microseconds / 200000.0f);
+        interface_console.timeSinceStart += -((float) interface_console.transitionDirection) * (microseconds / 200000.0f);
 
-        if (console.timeSinceStart < 0.0f)
-            console.state = Console::State::HIDDEN;
-        else if (console.timeSinceStart > 1.0f)
-            console.state = Console::State::SHOWN;
+        if (interface_console.timeSinceStart < 0.0f)
+            interface_console.state = console::State::HIDDEN;
+        else if (interface_console.timeSinceStart > 1.0f)
+            interface_console.state = console::State::SHOWN;
         else
-            console.consoleTransition = glm::smoothstep(0.0f, 1.0f, console.timeSinceStart);
+            interface_console.consoleTransition = glm::smoothstep(0.0f, 1.0f, interface_console.timeSinceStart);
     }
 }
 
 void Interface::toggleConsole()
 {
-    switch (console.state)
+    switch (interface_console.state)
     {
-    case Console::State::SHOWN:
-        console.state = Console::State::TRANSITION_HIDE;
-        console.timeSinceStart = 1.0f;
-        console.consoleTransition = 1.0f;
-        console.transitionDirection = Console::TransitionDirection::UP;
+    case console::State::SHOWN:
+        interface_console.state = console::State::TRANSITION_HIDE;
+        interface_console.timeSinceStart = 1.0f;
+        interface_console.consoleTransition = 1.0f;
+        interface_console.transitionDirection = console::TransitionDirection::UP;
         break;
-    case Console::State::HIDDEN:
-        console.state = Console::State::TRANSITION_SHOW;
-        console.timeSinceStart = 0.0f;
-        console.consoleTransition = 0.0f;
-        console.transitionDirection = Console::TransitionDirection::DOWN;
+    case console::State::HIDDEN:
+        interface_console.state = console::State::TRANSITION_SHOW;
+        interface_console.timeSinceStart = 0.0f;
+        interface_console.consoleTransition = 0.0f;
+        interface_console.transitionDirection = console::TransitionDirection::DOWN;
         break;
-    case Console::State::TRANSITION_HIDE:
-        console.state = Console::State::TRANSITION_SHOW;
-        console.transitionDirection = Console::TransitionDirection::DOWN;
+    case console::State::TRANSITION_HIDE:
+        interface_console.state = console::State::TRANSITION_SHOW;
+        interface_console.transitionDirection = console::TransitionDirection::DOWN;
         break;
-    case Console::State::TRANSITION_SHOW:
-        console.state = Console::State::TRANSITION_HIDE;
-        console.transitionDirection = Console::TransitionDirection::UP;
+    case console::State::TRANSITION_SHOW:
+        interface_console.state = console::State::TRANSITION_HIDE;
+        interface_console.transitionDirection = console::TransitionDirection::UP;
         break;
     }
 }
 
-inline Interface::Console::Message buildMessage(
+inline Interface::console::Message buildMessage(
         unsigned int category,
         SDL_LogPriority priority,
         const std::string& message,
@@ -198,10 +198,10 @@ inline Interface::Console::Message buildMessage(
 
     ss << message;
 
-    return Interface::Console::Message{ss.str(), color};
+    return Interface::console::Message{ss.str(), color};
 }
 
-void Interface::render(RenderResults& results)
+void Interface::render(render_results& results)
 {
     using namespace std::chrono;
     const auto timeBegin = high_resolution_clock::now();
@@ -230,13 +230,13 @@ void Interface::render(RenderResults& results)
     sstream << "RenderTime: " << data.renderTime;
     writeText(sstream.str(), whiteColor, 24.0f, 4 * fontHeight + 24.0f);
 
-    if (Console::State::HIDDEN != console.state)
+    if (console::State::HIDDEN != interface_console.state)
     {
-        const float y = Console::State::SHOWN == console.state ? 1.0f : console.consoleTransition;
+        const float y = console::State::SHOWN == interface_console.state ? 1.0f : interface_console.consoleTransition;
         unsigned int messageIndex = 0;
 
-        const auto begin = std::begin(console.messages) + settings.consoleLine;
-        const auto end = std::min(begin + console.linesPerPage, std::end(console.messages));
+        const auto begin = std::begin(interface_console.messages) + settings.consoleLine;
+        const auto end = std::min(begin + interface_console.linesPerPage, std::end(interface_console.messages));
 
         for (auto it = begin; it < end; ++it)
         {
@@ -283,9 +283,9 @@ void Interface::render(RenderResults& results)
         glEnd();
     }
 
-    if (Console::State::HIDDEN != console.state)
+    if (console::State::HIDDEN != interface_console.state)
     {
-        const float y = Console::State::SHOWN == console.state ? 1.0f : console.consoleTransition;
+        const float y = console::State::SHOWN == interface_console.state ? 1.0f : interface_console.consoleTransition;
 
         glColor4f(0.0f, 0.0f, 0.0f, 0.8f);
         glm::vec2 boxSize(settings.width, settings.height * 0.666f);
@@ -350,15 +350,15 @@ void Interface::scroll(int amount)
     else
         line += amount;
 
-    line = glm::min(line, (unsigned int) console.messages.size());
+    line = glm::min(line, (unsigned int) interface_console.messages.size());
 }
 
 void Interface::scrollTo(int line)
 {
-    if (line < 0 && console.messages.size() >= console.linesPerPage)
-        line = console.messages.size() - console.linesPerPage;
+    if (line < 0 && interface_console.messages.size() >= interface_console.linesPerPage)
+        line = interface_console.messages.size() - interface_console.linesPerPage;
 
-    settings.consoleLine = glm::clamp((unsigned int) line, 0u, (unsigned int) console.messages.size());
+    settings.consoleLine = glm::clamp((unsigned int) line, 0u, (unsigned int) interface_console.messages.size());
 }
 
 void Interface::writeText(const std::string& str, const SDL_Color& color, float x, float y)
@@ -378,7 +378,7 @@ void Interface::writeText(const std::string& str, const SDL_Color& color, float 
 
 void Interface::addMessage(int category, SDL_LogPriority priority, const std::string& message)
 {
-    console.messages.push_front(
+    interface_console.messages.push_front(
             buildMessage(category, priority, message,
             std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - startTime))
             );
@@ -386,8 +386,8 @@ void Interface::addMessage(int category, SDL_LogPriority priority, const std::st
     if (0 != settings.consoleLine)
         settings.consoleLine += 1;
 
-    if (console.messages.size() >= 4096 * 2)
-        console.messages.resize(4096);
+    if (interface_console.messages.size() >= 4096 * 2)
+        interface_console.messages.resize(4096);
 }
 
 void Interface::addMessage(const std::string& message)

@@ -15,23 +15,23 @@
 
 #include "renderer/resources/Texture.hpp"
 
-#include "Utilities.hpp"
+#include "shared/utilities.hpp"
 
 namespace renderer {
 namespace resources {
 
-FrameBuffer::FrameBuffer()
+frame_buffer::frame_buffer()
     : buffer(0)
 {
     glGenFramebuffers(1, &buffer);
 }
 
-FrameBuffer::~FrameBuffer()
+frame_buffer::~frame_buffer()
 {
 	glDeleteFramebuffers(1, &buffer);
 }
 
-void FrameBuffer::attach(std::unique_ptr<Texture> texture, GLenum attachmentPoint)
+void frame_buffer::attach(std::unique_ptr<Texture> texture, GLenum attachmentPoint)
 {
     glBindFramebuffer(GL_FRAMEBUFFER, buffer);
 
@@ -42,7 +42,7 @@ void FrameBuffer::attach(std::unique_ptr<Texture> texture, GLenum attachmentPoin
     attachments.emplace_back(attachmentPoint, std::move(texture));
 }
 
-void FrameBuffer::enableAll()
+void frame_buffer::enableAll()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, buffer);
 
@@ -60,18 +60,18 @@ void FrameBuffer::enableAll()
     glDrawBuffers(v.size(), v.data());
 }
 
-void FrameBuffer::enable(const std::initializer_list<GLenum> attachments)
+void frame_buffer::enable(const std::initializer_list<GLenum> attachments)
 {
     glBindFramebuffer(GL_FRAMEBUFFER, buffer);
     glDrawBuffers(attachments.size(), attachments.begin());
 }
 
-void FrameBuffer::disable()
+void frame_buffer::disable()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void FrameBuffer::bindTextures(
+void frame_buffer::bindTextures(
         const std::initializer_list<binding_type>& bindings)
 {
     for (const auto& binding: bindings)

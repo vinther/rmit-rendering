@@ -68,7 +68,7 @@ bool assets::scene::loadFromDisk()
     return false;
 }
 
-bool assets::scene::loadFromDisk(assets::data_store& dataStore)
+bool assets::scene::loadFromDisk(assets::asset_store& dataStore)
 {
     if (!loadFromDisk())
         return false;

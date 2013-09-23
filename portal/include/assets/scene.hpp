@@ -1,7 +1,7 @@
 #ifndef ASSET_SCENE_HPP_
 #define ASSET_SCENE_HPP_
 
-#include "assets/Asset.hpp"
+#include "assets/asset.hpp"
 
 #include <memory>
 #include <array>
@@ -9,12 +9,14 @@
 #include <SDL2/SDL.h>
 #include <assimp/Importer.hpp>
 
+#include "asset_store.hpp"
+
 class aiScene;
 
 namespace assets
 {
 
-class Material;
+class material;
 
 class scene: public asset
 {
@@ -29,12 +31,12 @@ public:
     };
 
     bool loadFromDisk();
-    bool loadFromDisk(data_store& assetManager);
+    bool loadFromDisk(asset_store& assetManager);
     size_t reportSize() const;
     void reload();
 
-    std::unique_ptr<const aiScene, std::function<void(const aiScene*)>> scene;
-    std::vector<utilities::handle<assets::material> > materials;
+    std::unique_ptr<const aiScene, std::function<void(const aiScene*)>> assimp_scene;
+    std::vector<handle<assets::material> > materials;
 
     std::string path;
     std::string basePath;

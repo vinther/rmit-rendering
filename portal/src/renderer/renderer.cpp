@@ -42,7 +42,7 @@ void printOglError(const char *file, int line)
 }
 
 renderer::Renderer::Renderer()
-    : resourceManager(std::make_unique<ResourceManager>())
+    : resourceManager(std::make_unique<storage_backend>())
     , geometryBuffer()
 {
 
@@ -52,7 +52,7 @@ renderer::Renderer::~Renderer()
 {
 }
 
-void renderer::Renderer::initialize(SDL_Window* window, SDL_GLContext context, assets::data_store& assetManager)
+void renderer::Renderer::initialize(SDL_Window* window, SDL_GLContext context, assets::asset_store& assetManager)
 {
     glewInit();
 
@@ -95,7 +95,7 @@ void renderer::Renderer::initialize(SDL_Window* window, SDL_GLContext context, a
 //    pointLightShader = resourceManager->getByAsset<resources::ShaderProgram>(pointLightShaderAsset);
 //    finalShader = resourceManager->getByAsset<resources::ShaderProgram>(geometryBufferOutputShaderAsset);
 
-    geometryBuffer = std::make_unique<resources::FrameBuffer>();
+    geometryBuffer = std::make_unique<resources::frame_buffer>();
 
     auto DS = std::make_unique<resources::Texture>(nullptr);
     auto RT0 = std::make_unique<resources::Texture>(nullptr);
@@ -115,12 +115,12 @@ void renderer::Renderer::initialize(SDL_Window* window, SDL_GLContext context, a
     geometryBuffer->attach(std::move(RT2), GL_COLOR_ATTACHMENT2);
     geometryBuffer->attach(std::move(RT3), GL_COLOR_ATTACHMENT3);
 
-    const auto pointLightAsset = assetManager.getOrCreate<assets::Model>("models/pointLight.obj");
+    const auto pointLightAsset = assetManager.getOrCreate<assets::Mesh>("models/pointLight.obj");
 
     materialBuffer = std::make_shared<resources::UniformBuffer>();
     pointLights = std::make_unique<resources::PointLightGroup>();
 
-    pointLights->buffer->bind(BindingPoints::POINT_LIGHT_BUFFER);
+    pointLights->buffer->bind(binding_points::POINT_LIGHT_BUFFER);
 
     std::vector<resources::PointLightGroup::LightData> pointLightData;
 
@@ -146,7 +146,7 @@ float test = 0.0f;
 unsigned int testInt = 0;
 
 
-void renderer::Renderer::render(const scene_graph::scene_graph& scene, RenderResults& results)
+void renderer::Renderer::render(const scene_graph::scene_graph& scene, render_results& results)
 {
     using namespace std::chrono;
     const auto timeBegin = high_resolution_clock::now();
@@ -167,7 +167,7 @@ void renderer::Renderer::render(const scene_graph::scene_graph& scene, RenderRes
     results.renderTime = duration_cast<microseconds>(high_resolution_clock::now() - timeBegin);
 }
 
-void renderer::Renderer::renderNode(const scene_graph::scene_node& node, RenderState& state) const
+void renderer::Renderer::renderNode(const scene_graph::scene_node& node, render_state& state) const
 {
     const glm::mat4 modelMatrix = state.modelMatrix;
 
@@ -178,7 +178,7 @@ void renderer::Renderer::renderNode(const scene_graph::scene_node& node, RenderS
 
     for (const auto& model: node.models)
     {
-        renderModel(*(resourceManager->getByAsset<resources::Model>(model)), state);
+        renderModel(*(resourceManager->getByAsset<resources::Mesh>(model)), state);
     }
 
     for (auto& childNodePtr: node.children)
@@ -189,9 +189,9 @@ void renderer::Renderer::renderNode(const scene_graph::scene_node& node, RenderS
     state.modelMatrix = modelMatrix;
 }
 
-void renderer::Renderer::renderModel(const resources::Model& model, RenderState& state) const
+void renderer::Renderer::renderModel(const resources::Mesh& model, render_state& state) const
 {
-    if (!(model.state & resources::Model::State::READY))
+    if (!(model.state & resources::Mesh::State::READY))
         return;
 
     for (const auto& mesh: model.meshes)
@@ -232,11 +232,11 @@ void renderer::Renderer::doGeometryPass(const scene_graph::scene_graph& scene) c
 
     geometryPassShader->setUniform("projectionMatrix", camera.projection());
     geometryPassShader->setUniform("test", test);
-    geometryPassShader->setUniform("enableBumpMapping", settings.bumpMapping);
+    geometryPassShader->setUniform("enableBumpMapping", settings.bump_mapping);
 
     geometryPassShader->bindUniformBlock("MaterialParametersLoc", 1);
 
-    RenderState state{
+    render_state state{
         glm::mat4(1.0f), camera.view(), camera.projection(), glm::mat4(1.0f),
         geometryPassShader, materialBuffer
     };
@@ -314,7 +314,7 @@ void renderer::Renderer::doLightPasses(const scene_graph::scene_graph& scene) co
     pointLightShader->setUniform("viewMatrix", camera.view());
     pointLightShader->setUniform("modelMatrix", glm::mat4(1.0f));
     pointLightShader->setUniform("viewProjectionInverse", glm::inverse(camera.viewProjection()));
-    pointLightShader->bindUniformBlock("LightDataLoc", BindingPoints::POINT_LIGHT_BUFFER);
+    pointLightShader->bindUniformBlock("LightDataLoc", binding_points::POINT_LIGHT_BUFFER);
 
     pointLights->buffer->enable();
     glBindVertexArray(pointLights->meshData.vao);
@@ -380,15 +380,15 @@ void renderer::Renderer::finalizeOutput(const scene_graph::scene_graph& scene) c
     {
         switch (settings.output)
         {
-        case Settings::OutputMode::FULL:
+        case settings_t::OutputMode::FULL:
             activeShader->setSubroutine("lightAccumulation", GL_FRAGMENT_SHADER); break;
-        case Settings::OutputMode::DEPTH_ONLY:
+        case settings_t::OutputMode::DEPTH_ONLY:
             activeShader->setSubroutine("depth", GL_FRAGMENT_SHADER); break;
-        case Settings::OutputMode::NORMALS_ONLY:
+        case settings_t::OutputMode::NORMALS_ONLY:
             activeShader->setSubroutine("normals", GL_FRAGMENT_SHADER); break;
-        case Settings::OutputMode::ALBEDO_ONLY:
+        case settings_t::OutputMode::ALBEDO_ONLY:
             activeShader->setSubroutine("albedo", GL_FRAGMENT_SHADER); break;
-        case Settings::OutputMode::POSITIONS_ONLY:
+        case settings_t::OutputMode::POSITIONS_ONLY:
             activeShader->setSubroutine("positions", GL_FRAGMENT_SHADER); break;
         default:
             break;
@@ -424,25 +424,25 @@ void renderer::Renderer::prepareFrame(threading::thread_pool& threadPool, SDL_Wi
 	resourceManager->updateResources();
 }
 
-void renderer::Renderer::Settings::toggleBumpMapping()
+void renderer::Renderer::settings_t::toggleBumpMapping()
 {
-    bumpMapping = !bumpMapping;
-    SDL_LogDebug(client::PORTAL_LOG_CATEGORY_RENDERER, "Bump mapping %s", bumpMapping ? "ON" : "OFF");
+    bump_mapping = !bump_mapping;
+    SDL_LogDebug(client::PORTAL_LOG_CATEGORY_RENDERER, "Bump mapping %s", bump_mapping ? "ON" : "OFF");
 }
 
-void renderer::Renderer::Settings::toggleAmbientOcclusion()
+void renderer::Renderer::settings_t::toggleAmbientOcclusion()
 {
-    ambientOcclusion = !ambientOcclusion;
-    SDL_LogDebug(client::PORTAL_LOG_CATEGORY_RENDERER, "SSAO %s", ambientOcclusion ? "ON" : "OFF");
+    ambient_occlusion = !ambient_occlusion;
+    SDL_LogDebug(client::PORTAL_LOG_CATEGORY_RENDERER, "SSAO %s", ambient_occlusion ? "ON" : "OFF");
 }
 
-void renderer::Renderer::Settings::toggleLighting()
+void renderer::Renderer::settings_t::toggleLighting()
 {
     lighting = !lighting;
     SDL_LogDebug(client::PORTAL_LOG_CATEGORY_RENDERER, "Lighting %s", lighting ? "ON" : "OFF");
 }
 
-void renderer::Renderer::Settings::setOutput(OutputMode output)
+void renderer::Renderer::settings_t::setOutput(OutputMode output)
 {
     this->output = output;
 

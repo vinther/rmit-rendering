@@ -1,12 +1,5 @@
-/*
- * FileWatcher.hpp
- *
- *  Created on: 31/07/2013
- *      Author: svp
- */
-
-#ifndef FILEWATCHER_HPP_
-#define FILEWATCHER_HPP_
+#ifndef ASSETS_FILE_WATCHER_HPP_
+#define ASSETS_FILE_WATCHER_HPP_
 
 #include <memory>
 #include <array>
@@ -45,4 +38,4 @@ private:
 
 }
 
-#endif /* FILEWATCHER_HPP_ */
+#endif /* ASSETS_FILE_WATCHER_HPP_ */

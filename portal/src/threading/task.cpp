@@ -5,16 +5,16 @@
  *      Author: svp
  */
 
-#include "threading/Task.hpp"
+#include "threading/task.hpp"
 
-threading::Task::Task()
+threading::task::task()
     : f([](){})
     , priority(Priority::PRIOTIRY_MID)
     , flags(Flags::SYNCHRONIZE_FRAME)
 {
 }
 
-threading::Task::Task(function_type f, Priority priority, Flags flags)
+threading::task::task(function_type f, Priority priority, Flags flags)
     : f(f)
     , priority(priority)
     , flags(flags)

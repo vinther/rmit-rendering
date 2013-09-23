@@ -45,7 +45,7 @@ void renderer::resources::Material::activate() const
 	}
 }
 
-void renderer::resources::Material::loadFromAsset(ResourceManager& resourceManager)
+void renderer::resources::Material::loadFromAsset(storage_backend& resourceManager)
 {
     const auto& material = *(asset);
 

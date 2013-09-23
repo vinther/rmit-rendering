@@ -1,12 +1,5 @@
-/*
- * Scene.hpp
- *
- *  Created on: 27/07/2013
- *      Author: svp
- */
-
-#ifndef SCENE_HPP_
-#define SCENE_HPP_
+#ifndef SCENE_SCENE_GRAPH_HPP_
+#define SCENE_SCENE_GRAPH_HPP_
 
 #include <memory>
 
@@ -28,9 +21,8 @@ public:
 
     std::unique_ptr<camera> main_camera;
     std::unique_ptr<scene_node> root;
-
 };
 
 }
 
-#endif /* SCENE_HPP_ */
+#endif /* SCENE_SCENE_GRAPH_HPP_ */

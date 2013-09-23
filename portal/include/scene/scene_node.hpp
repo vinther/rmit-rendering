@@ -24,7 +24,7 @@ public:
 
     glm::mat4 transformation;
 
-    std::unique_ptr<physics::Octree> bvh;
+    std::unique_ptr<physics::octree> bvh;
 
     void initialize();
 };

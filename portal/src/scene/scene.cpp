@@ -5,9 +5,11 @@
  *      Author: svp
  */
 
-#include "scene/scene.hpp"
+#include "scene/scene_graph.hpp"
 
 #include <iostream>
+
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "client/client.hpp"
 
@@ -17,20 +19,19 @@
 
 #include "shared/utilities.hpp"
 
-#include <glm/gtc/matrix_transform.hpp>
 
-scene_graph::scene_graph::scene_graph()
-    : camera(std::make_unique<camera>())
+scene::scene_graph::scene_graph()
+    : main_camera(std::make_unique<camera>())
     , root(std::make_unique<scene_node>())
 {
 }
 
-scene_graph::scene_graph::~scene_graph()
+scene::scene_graph::~scene_graph()
 {
     // TODO Auto-generated destructor stub
 }
 
-void scene_graph::scene_graph::initialize()
+void scene::scene_graph::initialize()
 {
     root->initialize();
 }

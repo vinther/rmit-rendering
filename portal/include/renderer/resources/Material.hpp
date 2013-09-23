@@ -27,7 +27,7 @@ namespace renderer
 namespace resources
 {
 
-class Material: public AssetResource<assets::Material>
+class Material: public AssetResource<assets::material>
 {
 public:
     Material(std::shared_ptr<const asset_type> asset);
@@ -60,7 +60,7 @@ public:
     bool translucent;
 
     void activate() const;
-    void loadFromAsset(ResourceManager& resourceManager);
+    void loadFromAsset(storage_backend& resourceManager);
 };
 
 }

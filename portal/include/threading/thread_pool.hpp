@@ -1,12 +1,5 @@
-/*
- * ThreadPool.hpp
- *
- *  Created on: 07/08/2013
- *      Author: svp
- */
-
-#ifndef THREADPOOL_HPP_
-#define THREADPOOL_HPP_
+#ifndef THREADING_THREAD_POOL_HPP_
+#define THREADING_THREAD_POOL_HPP_
 
 #include <thread>
 #include <mutex>
@@ -15,8 +8,8 @@
 #include <atomic>
 #include <condition_variable>
 
-#include "threading/Task.hpp"
-#include "threading/WorkerThread.hpp"
+#include "threading/task.hpp"
+#include "threading/worker_thread.hpp"
 
 namespace threading
 {
@@ -24,25 +17,25 @@ namespace threading
 class thread_pool
 {
 public:
-    struct Settings
+    struct settings_t
     {
-        unsigned int numThreads;
+        unsigned int num_threads;
     } settings;
 
     thread_pool();
     virtual ~thread_pool();
 
     bool initialize();
-    void enqueue(Task&& task);
-    void enqueue(std::vector<Task>& tasks);
-    void synchronize(Task::Flags flags = Task::Flags::ALL_FLAGS);
+    void enqueue(task&& task);
+    void enqueue(std::vector<task>& tasks);
+    void synchronize(task::Flags flags = task::Flags::ALL_FLAGS);
 
-    unsigned int getNumTasks() const
+    unsigned int num_tasks() const
     {
         return taskQueue.size();
     }
 
-    const std::vector<std::shared_ptr<worker_thread>>& getWorkers() const
+    const std::vector<std::shared_ptr<worker_thread>>& workers() const
     {
         return workerThreadObjects;
     }
@@ -63,13 +56,13 @@ private:
 
     struct TaskCompare
     {
-        inline bool operator()(const Task& a, const Task& b) const
+        inline bool operator()(const task& a, const task& b) const
         {
             return a.priority < b.priority;
         }
     };
 
-    std::priority_queue<Task, std::vector<Task>, TaskCompare> taskQueue;
+    std::priority_queue<task, std::vector<task>, TaskCompare> taskQueue;
 
     std::mutex queueMutex;
     std::mutex syncMutex;
@@ -84,4 +77,4 @@ private:
 
 } /* namespace threading */
 
-#endif /* THREADPOOL_HPP_ */
+#endif /* THREADING_THREAD_POOL_HPP_ */

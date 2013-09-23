@@ -46,7 +46,6 @@ public:
      * If assets fill this vector with paths it will be picked up by the file watcher and get reloaded upon changes
      */
     std::vector<std::string> assetFilePaths;
-    size_t version;
 protected:
     asset(const std::string& name, Type type);
 

@@ -36,12 +36,12 @@ struct MeshData
     unsigned int materialId;
 };
 
-renderer::resources::Model::Model(std::shared_ptr<const asset_type> asset)
+renderer::resources::Mesh::Mesh(std::shared_ptr<const asset_type> asset)
     : AssetResource(asset)
 {
 }
 
-renderer::resources::Model::MeshInfo::MeshInfo()
+renderer::resources::Mesh::MeshInfo::MeshInfo()
     : buffers{{0, 0, 0, 0, 0}}
     , material()
     , vao(0)
@@ -49,7 +49,7 @@ renderer::resources::Model::MeshInfo::MeshInfo()
 {
 }
 
-renderer::resources::Model::MeshInfo::MeshInfo(MeshInfo&& other)
+renderer::resources::Mesh::MeshInfo::MeshInfo(MeshInfo&& other)
     : buffers(std::move(other.buffers))
     , material(other.material)
     , vao(other.vao)
@@ -57,7 +57,7 @@ renderer::resources::Model::MeshInfo::MeshInfo(MeshInfo&& other)
 {
 }
 
-renderer::resources::Model::MeshInfo& renderer::resources::Model::MeshInfo::operator=(MeshInfo&& other)
+renderer::resources::Mesh::MeshInfo& renderer::resources::Mesh::MeshInfo::operator=(MeshInfo&& other)
 {
     buffers = std::move(other.buffers);
     material = std::move(other.material);
@@ -67,12 +67,12 @@ renderer::resources::Model::MeshInfo& renderer::resources::Model::MeshInfo::oper
     return *this;
 }
 
-void renderer::resources::Model::loadFromAsset(ResourceManager& resourceManager)
+void renderer::resources::Mesh::loadFromAsset(storage_backend& resourceManager)
 {
     if (nullptr == asset->scene)
        throw std::runtime_error("Trying to render scene with NULL scene");
 
-    typedef Model::MeshInfo::BufferIndices BufferIndices;
+    typedef Mesh::MeshInfo::BufferIndices BufferIndices;
     const auto& scene = *(asset->scene);
 
    for (const auto& mesh: meshes)

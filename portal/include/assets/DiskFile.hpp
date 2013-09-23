@@ -1,7 +1,7 @@
 #ifndef DISK_FILE_HPP_
 #define DISK_FILE_HPP_
 
-#include "assets/Asset.hpp"
+#include "assets/asset.hpp"
 
 #include <string>
 

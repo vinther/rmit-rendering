@@ -20,13 +20,13 @@ namespace resources {
 
 class Texture;
 
-class FrameBuffer {
+class frame_buffer {
 public:
     typedef std::pair<GLenum, std::unique_ptr<Texture>> attachment_type;
     typedef std::pair<GLenum, GLenum> binding_type;
 
-	FrameBuffer();
-	virtual ~FrameBuffer();
+	frame_buffer();
+	virtual ~frame_buffer();
 
 	GLuint buffer;
 

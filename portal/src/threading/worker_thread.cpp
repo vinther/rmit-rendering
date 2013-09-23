@@ -1,14 +1,6 @@
-/*
- * WorkerThread.cpp
- *
- *  Created on: 07/08/2013
- *      Author: svp
- */
+#include "threading/worker_thread.hpp"
 
-
-#include "threading/WorkerThread.hpp"
-
-#include "threading/ThreadPool.hpp"
+#include "threading/thread_pool.hpp"
 
 threading::worker_thread::worker_thread(thread_pool& parent_pool)
     : timeStarted()
@@ -20,7 +12,7 @@ void threading::worker_thread::operator ()()
 {
     timeStarted = std::chrono::high_resolution_clock::now();
 
-    Task task;
+    task task;
 
     while(!parent_pool.stop)
     {
@@ -43,7 +35,7 @@ void threading::worker_thread::operator ()()
         workTime += std::chrono::duration_cast<std::chrono::microseconds>(
                 std::chrono::high_resolution_clock::now() - taskStart);
 
-        if (task.flags & Task::Flags::REENTRANT)
+        if (task.flags & task::Flags::REENTRANT)
             parent_pool.enqueue(std::move(task));
 
         if (parent_pool.isSynchronizing)

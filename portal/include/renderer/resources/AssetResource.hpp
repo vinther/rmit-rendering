@@ -15,7 +15,7 @@
 namespace renderer
 {
 
-class ResourceManager;
+class storage_backend;
 
 namespace resources
 {
@@ -44,7 +44,7 @@ public:
 
     virtual ~AssetResource() {};
 
-    virtual void loadFromAsset(ResourceManager& resourceManager) = 0;
+    virtual void loadFromAsset(storage_backend& resourceManager) = 0;
 
     std::shared_ptr<const T> asset;
     size_t currentVersion;

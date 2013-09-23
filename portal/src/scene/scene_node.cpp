@@ -16,6 +16,6 @@ scene::scene_node::~scene_node()
 
 void scene::scene_node::initialize()
 {
-    bvh = std::make_unique<physics::Octree>();
-    bvh->createFromNode(*this, 32);
+    bvh = std::make_unique<physics::octree>();
+    bvh->from_node(*this, 32);
 }

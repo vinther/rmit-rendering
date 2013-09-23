@@ -11,7 +11,7 @@
 #include <cstdint>
 
 template <typename T>
-struct Handle
+struct handle
 {
     std::uint32_t index;
     std::uint32_t generation;
