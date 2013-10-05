@@ -326,7 +326,7 @@ void renderer::Renderer::doLightPasses(const scene::Scene& scene) const
     printOpenGLError();
 
     glDisable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
+    glCullFace(GL_FRONT);
 
     glDisable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
