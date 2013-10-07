@@ -84,13 +84,17 @@ void renderer::Renderer::initialize(SDL_Window* window, SDL_GLContext context, a
     const auto pointLightShaderAsset = assetManager.getOrCreate<assets::Shader>(
             "shaders/pointLight", "shaders/defaultLight.vert", "shaders/pointLight.frag");
 
-    const auto geometryBufferOutputShaderAsset = assetManager.getOrCreate<assets::Shader>(
+    const auto ssaoShaderAsset = assetManager.getOrCreate<assets::Shader>(
+            "shaders/ssao", "shaders/fullscreenQuad.vert", "shaders/ssao.frag");
+
+    const auto outputShaderAsset = assetManager.getOrCreate<assets::Shader>(
             "shaders/final", "shaders/fullscreenQuad.vert", "shaders/geometryBufferOutput.frag");
 
     geometryPassShader = resourceManager->getByAsset<resources::ShaderProgram>(geometryPassShaderAsset);
     ambientLightShader = resourceManager->getByAsset<resources::ShaderProgram>(ambientLightShaderAsset);
     pointLightShader = resourceManager->getByAsset<resources::ShaderProgram>(pointLightShaderAsset);
-    finalShader = resourceManager->getByAsset<resources::ShaderProgram>(geometryBufferOutputShaderAsset);
+    ssaoShader = resourceManager->getByAsset<resources::ShaderProgram>(ssaoShaderAsset);
+    outputShader = resourceManager->getByAsset<resources::ShaderProgram>(outputShaderAsset);
 
     geometryBuffer = std::make_unique<resources::FrameBuffer>();
 
@@ -122,17 +126,17 @@ void renderer::Renderer::initialize(SDL_Window* window, SDL_GLContext context, a
     std::vector<resources::PointLightGroup::LightData> pointLightData =
     {{glm::vec4(0.0f, 200.0f, 0.0f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 0.0f), glm::vec4(1000.0f)},};
 
-//    pointLightData.resize(4);
-//
-//    std::mt19937 gen;
-//    std::uniform_real_distribution<float> D;
-//
-//    std::generate(std::begin(pointLightData), std::end(pointLightData), [&](){
-//        return resources::PointLightGroup::LightData{
-//                glm::vec4(D(gen) * 2000.0f - 1000.0f, D(gen) * 600.0f, D(gen) * 1000.0f - 500.0f, 0.0f),
-//                glm::vec4(D(gen), D(gen), D(gen), 1.0f),
-//                glm::vec4(D(gen) * 1200.0f, 0.0f, 0.0f, 0.0f)};
-//    });
+    pointLightData.resize(64);
+
+    std::mt19937 gen;
+    std::uniform_real_distribution<float> D;
+
+    std::generate(std::begin(pointLightData), std::end(pointLightData), [&](){
+        return resources::PointLightGroup::LightData{
+                glm::vec4(D(gen) * 2000.0f - 1000.0f, D(gen) * 600.0f, D(gen) * 1000.0f - 500.0f, 0.0f),
+                glm::vec4(D(gen), D(gen), D(gen), 1.0f),
+                glm::vec4(D(gen) * 1200.0f, 0.0f, 0.0f, 0.0f)};
+    });
 
     assert(sizeof(resources::PointLightGroup::LightData) == 3 * 4 * sizeof(float));
 
@@ -219,6 +223,8 @@ void renderer::Renderer::doGeometryPass(const scene::Scene& scene) const
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glClearColor(125.0f / 255.0f, 190.0f / 255.0f, 239.0f / 255.0f, 0);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
 
     {
         geometryPassShader->setUniform("emissiveTexSampler", resources::Material::MaterialInfo::TEXTURE_EMISSIVE);
@@ -247,6 +253,7 @@ void renderer::Renderer::doGeometryPass(const scene::Scene& scene) const
 
     glDisable(GL_STENCIL_TEST);
     glDisable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
 
     geometryPassShader->disable();
     materialBuffer->disable();
@@ -279,6 +286,9 @@ void renderer::Renderer::doLightPasses(const scene::Scene& scene) const
     geometryBuffer->enable({GL_COLOR_ATTACHMENT0});
 
     ambientLightShader->enable();
+    ambientLightShader->setUniform("viewProjectionInverse", glm::inverse(camera.viewProjection()));
+    ambientLightShader->setUniform("cameraPosition", camera.position);
+    ambientLightShader->setUniform("enableSSAO", settings.ambientOcclusion ? 1 : 0);
 
     renderFullscreenScreenQuad();
 
@@ -288,57 +298,60 @@ void renderer::Renderer::doLightPasses(const scene::Scene& scene) const
         //renderFullscreenScreenQuad();
     }
 
-    pointLightShader->enable();
-
-    for (const auto& t: {
-            std::make_pair("RT1Sampler", 1),
-            std::make_pair("RT2Sampler", 2),
-            std::make_pair("RT3Sampler", 3),
-            std::make_pair("DSSampler",  4)})
+    if (settings.lighting)
     {
-        pointLightShader->setUniform(t.first, t.second);
+        pointLightShader->enable();
+
+        for (const auto& t: {
+                std::make_pair("RT1Sampler", 1),
+                std::make_pair("RT2Sampler", 2),
+                std::make_pair("RT3Sampler", 3),
+                std::make_pair("DSSampler",  4)})
+        {
+            pointLightShader->setUniform(t.first, t.second);
+        }
+
+        glDisable(GL_DEPTH_TEST);
+        glDepthMask(GL_FALSE);
+
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_FRONT);
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE, GL_ONE);
+
+        pointLightShader->setUniform("projectionMatrix", camera.projection());
+        pointLightShader->setUniform("viewMatrix", camera.view());
+        pointLightShader->setUniform("modelMatrix", glm::mat4(1.0f));
+        pointLightShader->setUniform("viewProjectionInverse", glm::inverse(camera.viewProjection()));
+
+    //    pointLights->buffer->enable();
+        glBindVertexArray(pointLights->meshData.vao);
+
+        for (const auto& lightData: pointLights->data)
+        {
+            pointLightShader->setUniform("position", lightData.position);
+            pointLightShader->setUniform("color", lightData.color);
+            pointLightShader->setUniform("radius", lightData.extraA.x);
+
+            glDrawElements(GL_TRIANGLES, pointLights->meshData.numFaces * 3, GL_UNSIGNED_INT, 0);
+        }
+
+        glBindVertexArray(0);
+    //    pointLights->buffer->disable();
+
+        printOpenGLError();
+
+        glDisable(GL_CULL_FACE);
+        glCullFace(GL_FRONT);
+
+        glDisable(GL_DEPTH_TEST);
+        glDepthMask(GL_TRUE);
+
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        pointLightShader->disable();
     }
-
-    glDisable(GL_DEPTH_TEST);
-    glDepthMask(GL_FALSE);
-
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ONE);
-
-    pointLightShader->setUniform("projectionMatrix", camera.projection());
-    pointLightShader->setUniform("viewMatrix", camera.view());
-    pointLightShader->setUniform("modelMatrix", glm::mat4(1.0f));
-    pointLightShader->setUniform("viewProjectionInverse", glm::inverse(camera.viewProjection()));
-
-    printOpenGLError();
-
-//    pointLights->buffer->enable();
-    glBindVertexArray(pointLights->meshData.vao);
-
-    for (const auto& lightData: pointLights->data)
-    {
-        pointLightShader->setUniform("position", lightData.position);
-        pointLightShader->setUniform("color", lightData.color);
-        pointLightShader->setUniform("radius", lightData.extraA.x);
-
-        glDrawElements(GL_TRIANGLES, pointLights->meshData.numFaces * 3, GL_UNSIGNED_INT, 0);
-    }
-
-    glBindVertexArray(0);
-//    pointLights->buffer->disable();
-
-    printOpenGLError();
-
-    glDisable(GL_CULL_FACE);
-    glCullFace(GL_FRONT);
-
-    glDisable(GL_DEPTH_TEST);
-    glDepthMask(GL_TRUE);
-
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 //            activeShader->setUniform("enableAmbientOcclusion", settings.ambientOcclusion);
 //            activeShader->setUniform("enableLighting", settings.lighting);
@@ -349,14 +362,41 @@ void renderer::Renderer::doLightPasses(const scene::Scene& scene) const
 
 void renderer::Renderer::doPostProcessing(const scene::Scene& scene) const
 {
-    UNUSED(scene);
+    geometryBuffer->bindTextures({
+        {GL_COLOR_ATTACHMENT1, GL_TEXTURE1},
+        {GL_COLOR_ATTACHMENT2, GL_TEXTURE2},
+        {GL_COLOR_ATTACHMENT3, GL_TEXTURE3},
+        {GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE4}
+    });
+
+    geometryBuffer->enable({GL_COLOR_ATTACHMENT0});
+
+    if (settings.ambientOcclusion && 0)
+    {
+        ssaoShader->enable();
+        ssaoShader->setUniform("viewProjectionInverse", glm::inverse(scene.camera->viewProjection()));
+        ssaoShader->setUniform("cameraPosition", scene.camera->position);
+
+        for (const auto& t: {
+                std::make_pair("RT1Sampler", 1),
+                std::make_pair("DSSampler",  4)})
+        {
+            ssaoShader->setUniform(t.first, t.second);
+        }
+
+        geometryBuffer->enable({GL_COLOR_ATTACHMENT0});
+
+        renderFullscreenScreenQuad();
+
+        ssaoShader->disable();
+    }
 }
 
 void renderer::Renderer::finalizeOutput(const scene::Scene& scene) const
 {
     const auto& camera = *(scene.camera);
 
-    std::shared_ptr<const resources::ShaderProgram> activeShader = finalShader;
+    std::shared_ptr<const resources::ShaderProgram> activeShader = outputShader;
     activeShader->enable();
 
     geometryBuffer->disable();

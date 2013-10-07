@@ -25,8 +25,8 @@ renderer::resources::PointLightGroup::PointLightGroup()
 renderer::resources::PointLightGroup::PointLightGroup(
         const std::shared_ptr<const assets::Model> geometry,
         const std::initializer_list<LightData>& data)
-    : PointLightGroup()
 {
+    glGenVertexArrays(1, &meshData.vao);
     create(geometry, data);
 }
 
