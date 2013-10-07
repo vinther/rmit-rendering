@@ -4,8 +4,6 @@ layout(location = 0) out vec4 RT0;
 
 smooth in vec4 fragPosition;
 smooth in vec4 fragLightPosition;
-flat in vec4 color;
-flat in float radius;
 
 uniform sampler2D RT1Sampler;
 uniform sampler2D RT2Sampler;
@@ -17,6 +15,10 @@ uniform vec3 pingStart;
 
 uniform mat4 viewProjectionInverse;
 uniform vec3 cameraPosition;
+
+uniform vec4 position;
+uniform vec4 color;
+uniform float radius;
 
 // http://aras-p.info/texts/CompactNormalStorage.html#method04spheremap
 vec3 decode (vec2 enc)

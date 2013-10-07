@@ -16,8 +16,8 @@
 
 renderer::resources::PointLightGroup::PointLightGroup()
     : meshData({0, 0})
-    , buffer(std::make_unique<UniformBuffer>())
-    , count(0)
+//    , buffer(std::make_unique<UniformBuffer>())
+//    , count(0)
 {
     glGenVertexArrays(1, &meshData.vao);
 }
@@ -39,9 +39,9 @@ void renderer::resources::PointLightGroup::create(
         const std::shared_ptr<const assets::Model> geometry,
         const std::vector<LightData>& data)
 {
-    buffer->enable();
-    buffer->data(data.size() * sizeof(LightData), data.data());
-    buffer->disable();
+//    buffer->enable();
+//    buffer->data(data.size() * sizeof(LightData), data.data());
+//    buffer->disable();
 
     glBindVertexArray(meshData.vao);
 
@@ -78,6 +78,7 @@ void renderer::resources::PointLightGroup::create(
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    count = data.size();
+    this->data = data;
+
     meshData.numFaces = geometry->scene->mMeshes[0]->mNumFaces;
 }

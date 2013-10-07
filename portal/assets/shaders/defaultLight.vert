@@ -1,6 +1,6 @@
 #version 410
 
-layout(location = 0) in vec4 position;
+layout(location = 0) in vec4 vertPos;
 
 uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
@@ -9,28 +9,14 @@ uniform mat4 projectionMatrix;
 smooth out vec4 fragPosition;
 smooth out vec4 fragLightPosition;
 
-flat out vec4 color;
-flat out float radius;
-
-struct LightData
-{
-	vec4 position;
-	vec4 color;
-	float radius, X, Y, Z;
-};
-
-layout(std140) uniform LightDataLoc
-{
-	LightData lights[1024];
-};
+uniform vec4 position;
+uniform vec4 color;
+uniform float radius;
 
 void main()
 {
-	fragPosition = viewMatrix * modelMatrix * position;
-	fragLightPosition = lights[gl_InstanceID].position;
+	fragPosition = viewMatrix * modelMatrix * vertPos;
+	fragLightPosition = position;
 	
-	radius = lights[gl_InstanceID].radius;
-	color = lights[gl_InstanceID].color;
-	
-	gl_Position = projectionMatrix * viewMatrix * ((mat4(mat3(1.0f) * radius)) * modelMatrix * position + lights[gl_InstanceID].position);
+	gl_Position = projectionMatrix * viewMatrix * ((mat4(mat3(1.0f) * radius)) * modelMatrix * vertPos + position);
 }

@@ -46,8 +46,10 @@ public:
         GLuint vao;
     } meshData;
 
-    std::unique_ptr<UniformBuffer> buffer;
-    unsigned int count;
+    std::vector<LightData> data;
+
+//    std::unique_ptr<UniformBuffer> buffer;
+//    unsigned int count;
 };
 
 

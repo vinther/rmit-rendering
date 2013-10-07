@@ -117,21 +117,22 @@ void renderer::Renderer::initialize(SDL_Window* window, SDL_GLContext context, a
     materialBuffer = std::make_shared<resources::UniformBuffer>();
     pointLights = std::make_unique<resources::PointLightGroup>();
 
-    pointLights->buffer->bind(BindingPoints::POINT_LIGHT_BUFFER);
+//    pointLights->buffer->bind(BindingPoints::POINT_LIGHT_BUFFER);
 
-    std::vector<resources::PointLightGroup::LightData> pointLightData;
+    std::vector<resources::PointLightGroup::LightData> pointLightData =
+    {{glm::vec4(0.0f, 200.0f, 0.0f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 0.0f), glm::vec4(1000.0f)},};
 
-    pointLightData.resize(64);
-
-    std::mt19937 gen;
-    std::uniform_real_distribution<float> D;
-
-    std::generate(std::begin(pointLightData), std::end(pointLightData), [&](){
-        return resources::PointLightGroup::LightData{
-                glm::vec4(D(gen) * 2000.0f - 1000.0f, D(gen) * 600.0f, D(gen) * 1000.0f - 500.0f, 0.0f),
-                glm::vec4(D(gen), D(gen), D(gen), 1.0f),
-                glm::vec4(D(gen) * 1200.0f, 0.0f, 0.0f, 0.0f)};
-    });
+//    pointLightData.resize(4);
+//
+//    std::mt19937 gen;
+//    std::uniform_real_distribution<float> D;
+//
+//    std::generate(std::begin(pointLightData), std::end(pointLightData), [&](){
+//        return resources::PointLightGroup::LightData{
+//                glm::vec4(D(gen) * 2000.0f - 1000.0f, D(gen) * 600.0f, D(gen) * 1000.0f - 500.0f, 0.0f),
+//                glm::vec4(D(gen), D(gen), D(gen), 1.0f),
+//                glm::vec4(D(gen) * 1200.0f, 0.0f, 0.0f, 0.0f)};
+//    });
 
     assert(sizeof(resources::PointLightGroup::LightData) == 3 * 4 * sizeof(float));
 
@@ -311,17 +312,23 @@ void renderer::Renderer::doLightPasses(const scene::Scene& scene) const
     pointLightShader->setUniform("viewMatrix", camera.view());
     pointLightShader->setUniform("modelMatrix", glm::mat4(1.0f));
     pointLightShader->setUniform("viewProjectionInverse", glm::inverse(camera.viewProjection()));
-    pointLightShader->bindUniformBlock("LightDataLoc", BindingPoints::POINT_LIGHT_BUFFER);
 
-    pointLights->buffer->enable();
+    printOpenGLError();
+
+//    pointLights->buffer->enable();
     glBindVertexArray(pointLights->meshData.vao);
 
-    glDrawElementsInstanced(GL_TRIANGLES, pointLights->meshData.numFaces * 3, GL_UNSIGNED_INT, 0, pointLights->count);
+    for (const auto& lightData: pointLights->data)
+    {
+        pointLightShader->setUniform("position", lightData.position);
+        pointLightShader->setUniform("color", lightData.color);
+        pointLightShader->setUniform("radius", lightData.extraA.x);
+
+        glDrawElements(GL_TRIANGLES, pointLights->meshData.numFaces * 3, GL_UNSIGNED_INT, 0);
+    }
 
     glBindVertexArray(0);
-    pointLights->buffer->disable();
-
-    assert(pointLights->meshData.numFaces && pointLights->count && pointLights->meshData.vao);
+//    pointLights->buffer->disable();
 
     printOpenGLError();
 
