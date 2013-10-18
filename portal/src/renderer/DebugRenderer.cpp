@@ -38,17 +38,17 @@ renderer::DebugRenderer::~DebugRenderer()
 }
 
 void drawAABBs(
-        const std::array<physics::SIMDAABB, 8>& aabbs,
+        const std::array<physics::AABB, 8>& aabbs,
         const renderer::DebugRenderer::Settings& settings)
 {
     UNUSED(settings);
 
     glColor3f(1.0f, 0.0f, 1.0f);
 
-    for (const auto& simdaabb: aabbs)
+    for (const auto& aabb: aabbs)
     {
-    	const auto min = glm::vec4_cast(simdaabb.min);
-    	const auto max = glm::vec4_cast(simdaabb.max);
+    	const auto min = aabb.min;
+    	const auto max = aabb.max;
 
         glBegin(GL_LINE_STRIP);
         glVertex3f(min.x, min.y, min.z); // v0

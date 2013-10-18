@@ -60,10 +60,10 @@ public:
     {
         std::vector<std::array<unsigned int, 8>> children;
         std::vector<std::array<bool, 8>> leaves;
-        std::vector<std::array<SIMDAABB, 8>> aabbs;
+        std::vector<std::array<AABB, 8>> aabbs;
 
         std::vector<detail::BucketDescriptor> descriptors;
-        std::vector<SIMDTriangle> objects;
+        std::vector<Triangle> objects;
     } data;
 private:
     std::vector<detail::BucketDescriptor> bucketDescriptorBuffer;

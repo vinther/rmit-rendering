@@ -143,6 +143,8 @@ private:
     std::shared_ptr<resources::UniformBuffer> materialBuffer;
     std::shared_ptr<resources::UniformBuffer> geometryBufferSetup;
     std::unique_ptr<resources::PointLightGroup> pointLights;
+
+    Uint16 geometryBufferWidth, geometryBufferHeight;
 };
 
 }

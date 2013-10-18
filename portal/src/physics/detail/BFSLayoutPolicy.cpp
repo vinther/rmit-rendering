@@ -16,7 +16,7 @@
 #include "physics/Octree.hpp"
 #include "physics/detail/ConstructionTree.hpp"
 
-void physics::detail::BFSLayoutPolicy::layout(
+void physics::detail::BFSLayoutPolicy::operator()(
 		const ConstructionTree& cTree,
 		Octree::Data& data)
 {
@@ -39,8 +39,8 @@ void physics::detail::BFSLayoutPolicy::layout(
 	for (unsigned int i = 0; i < 8 ; ++i)
 	{
 		data.leaves[nodeIdx][i] = cTree.root->children[i]->isLeaf;
-        data.aabbs[nodeIdx][i].min = glm::simdVec4(cTree.root->children[i]->aabb.min, 0.0f);
-        data.aabbs[nodeIdx][i].max = glm::simdVec4(cTree.root->children[i]->aabb.max, 0.0f);
+        data.aabbs[nodeIdx][i].min = cTree.root->children[i]->aabb.min;
+        data.aabbs[nodeIdx][i].max = cTree.root->children[i]->aabb.max;
 
 		q.push(std::make_tuple(nodeIdx, i, cTree.root->children[i].get()));
 	}
@@ -58,8 +58,8 @@ void physics::detail::BFSLayoutPolicy::layout(
 		{
 			data.leaves[nodeIdx][i] = nodePtr->children[i]->isLeaf;
 
-			data.aabbs[nodeIdx][i].min = glm::simdVec4(nodePtr->children[i]->aabb.min, 0.0f);
-			data.aabbs[nodeIdx][i].max = glm::simdVec4(nodePtr->children[i]->aabb.max, 0.0f);
+			data.aabbs[nodeIdx][i].min = nodePtr->children[i]->aabb.min;
+			data.aabbs[nodeIdx][i].max = nodePtr->children[i]->aabb.max;
 
 			if (data.leaves[nodeIdx][i])
 			{
@@ -79,9 +79,9 @@ void physics::detail::BFSLayoutPolicy::layout(
 
 				for (unsigned int j = 0; j < descriptor.size; ++j)
 				{
-					data.objects[descriptor.offset + j][0] = glm::simdVec4(cTree.objects[nodePtr->children[i]->bucket[j]][0], 0.0f);
-					data.objects[descriptor.offset + j][1] = glm::simdVec4(cTree.objects[nodePtr->children[i]->bucket[j]][1], 0.0f);
-					data.objects[descriptor.offset + j][2] = glm::simdVec4(cTree.objects[nodePtr->children[i]->bucket[j]][2], 0.0f);
+					data.objects[descriptor.offset + j][0] = cTree.objects[nodePtr->children[i]->bucket[j]][0];
+					data.objects[descriptor.offset + j][1] = cTree.objects[nodePtr->children[i]->bucket[j]][1];
+					data.objects[descriptor.offset + j][2] = cTree.objects[nodePtr->children[i]->bucket[j]][2];
 				}
 
 				data.descriptors.push_back(descriptor);

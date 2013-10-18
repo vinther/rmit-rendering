@@ -37,18 +37,19 @@ void physics::Octree::createFromNode(const scene::SceneNode& node, unsigned int 
 	detail::ConstructionTree constructionTree(node, bucketSize);
 
 	MemoryLayoutPolicy mlp;
-	mlp.layout(constructionTree, data);
+	mlp(constructionTree, data);
 
 	aabb = {constructionTree.root->aabb.min, constructionTree.root->aabb.max};
 }
 
 inline void getDescriptors(
-        const physics::SIMDRay ray,
+        const physics::Ray ray,
         const physics::Octree::Data& data,
 
         std::vector<physics::detail::BucketDescriptor>& descriptors)
 {
-    const glm::simdVec4 directionRec = 1.0f / ray.direction;
+    float out = 0.0f;
+    const glm::vec3 directionRec = 1.0f / ray.direction;
 
     std::vector<unsigned int> q;
     q.push_back(0);
@@ -60,10 +61,10 @@ inline void getDescriptors(
         for (unsigned int i = 0; i < 8; ++i)
         {
             if (data.children[node][i] &&
-                    physics::rayAABBIntersectionOpt(
+                    physics::rayAABBIntersection(
                             ray.origin, directionRec,
                             data.aabbs[node][i].min,
-                            data.aabbs[node][i].max))
+                            data.aabbs[node][i].max, out))
             {
                 if (data.leaves[node][i]) {
                     descriptors.push_back(data.descriptors[data.children[node][i]]);
@@ -81,9 +82,9 @@ bool physics::Octree::trace(const Ray& ray, IntersectionPoint& result)
 
     bool intersection = false;
 
-    glm::simdVec4 v0, v1;
-    const glm::simdVec4 o = glm::simdVec4(ray.origin, 0.0f);
-    const glm::simdVec4 d = glm::simdVec4(ray.origin, 1.0f);
+    glm::vec3 v0, v1;
+    const glm::vec3 o = glm::vec3(ray.origin);
+    const glm::vec3 d = glm::vec3(ray.origin);
 
     bucketDescriptorBuffer.clear();
 
@@ -91,25 +92,24 @@ bool physics::Octree::trace(const Ray& ray, IntersectionPoint& result)
 
     SDL_Log("%d", bucketDescriptorBuffer.size());
 
-    return false;
 //    unsigned int sumBufferSize = 0;
     for (unsigned int i = 0; i < bucketDescriptorBuffer.size(); ++i)
     {
 //    	sumBufferSize += bucketDescriptorBuffer[i].size;
         for (unsigned int j = 0; j < bucketDescriptorBuffer[i].size; ++j)
         {
-            const SIMDTriangle& tri = data.objects[bucketDescriptorBuffer[i].offset + j];
+            const Triangle& tri = data.objects[bucketDescriptorBuffer[i].offset + j];
 
-            float t;
-            if (lineTriangleIntersection(
+            glm::vec3 t;
+            if (glm::intersectLineTriangle(
                     o, d,
                     tri[0], tri[1], tri[2],
                     t))
             {
                 intersection = true;
 
-                float dist = 0.0f;
-                if (t < shortestDist)
+                float dist = glm::length(t - o);
+                if (dist < shortestDist)
                 {
                     shortestDist = dist;
 
@@ -121,7 +121,7 @@ bool physics::Octree::trace(const Ray& ray, IntersectionPoint& result)
     }
 
 	result.position = ray.origin + ray.direction * shortestDist;
-	result.normal = glm::vec3(glm::vec4_cast(glm::cross(v0, v1)));
+	result.normal = glm::cross(v0, v1);
 
 	SDL_Log("Avg.: %f %f %f", result.position.x, result.position.y, result.position.z);
 

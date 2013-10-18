@@ -96,25 +96,8 @@ void renderer::Renderer::initialize(SDL_Window* window, SDL_GLContext context, a
     ssaoShader = resourceManager->getByAsset<resources::ShaderProgram>(ssaoShaderAsset);
     outputShader = resourceManager->getByAsset<resources::ShaderProgram>(outputShaderAsset);
 
-    geometryBuffer = std::make_unique<resources::FrameBuffer>();
-
-    auto DS = std::make_unique<resources::Texture>(nullptr);
-    auto RT0 = std::make_unique<resources::Texture>(nullptr);
-    auto RT1 = std::make_unique<resources::Texture>(nullptr);
-    auto RT2 = std::make_unique<resources::Texture>(nullptr);
-    auto RT3 = std::make_unique<resources::Texture>(nullptr);
-
-    DS->createBlank(GL_DEPTH24_STENCIL8, settings.width, settings.height, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, resources::Texture::MipMapMode::NO_MIPMAP);
-    RT0->createBlank(GL_RGBA8, settings.width, settings.height, GL_RGBA, GL_UNSIGNED_BYTE, resources::Texture::MipMapMode::NO_MIPMAP);
-    RT1->createBlank(GL_RG16F, settings.width, settings.height, GL_RG, GL_FLOAT, resources::Texture::MipMapMode::NO_MIPMAP);
-    RT2->createBlank(GL_RGBA8, settings.width, settings.height, GL_RGBA, GL_UNSIGNED_BYTE, resources::Texture::MipMapMode::NO_MIPMAP);
-    RT3->createBlank(GL_RGBA8, settings.width, settings.height, GL_RGBA, GL_UNSIGNED_BYTE, resources::Texture::MipMapMode::NO_MIPMAP);
-
-    geometryBuffer->attach(std::move(DS), GL_DEPTH_STENCIL_ATTACHMENT);
-    geometryBuffer->attach(std::move(RT0), GL_COLOR_ATTACHMENT0);
-    geometryBuffer->attach(std::move(RT1), GL_COLOR_ATTACHMENT1);
-    geometryBuffer->attach(std::move(RT2), GL_COLOR_ATTACHMENT2);
-    geometryBuffer->attach(std::move(RT3), GL_COLOR_ATTACHMENT3);
+    geometryBufferWidth = 0;
+    geometryBufferHeight = 0;
 
     const auto pointLightAsset = assetManager.getOrCreate<assets::Model>("models/pointLight.obj");
 
@@ -152,6 +135,29 @@ void renderer::Renderer::render(const scene::Scene& scene, RenderResults& result
 {
     using namespace std::chrono;
     const auto timeBegin = high_resolution_clock::now();
+
+    if (geometryBufferWidth != settings.width || geometryBufferHeight != settings.height)
+    {
+        geometryBuffer = std::make_unique<resources::FrameBuffer>();
+
+        auto DS = std::make_unique<resources::Texture>(nullptr);
+        auto RT0 = std::make_unique<resources::Texture>(nullptr);
+        auto RT1 = std::make_unique<resources::Texture>(nullptr);
+        auto RT2 = std::make_unique<resources::Texture>(nullptr);
+        auto RT3 = std::make_unique<resources::Texture>(nullptr);
+
+        DS->createBlank(GL_DEPTH24_STENCIL8, settings.width, settings.height, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, resources::Texture::MipMapMode::NO_MIPMAP);
+        RT0->createBlank(GL_RGBA8, settings.width, settings.height, GL_RGBA, GL_UNSIGNED_BYTE, resources::Texture::MipMapMode::NO_MIPMAP);
+        RT1->createBlank(GL_RG16F, settings.width, settings.height, GL_RG, GL_FLOAT, resources::Texture::MipMapMode::NO_MIPMAP);
+        RT2->createBlank(GL_RGBA8, settings.width, settings.height, GL_RGBA, GL_UNSIGNED_BYTE, resources::Texture::MipMapMode::NO_MIPMAP);
+        RT3->createBlank(GL_RGBA8, settings.width, settings.height, GL_RGBA, GL_UNSIGNED_BYTE, resources::Texture::MipMapMode::NO_MIPMAP);
+
+        geometryBuffer->attach(std::move(DS), GL_DEPTH_STENCIL_ATTACHMENT);
+        geometryBuffer->attach(std::move(RT0), GL_COLOR_ATTACHMENT0);
+        geometryBuffer->attach(std::move(RT1), GL_COLOR_ATTACHMENT1);
+        geometryBuffer->attach(std::move(RT2), GL_COLOR_ATTACHMENT2);
+        geometryBuffer->attach(std::move(RT3), GL_COLOR_ATTACHMENT3);
+    }
 
     test += 0.01f;
     testInt += 1;
@@ -289,18 +295,17 @@ void renderer::Renderer::doLightPasses(const scene::Scene& scene) const
     ambientLightShader->setUniform("viewProjectionInverse", glm::inverse(camera.viewProjection()));
     ambientLightShader->setUniform("cameraPosition", camera.position);
     ambientLightShader->setUniform("enableSSAO", settings.ambientOcclusion ? 1 : 0);
+    ambientLightShader->setUniform("exclusiveSSAO", Settings::OutputMode::AMBIENT_OCCLUSION_ONLY == settings.output ? 1 : 0);
 
     renderFullscreenScreenQuad();
 
-    for(;false;)
-    {
-        // Set light parameters here
-        //renderFullscreenScreenQuad();
-    }
+    ambientLightShader->disable();
 
-    if (settings.lighting)
+    if (!(Settings::OutputMode::AMBIENT_OCCLUSION_ONLY == settings.output) && settings.lighting)
     {
         pointLightShader->enable();
+        pointLightShader->setUniform("screenWidth", settings.width);
+        pointLightShader->setUniform("screenHeight", settings.height);
 
         for (const auto& t: {
                 std::make_pair("RT1Sampler", 1),
@@ -434,6 +439,8 @@ void renderer::Renderer::finalizeOutput(const scene::Scene& scene) const
             activeShader->setSubroutine("albedo", GL_FRAGMENT_SHADER); break;
         case Settings::OutputMode::POSITIONS_ONLY:
             activeShader->setSubroutine("positions", GL_FRAGMENT_SHADER); break;
+        case Settings::OutputMode::AMBIENT_OCCLUSION_ONLY:
+            activeShader->setSubroutine("ambient_occlusion", GL_FRAGMENT_SHADER); break;
         default:
             break;
         }

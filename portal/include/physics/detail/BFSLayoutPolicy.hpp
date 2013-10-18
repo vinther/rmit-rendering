@@ -16,7 +16,7 @@ namespace detail {
 class ConstructionTree;
 
 struct BFSLayoutPolicy {
-	void layout(const ConstructionTree& cTree, Octree::Data& data);
+	void operator()(const ConstructionTree& cTree, Octree::Data& data);
 };
 
 } /* namespace detail */

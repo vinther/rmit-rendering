@@ -1,0 +1,12 @@
+This project relies on the following libraries:
+
+STL
+OpenGL
+GLUT
+GLM
+GLEW
+SDL2
+SDL2_image
+SDL2_ttf
+JPEG
+Assimp
