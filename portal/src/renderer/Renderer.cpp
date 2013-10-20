@@ -102,16 +102,17 @@ void renderer::Renderer::initialize(SDL_Window* window, SDL_GLContext context, a
 
     std::vector<resources::PointLightGroup::LightData> pointLightData;
 
-    pointLightData.resize(32);
+    pointLightData.resize(8);
 
     std::mt19937 gen;
     std::uniform_real_distribution<float> D;
+    std::normal_distribution<float> R(600, 200);
 
     std::generate(std::begin(pointLightData), std::end(pointLightData), [&](){
         return resources::PointLightGroup::LightData{
                 glm::vec4(D(gen) * 2000.0f - 1000.0f, D(gen) * 600.0f, D(gen) * 1000.0f - 500.0f, 0.0f),
                 glm::vec4(D(gen), D(gen), D(gen), 1.0f),
-                glm::vec4(D(gen) * 200.0f, 0.0f, 0.0f, 0.0f)};
+                glm::vec4(R(gen), 0.0f, 0.0f, 0.0f)};
     });
 
     pointLights->create(pointLightAsset, pointLightData);

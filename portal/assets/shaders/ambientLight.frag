@@ -110,7 +110,7 @@ void main()
     	ao = SSAO(P, N, texCoord, depth);
     
     if (0 == exclusiveSSAO)
-    	RT0 = 1.0f * RT3 * ao;
+    	RT0 = 0.5f * RT3 * ao;
 	else
 		RT0.xyz = vec3(ao);
     

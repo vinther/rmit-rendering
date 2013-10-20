@@ -72,5 +72,5 @@ void main()
 	float attenuation = 1.0f - smoothstep(0.0, radius, distance);
 
     RT0 = color * albedo * noZTestFix * attenuation * diffuseModifier;
-	//RT0.w = 1.0f;
+	RT0.w = 1.0f;
 }	
