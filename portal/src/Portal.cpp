@@ -21,8 +21,8 @@
 #include "Utilities.hpp"
 #include "Config.hpp"
 
-const int DEFAULT_WIDTH = 1280;
-const int DEFAULT_HEIGHT = 720;
+const int DEFAULT_WIDTH = 1024;
+const int DEFAULT_HEIGHT = 768;
 const int DEFAULT_DEPTH = 32;
 
 static int exitConditions;
@@ -59,7 +59,7 @@ int main(int argc, char **argv)
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 
-    if (true)
+    if (false)
     {
         windowWidth = displayMode.w;
         windowHeight = displayMode.h;
@@ -98,6 +98,8 @@ int main(int argc, char **argv)
     SDL_Log("Platform: %s (%d logical CPU cores)", SDL_GetPlatform(), SDL_GetCPUCount());
     SDL_Log("OpenGL: %s (%s)", (char*) glGetString(GL_VERSION), (char*) glGetString(GL_RENDERER));
 
+    bool forceNoFocus = false;
+
     while (!exitConditions)
     {
         /* Process all pending events */
@@ -109,7 +111,14 @@ int main(int argc, char **argv)
                 SDL_Log("Quit event received");
                 quit();
                 break;
+            case SDL_KEYDOWN:
+                if (ev.key.keysym.sym == 'g')
+                {
+                    forceNoFocus = !forceNoFocus;
+                }
 
+                client->event(&ev);
+                break;
             case SDL_WINDOWEVENT:
                 switch (ev.window.event)
                 {
@@ -129,6 +138,9 @@ int main(int argc, char **argv)
                 }
                 break;
             case SDL_MOUSEMOTION:
+                if (forceNoFocus)
+                    break;
+
                 // Ugly hack to simulate mouse grabbing
                 if (windowFocus)
                 {
@@ -145,7 +157,7 @@ int main(int argc, char **argv)
         }
 
         // Ugly hack to simulate mouse grabbing
-        if (windowFocus)
+        if (windowFocus && !forceNoFocus)
             SDL_WarpMouseInWindow(window, windowWidth / 2, windowHeight / 2);
 
         client->prepareFrame(window, glContext);

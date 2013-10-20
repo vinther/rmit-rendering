@@ -1,0 +1,310 @@
+%% LyX 2.0.3 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[english,annual]{acmsiggraph}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{url}
+\usepackage{graphicx}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+% for the following cases use the listed document class option:
+% [annual] - Technical paper accepted for presentation at the ACM SIGGRAPH 
+%   or SIGGRAPH Asia annual conference.
+% [sponsored] - Short or full-length technical paper accepted for 
+%   presentation at an event sponsored by ACM SIGGRAPH
+%   (but not the annual conference Technical Papers program).
+% [abstract] - A one-page abstract of your accepted content
+%   (Technical Sketches, Posters, Emerging Technologies, etc.). 
+%   Content greater than one page in length should use the "[sponsored]"
+%   parameter.
+% [preprint] - A preprint version of your final content.
+% [review] - A technical paper submitted for review. Includes line
+%   numbers and anonymization of author and affiliation information.
+
+% When you submit your paper for review, please use the \TOGonlineID''
+% command to include the online ID value assigned to your paper by the
+% submission management system. Replace '45678' with the value you were
+% assigned.
+\TOGonlineid{45678}
+
+% If you are preparing a preprint of your accepted paper, and your paper
+% will be published in an issue of the ACM "Transactions on Graphics''
+% journal, replace the "0'' values in the commands below with the correct
+% volume and number values for that issue - you'll get them before your
+% final paper is due.
+\TOGvolume{0}
+\TOGnumber{0}
+
+% The TOGarticleDOI' command accepts the DOI information provided to you
+% during production, and which makes up the URLs which identifies the ACM
+% article page and direct PDF link in the ACM Digital Library.
+% Replace "1111111.2222222'' with the values you are given.
+% \TOGarticleDOI{1111111.2222222}
+
+% If you would like to include links to personal repositories for auxiliary
+% material related your research contribution, you may use one or more of
+% these commands to define an appropriate URL. The "\TOGlinkslist'' command
+% found just before the first section of your document will add hyperlinked
+% icons to your document, in addition to hyperlinked icons which point to
+% the ACM Digital Library article page and the ACM Digital Library-held PDF.
+% \TOGprojectURL{}
+% \TOGvideoURL{}
+% \TOGdataURL{}
+% \TOGcodeURL{}
+
+% Paper title.
+\title{Real-Time Rendering and 3D Games Programming: Custom Rendering Engine}
+
+% Author and Affiliation (single author).
+%\author{Name \thanks{e-mail: name@unknown.uu}\\ Research Institute}
+
+% Author and Affiliation (multiple authors).
+\author{Søren V. Poulsen\thanks{e-mail: svipo@dtu.dk}\\M.Sc. Stud.\\DTU Compute, Lyngby %
+\and Geoff Leach\thanks{e-mail:gl@rmit.edu.au}\\Lecturer and Coordinator\\RMIT University%
+\and Tim Mutton\thanks{e-mail:tim.mutton@rmit.edu.au}\\Head Tutor\\RMIT University}
+
+% The ``pdfauthor'' command accepts the authors of the work,
+% comma-delimited, and adds this information to the PDF metadata.
+\pdfauthor{Søren V. Poulsen}
+
+% Keywords that describe your work.
+\keywords{opengl,rendering,}
+
+\@ifundefined{showcaptionsetup}{}{%
+ \PassOptionsToPackage{caption=false}{subfig}}
+\usepackage{subfig}
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+
+\teaser{\includegraphics[width=0.2\paperwidth]{\string"images/RMIT Portal_008\string".png}\,\includegraphics[width=0.2\paperwidth]{\string"images/RMIT Portal_009\string".png}\,\includegraphics[width=0.2\paperwidth]{\string"images/RMIT Portal_010\string".png}\,\includegraphics[width=0.2\paperwidth]{\string"images/RMIT Portal_012\string".png}\caption{Crytek Sponza scene rendering stages. Subfigures from left to right:
+full shading mode, depth buffer, normal buffer, and ambient occlusion.}
+}
+
+\maketitle
+\maketitle 
+\begin{abstract}
+This paper describes the design and implementation of a custom engine
+for rendering various 3D scenes using OpenGL. Using modern rendering
+techniques, features such as dynamic point lights, screen-space ambient
+occlusion and deferred rendering has been implemented in a GNU/Linux
+C++11 application with minimal use of external libraries. The project
+has been completed as an assignment in the course \emph{COSC1224/1226
+Real-Time Rendering and 3D Games Programming}%
+\footnote{\url{http://goanna.cs.rmit.edu.au/~gl/teaching/rtr&3dgp/}%
+}\emph{ }coordinated by professor Geoff Leach of RMIT University\emph{. }
+
+The project has been completed in 12 weeks during semester 2 of 2013
+by M.Sc. Stud. Søren V. Poulsen of DTU Compute in Lyngby, Denmark.
+\end{abstract}
+
+\date{October 2013}
+
+
+\section{Introduction}
+
+%\copyrightspace
+
+The purpose of this project assignment has been to demonstrate skills
+and knowledge of various OpenGL features. Initially the project schedule
+included portal rendering capabilities, however this has not been
+implemented. Instead, more advanced rendering features such as deferred
+rendering was chosen.
+
+Full source code and assets are available via GitHub%
+\footnote{\url{https://github.com/vinther/rmit-rendering}%
+}.
+
+
+\section{Features}
+
+Below is a list of the features that are currently part of the rendering
+engine in a working state:
+\begin{itemize}
+\item Fully deferred rendering 
+\item Color and normal displacement textures
+\item Dynamic and unlimited point light sources
+\item Screen-space ambient occlusion
+\item Efficient CPU-based ray/scene intersection test using bounding volume
+hierarchies
+\item Crytek Sponza scene, 262k triangles, 256 lights: 40-60 (capped) frames
+per second on Nvidia 650m hardware via bumblebee (Optimus hardware
+switch emulator) on Linux Mint 15 ``olivia''.
+\end{itemize}
+
+\section{Implementation}
+
+The application is based on the SDL2 library which provides the OpenGL
+context and window management. Other libraries such as \emph{GLEW}
+and \emph{libjpeg} has been used to provide math functions and image
+loading capabilities, respectively. The \emph{Open Asset Import Library}
+(\emph{assimp}) is used to load scenes from Wavefront OBJ files. Several
+C++0x/C++11 features such as smart pointers and range-based \emph{for}
+loops are heavily utilized throughout the implementation.
+
+
+\subsection{Deferred Passes}
+
+\begin{figure}
+\begin{centering}
+\subfloat[Bump-mapping disabled]{\includegraphics[width=0.45\columnwidth]{\string"images/RMIT Portal_021\string".png}
+
+}\subfloat[Bump-mapping enabled]{\includegraphics[width=0.45\columnwidth]{\string"images/RMIT Portal_020\string".png}
+
+}
+\par\end{centering}
+
+\caption{Surface normals of lions head\label{fig:Surface-normals-of}}
+\end{figure}
+
+
+Deferred rendering is a rendering technique that separates geometry
+and lighting operations into multiple passes. Using this technique
+has the great benefit of reducing the performance hit of having many
+lights in a scene regardless of the complexity of the scene geometry.
+However, this technique complicates having translucent materials (something
+which is not handled at all in this implementation) since each pixel
+can only contain information about a single, opaque surface.
+
+In the first pass (the geometry or G-pass), information about the
+scene geometry is rendered into multiple buffers (which in turn are
+simple textures). In this application the texture color (albedo) is
+stored in a $4\times8\,\mbox{bit}$ texture buffer, the surface normal
+in a packed $2\times16\,\mbox{bit}$ floating point (FP) texture buffer,
+and finally the depth and stencil in a $24+8\,\mbox{bit}$ FP/integer
+texture buffer. The normal maps are displaced using height map displacement
+(bump-mapping) in order to increase details in lighting calculations
+without having to increase the complexity of the scene geometry (fig.
+\ref{fig:Surface-normals-of}).
+
+
+\subsection{Lighting}
+
+\begin{figure}
+\begin{centering}
+\subfloat[SSAO disabled]{\includegraphics[width=0.45\columnwidth]{\string"images/RMIT Portal_023\string".png}
+
+}\subfloat[SSAO enabled]{\includegraphics[width=0.45\columnwidth]{\string"images/RMIT Portal_024\string".png}
+
+}
+\par\end{centering}
+
+\caption{Display of SSAO effect (bump-mapping enabled)\label{fig:Display-of-SSAO}}
+\end{figure}
+
+
+Lighting happens in a separate, deferred stage. This implementation
+supports a single ambient light and a potentially infinite number
+of spherical point lights.
+
+To determine the ambient light contribution a single full-screen quadrangle
+is rendered to the light accumulation buffer. The quadrangle is texture
+with the contents of the geometry texture color (from the geometry
+buffer) multiplied by some constant in the unit interval. An ambient
+occlusion term is multiplied onto the ambient light contribution (fig.
+\ref{fig:Display-of-SSAO}) using a hemispherical approach%
+\footnote{\url{http://blog.evoserv.at/index.php/2012/12/hemispherical-screen-space-ambient-occlusion-ssao-for-deferred-renderers-using-openglglsl/}%
+}. This term provides a subtle shadow along corners and creases that
+under physically correct circumstances are likely to receive less
+contribution from ambient lighting.
+
+Point light source contributions are determined by rendering spheres
+with radii corresponding to the intensity of the light (fig. \ref{fig:Point-light-sphere}).
+When doing the per-pixel (fragment) shading of the rendered spheres,
+the geometry properties of each pixel (i.e. depth and normals) are
+looked up in the geometry buffer. Pixels outside the area of influence
+contributes no light (fig. \ref{fig:Influenced-surfaces}) while the
+remaining contribute light according to their distance from the light
+(fig. \ref{fig:Attenuated-light-(linear)}), surface texture color
+and cosine weighting (fig. \ref{fig:Final-contribution}). 
+
+\begin{figure}
+\begin{centering}
+\subfloat[Point light sphere backfaces\label{fig:Point-light-sphere}]{\includegraphics[width=0.45\columnwidth]{\string"images/RMIT Portal_015\string".png}
+
+
+
+}\subfloat[Influenced surfaces\label{fig:Influenced-surfaces}]{\includegraphics[width=0.45\columnwidth]{\string"images/RMIT Portal_016\string".png}
+
+}
+\par\end{centering}
+
+\begin{centering}
+\subfloat[Attenuated light (linear)\label{fig:Attenuated-light-(linear)}]{\includegraphics[width=0.45\columnwidth]{\string"images/RMIT Portal_017\string".png}
+
+}\subfloat[Final contribution\label{fig:Final-contribution}]{\includegraphics[width=0.45\columnwidth]{\string"images/RMIT Portal_019\string".png}
+
+}
+\par\end{centering}
+
+\caption{Point light example}
+
+
+\end{figure}
+
+
+
+\subsection{Ray-tracing}
+
+In an effort to support basic game-like features such as shooting
+weapons, the application is capable of doing ray-scene intersection.
+That is, given a starting point and direction, determine the closest
+point (if any) of intersection with the triangle meshes that makes
+up the scene. A typical scene has many triangles, so a naive $O\left(n\right)$
+search is deemed to be too inefficient when scenes become non-trivial.
+
+Instead a bounding volume hierarchy (BVH) of axis-aligned bounding
+boxes (AABBs) containing triangles is built in the initialization
+stage of the engine. The octree data structure has been selected as
+the BVH structure. When querying for ray-triangle intersections, the
+top level (root) AABB of the BVH tree is tested for intersection with
+the given ray. If there is such an intersection, the 8 children AABBs
+beneath the root is tested and so forth until only leaf nodes are
+left. The leaf nodes contains simple triangle lists, which are then
+tested against the given ray.
+
+In average- and best-case scenarios this method significantly reduces
+ray-triangle intersection tests and makes even large amounts of ray-scene
+queries for each frame feasible.
+
+
+\subsection{Asset Handling}
+
+Any rendering or game engine requires handling of assets such as shader
+programs, textures, models, scripts, etc. The efficiency of the asset
+handling mechanics is a determining factor for loading times and/or
+memory usage, which makes it an important and essential part of any
+rendering engine.
+
+This application uses a simple string-based caching mechanic. Each
+asset is given a name, which is stored as a simple textual string,
+that in most cases is directly related to the file path of the asset.
+ When an asset is requested for usage (e.g. a model or texture file)
+the name of the requested asset is looked up in the asset cache. If
+found, a reference to the already loaded asset is returned, leaving
+the file system untouched. If the name is not found the asset is loaded
+from the file system and entered into the cache system.
+
+Having all assets handled by the same asset management system has
+other benefits besides reduced file system utilization. For example,
+this application features hot-loadable assets meaning that assets
+that are altered by an external application are almost instantaneously
+reloaded in the engine. This has been accomplished using the Linux
+kernel subsystem \emph{inotify} and has proven to be very beneficial
+while debugging the application. 
+
+
+\section{Conclusion}
+
+Despite not achieving a working portal rendering engine as originally
+intended, several advanced rendering techniques have been implemented
+together with other technically challenging features. Many trivial
+(and non-trivial) optimizations are not part of the current implementation
+thus making it an ideal target for further development. 
+
+\bibliographystyle{acmsiggraph}
+\bibliography{../examples/biblioExample}
+ 
+\end{document}

@@ -127,7 +127,46 @@
 
 \begin_layout Teaser
 \begin_inset Graphics
-	filename images/temp.png
+	filename images/RMIT Portal_008.png
+	display false
+	width 20page%
+	groupId test
+
+\end_inset
+
+
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset Graphics
+	filename images/RMIT Portal_009.png
+	display false
+	width 20page%
+	groupId test
+
+\end_inset
+
+
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset Graphics
+	filename images/RMIT Portal_010.png
+	display false
+	width 20page%
+	groupId test
+
+\end_inset
+
+
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\begin_inset Graphics
+	filename images/RMIT Portal_012.png
 	display false
 	width 20page%
 	groupId test
@@ -155,7 +194,9 @@ Senseless!!!
 
 \end_inset
 
-Crytek Sponza scene
+Crytek Sponza scene rendering stages.
+ Subfigures from left to right: full shading mode, depth buffer, normal
+ buffer, and ambient occlusion.
 \end_layout
 
 \end_inset
@@ -289,7 +330,34 @@ copyrightspace
 \begin_layout Standard
 The purpose of this project assignment has been to demonstrate skills and
  knowledge of various OpenGL features.
- Instead of aiming for visual fidelity or high frame rate efficiency 
+ Initially the project schedule included portal rendering capabilities,
+ however this has not been implemented.
+ Instead, more advanced rendering features such as deferred rendering was
+ chosen.
+\end_layout
+
+\begin_layout Standard
+Full source code and assets are available via GitHub
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://github.com/vinther/rmit-rendering
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Section
@@ -306,11 +374,11 @@ Fully deferred rendering
 \end_layout
 
 \begin_layout Itemize
-Color(diffuse) texturing and bump-mapping
+Color and normal displacement textures
 \end_layout
 
 \begin_layout Itemize
-Dynamic and (theoretically) unlimited point light sources
+Dynamic and unlimited point light sources
 \end_layout
 
 \begin_layout Itemize
@@ -322,18 +390,151 @@ Efficient CPU-based ray/scene intersection test using bounding volume hierarchie
 s
 \end_layout
 
+\begin_layout Itemize
+Crytek Sponza scene, 262k triangles, 256 lights: 40-60 (capped) frames per
+ second on Nvidia 650m hardware via bumblebee (Optimus hardware switch emulator)
+ on Linux Mint 15 
+\begin_inset Quotes eld
+\end_inset
+
+olivia
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
 \begin_layout Section
 Implementation
 \end_layout
 
 \begin_layout Standard
-The application has been implemented without use of a preexisting framework
- or rendering library.
- 
+The application is based on the SDL2 library which provides the OpenGL context
+ and window management.
+ Other libraries such as 
+\emph on
+GLEW
+\emph default
+ and 
+\emph on
+libjpeg
+\emph default
+ has been used to provide math functions and image loading capabilities,
+ respectively.
+ The 
+\emph on
+Open Asset Import Library
+\emph default
+ (
+\emph on
+assimp
+\emph default
+) is used to load scenes from Wavefront OBJ files.
+ Several C++0x/C++11 features such as smart pointers and range-based 
+\emph on
+for
+\emph default
+ loops are heavily utilized throughout the implementation.
 \end_layout
 
 \begin_layout Subsection
 Deferred Passes
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/RMIT Portal_021.png
+	display false
+	width 45col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Bump-mapping disabled
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/RMIT Portal_020.png
+	display false
+	width 45col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Bump-mapping enabled
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Surface normals of lions head
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Surface-normals-of"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -342,11 +543,14 @@ Deferred rendering is a rendering technique that separates geometry and
  Using this technique has the great benefit of reducing the performance
  hit of having many lights in a scene regardless of the complexity of the
  scene geometry.
+ However, this technique complicates having translucent materials (something
+ which is not handled at all in this implementation) since each pixel can
+ only contain information about a single, opaque surface.
 \end_layout
 
 \begin_layout Standard
 In the first pass (the geometry or G-pass), information about the scene
- geometry is gathered into multiple buffers (which in turn are simple textures).
+ geometry is rendered into multiple buffers (which in turn are simple textures).
  In this application the texture color (albedo) is stored in a 
 \begin_inset Formula $4\times8\,\mbox{bit}$
 \end_inset
@@ -361,16 +565,396 @@ In the first pass (the geometry or G-pass), information about the scene
 \end_inset
 
  FP/integer texture buffer.
-\end_layout
+ The normal maps are displaced using height map displacement (bump-mapping)
+ in order to increase details in lighting calculations without having to
+ increase the complexity of the scene geometry (fig.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Surface-normals-of"
 
-\begin_layout Standard
-Generating images in this application happens through multiple rendering
- passes.
- The first pass 
+\end_inset
+
+).
 \end_layout
 
 \begin_layout Subsection
 Lighting
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/RMIT Portal_023.png
+	width 45col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+SSAO disabled
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/RMIT Portal_024.png
+	width 45col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+SSAO enabled
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Display of SSAO effect (bump-mapping enabled)
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Display-of-SSAO"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Lighting happens in a separate, deferred stage.
+ This implementation supports a single ambient light and a potentially infinite
+ number of spherical point lights.
+\end_layout
+
+\begin_layout Standard
+To determine the ambient light contribution a single full-screen quadrangle
+ is rendered to the light accumulation buffer.
+ The quadrangle is texture with the contents of the geometry texture color
+ (from the geometry buffer) multiplied by some constant in the unit interval.
+ An ambient occlusion term is multiplied onto the ambient light contribution
+ (fig.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Display-of-SSAO"
+
+\end_inset
+
+) using a hemispherical approach
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://blog.evoserv.at/index.php/2012/12/hemispherical-screen-space-ambient-occlusi
+on-ssao-for-deferred-renderers-using-openglglsl/
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+.
+ This term provides a subtle shadow along corners and creases that under
+ physically correct circumstances are likely to receive less contribution
+ from ambient lighting.
+\end_layout
+
+\begin_layout Standard
+Point light source contributions are determined by rendering spheres with
+ radii corresponding to the intensity of the light (fig.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Point-light-sphere"
+
+\end_inset
+
+).
+ When doing the per-pixel (fragment) shading of the rendered spheres, the
+ geometry properties of each pixel (i.e.
+ depth and normals) are looked up in the geometry buffer.
+ Pixels outside the area of influence contributes no light (fig.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Influenced-surfaces"
+
+\end_inset
+
+) while the remaining contribute light according to their distance from
+ the light (fig.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Attenuated-light-(linear)"
+
+\end_inset
+
+), surface texture color and cosine weighting (fig.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Final-contribution"
+
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/RMIT Portal_015.png
+	display false
+	width 45col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Point light sphere backfaces
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Point-light-sphere"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/RMIT Portal_016.png
+	display false
+	width 45col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Influenced surfaces
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Influenced-surfaces"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/RMIT Portal_017.png
+	display false
+	width 45col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Attenuated light (linear)
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Attenuated-light-(linear)"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/RMIT Portal_019.png
+	display false
+	width 45col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Final contribution
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Final-contribution"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Point light example
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -413,8 +997,8 @@ Asset Handling
 \end_layout
 
 \begin_layout Standard
-Any rendering or game engine requires handling of assets such as shaders,
- textures, models, scripts, etc.
+Any rendering or game engine requires handling of assets such as shader
+ programs, textures, models, scripts, etc.
  The efficiency of the asset handling mechanics is a determining factor
  for loading times and/or memory usage, which makes it an important and
  essential part of any rendering engine.
@@ -429,8 +1013,8 @@ This application uses a simple string-based caching mechanic.
  the asset cache.
  If found, a reference to the already loaded asset is returned, leaving
  the file system untouched.
- If the name is not found, then the asset is loaded from the file system
- and entered into the cache system.
+ If the name is not found the asset is loaded from the file system and entered
+ into the cache system.
 \end_layout
 
 \begin_layout Standard
@@ -448,19 +1032,16 @@ inotify
 \end_layout
 
 \begin_layout Section
-Results
-\end_layout
-
-\begin_layout Standard
-Bla.
-\end_layout
-
-\begin_layout Section
 Conclusion
 \end_layout
 
 \begin_layout Standard
-Bla.
+Despite not achieving a working portal rendering engine as originally intended,
+ several advanced rendering techniques have been implemented together with
+ other technically challenging features.
+ Many trivial (and non-trivial) optimizations are not part of the current
+ implementation thus making it an ideal target for further development.
+ 
 \end_layout
 
 \begin_layout Standard

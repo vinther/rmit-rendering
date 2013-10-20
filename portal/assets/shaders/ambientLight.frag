@@ -59,6 +59,7 @@ const vec2 poisson16[] = vec2[](    // These are the Poisson Disk Samples
                                 vec2(  0.14383161,  -0.14100790 )
                                );
 
+// http://blog.evoserv.at/index.php/2012/12/hemispherical-screen-space-ambient-occlusion-ssao-for-deferred-renderers-using-openglglsl/
 float SSAO(vec3 viewPos, vec3 viewNormal, vec2 uv, float depth)
 {
     float ambientOcclusion = 0;
@@ -88,6 +89,7 @@ float SSAO(vec3 viewPos, vec3 viewNormal, vec2 uv, float depth)
 }
 
 uniform int enableSSAO;
+uniform int exclusiveSSAO;
 
 void main()
 {
@@ -107,6 +109,11 @@ void main()
     if (1 == enableSSAO)
     	ao = SSAO(P, N, texCoord, depth);
     
-    RT0 = 0.5f * RT3 * ao;
-    RT0.w = 1.0f;
+    if (0 == exclusiveSSAO)
+    	RT0 = 1.0f * RT3 * ao;
+	else
+		RT0.xyz = vec3(ao);
+    
+    
+	RT0.w = 1.0f;
 }	

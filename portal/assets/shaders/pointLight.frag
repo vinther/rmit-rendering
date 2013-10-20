@@ -20,6 +20,9 @@ uniform vec4 position;
 uniform vec4 color;
 uniform float radius;
 
+uniform int screenWidth;
+uniform int screenHeight;
+
 // http://aras-p.info/texts/CompactNormalStorage.html#method04spheremap
 vec3 decode (vec2 enc)
 {
@@ -47,9 +50,6 @@ vec3 viewSpacePos(vec2 uv, float zOverW)
 
 void main()
 {
-    const int screenWidth = 1280;
-    const int screenHeight = 720;
-
 	vec2 texCoord = (gl_FragCoord).xy;
 	texCoord.x = texCoord.x / screenWidth;
 	texCoord.y = texCoord.y / screenHeight;
@@ -65,24 +65,12 @@ void main()
     vec3 N = normalize(decode(packedNormal));
     vec3 P = viewSpacePos(texCoord, zOverW);
 	
-    //Lighting Calcs (view space)
-    
     vec3 L = fragLightPosition.xyz - P;
    	float diffuseModifier = max(dot(N,normalize(L)), 0.0);
     float noZTestFix = step(0.0, radius-length(L)); //0.0 if dist > radius, 1.0 otherwise
-    
-    float cutoff = 0.9f;
     float distance = length(L);
-    // calculate basic attenuation
-    float denom = max(distance, 0) / radius + 1;
-    float attenuation = 1 / (denom * denom);
-     
-    // scale and bias attenuation such that:
-    //   attenuation == 0 at extent of max influence
-    //   attenuation == 1 when d == 0
-    attenuation = (attenuation - cutoff) / (1 - cutoff);
-    attenuation = max(attenuation, 0);
-	attenuation = 1.0f - smoothstep(0.0, radius, distance);
+	float attenuation = 1.0f - smoothstep(0.0, radius, distance);
 
     RT0 = color * albedo * noZTestFix * attenuation * diffuseModifier;
+	//RT0.w = 1.0f;
 }	

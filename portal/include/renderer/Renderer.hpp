@@ -136,7 +136,6 @@ private:
     std::shared_ptr<resources::ShaderProgram> geometryPassShader;
     std::shared_ptr<resources::ShaderProgram> ambientLightShader;
     std::shared_ptr<resources::ShaderProgram> pointLightShader;
-    std::shared_ptr<resources::ShaderProgram> ssaoShader;
     std::shared_ptr<resources::ShaderProgram> outputShader;
 
     std::unique_ptr<resources::FrameBuffer> geometryBuffer;

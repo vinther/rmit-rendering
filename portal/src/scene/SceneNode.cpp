@@ -28,5 +28,5 @@ scene::SceneNode::~SceneNode()
 void scene::SceneNode::initialize()
 {
     bvh = std::make_unique<physics::Octree>();
-    bvh->createFromNode(*this, 32);
+    bvh->createFromNode(*this, 1024 * 4);
 }

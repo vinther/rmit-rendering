@@ -47,7 +47,7 @@ public:
     ~Octree();
 
     template <class MemoryLayoutPolicy = detail::DefaultLayoutPolicy>
-    void createFromNode(const scene::SceneNode& node, unsigned int bucketSize = 16);
+    void createFromNode(const scene::SceneNode& node, unsigned int bucketSize = 256);
 
     bool trace(const Ray& ray, IntersectionPoint& result);
     bool trace(const Ray& ray, const glm::mat4 transformation, IntersectionPoint& result);

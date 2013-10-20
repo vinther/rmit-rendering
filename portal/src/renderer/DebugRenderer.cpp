@@ -43,8 +43,6 @@ void drawAABBs(
 {
     UNUSED(settings);
 
-    glColor3f(1.0f, 0.0f, 1.0f);
-
     for (const auto& aabb: aabbs)
     {
     	const auto min = aabb.min;
@@ -108,6 +106,11 @@ void DebugRenderer::render(const scene::Scene& scene)
     const auto& camera = *(scene.camera);
     const glm::mat4 viewProjectionMatrix = camera.viewProjection();
 
+    glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+    glEnable (GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
@@ -118,17 +121,23 @@ void DebugRenderer::render(const scene::Scene& scene)
 
     if (settings.drawBVH)
     {
-        glLineWidth(1.0f);
-        glColor3f(1.0f, 0.0f, 1.0f);
+        glDisable(GL_CULL_FACE);
+        glDisable(GL_DEPTH_TEST);
 
+        glLineWidth(2.0f);
+        glColor3f(1.0f, 1.0f, 0.5f);
 
         glPushMatrix();
         glMultMatrixf(glm::value_ptr(scene.root->transformation));
+
         for (const auto& aabbs: scene.root->bvh->data.aabbs)
         {
             drawAABBs(aabbs, settings);
         }
         glPopMatrix();
+
+        glEnable(GL_CULL_FACE);
+        glEnable(GL_DEPTH_TEST);
     }
 
     if (settings.drawRays)
@@ -136,14 +145,14 @@ void DebugRenderer::render(const scene::Scene& scene)
         glLineWidth(10.0f);
 
         glBegin(GL_LINES);
-//        for (const auto& line: lines)
-//        {
-//            glColor3f(0.0f, 1.0f, 0.0f);
-//            glVertex3f(line.origin.x, line.origin.y, line.origin.z);
-//
-//            glColor3f(1.0f, 0.0f, 0.0f);
-//            glVertex3f(line.end.x, line.end.y, line.end.z);
-//        }
+        for (const auto& line: lines)
+        {
+            glColor3f(0.0f, 1.0f, 0.0f);
+            glVertex3f(line.origin.x, line.origin.y, line.origin.z);
+
+            glColor3f(1.0f, 0.0f, 0.0f);
+            glVertex3f(line.end.x, line.end.y, line.end.z);
+        }
         glEnd();
     }
 
@@ -189,4 +198,4 @@ void DebugRenderer::render(const scene::Scene& scene)
     }
 }
 
-} /* namespace threading */
+}

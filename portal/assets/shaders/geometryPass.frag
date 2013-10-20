@@ -42,8 +42,7 @@ vec2 encode (vec3 n)
     return vec2(n.xy/p + 0.5f);
 }
 
-//Returns a normal from a grid of heights
-
+// Returns a normal from a grid of heights
 vec3 findNormal(vec2 uv, int u)
 {   
     //u is one uint size, ie 1.0/texture size

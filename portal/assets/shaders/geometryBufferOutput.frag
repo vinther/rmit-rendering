@@ -75,6 +75,13 @@ vec3 positions(vec2 uv)
     return viewSpacePos(uv, texture2D(DSSampler, uv).x);
 }
 
+subroutine(textureOutputType)
+
+vec3 ambient_occlusion(vec2 uv)
+{
+    return texture2D(RT0Sampler, uv).xyz;
+}
+
 void main()
 {
     fragColor.xyz = textureOutput(texCoord);
