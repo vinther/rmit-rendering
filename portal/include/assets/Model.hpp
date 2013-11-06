@@ -16,7 +16,7 @@
 #include <SDL2/SDL.h>
 #include <assimp/Importer.hpp>
 
-class aiScene;
+struct aiScene;
 
 namespace assets
 {

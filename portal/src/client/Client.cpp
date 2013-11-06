@@ -97,7 +97,7 @@ void Client::initialize(SDL_Window* window, SDL_GLContext context)
     threadPool = std::make_unique<threading::ThreadPool>();
 
     threadPool->settings.numThreads = SDL_GetCPUCount() - 1;
-    threadPool->initialize();
+    //threadPool->initialize();
     SDL_LogDebug(client::PORTAL_LOG_CATEGORY_CLIENT, "Threadpool initialized");
 
     interface->initialize();

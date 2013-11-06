@@ -13,7 +13,7 @@
 
 #include "assets/Asset.hpp"
 
-class SDL_Surface;
+struct SDL_Surface;
 
 typedef unsigned int GLuint;
 

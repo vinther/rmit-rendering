@@ -31,7 +31,6 @@ struct TriangleT
 };
 
 typedef TriangleT<glm::vec3> Triangle;
-typedef TriangleT<glm::simdVec4> SIMDTriangle;
 
 template <typename T>
 struct RayT
@@ -41,7 +40,6 @@ struct RayT
 };
 
 typedef RayT<glm::vec3> Ray;
-typedef RayT<glm::simdVec4> SIMDRay;
 
 template <typename T>
 struct LineT
@@ -51,7 +49,6 @@ struct LineT
 };
 
 typedef LineT<glm::vec3> Line;
-typedef LineT<glm::simdVec4> SIMDLine;
 
 template <typename T>
 struct AABBT
@@ -61,7 +58,6 @@ struct AABBT
 };
 
 typedef AABBT<glm::vec3> AABB;
-typedef AABBT<glm::simdVec4> SIMDAABB;
 
 struct IntersectionPoint
 {

@@ -8,6 +8,7 @@
 #ifndef FREELIST_HPP_
 #define FREELIST_HPP_
 
+#include <limits>
 
 template <typename T>
 class FreeList
@@ -18,5 +19,6 @@ public:
     std::vector<T> items;
     std::vector<unsigned int> freeList;
 };
+
 
 #endif /* FREELIST_HPP_ */

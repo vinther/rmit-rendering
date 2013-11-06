@@ -15,7 +15,7 @@
 
 #include <glm/glm.hpp>
 
-class aiMaterial;
+struct aiMaterial;
 
 namespace assets
 {
