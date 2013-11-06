@@ -129,7 +129,7 @@ public:
             throw new std::out_of_range("Element is out of range: " + std::to_string(idx));
 
         if (nodes_used_[idx])
-            reinterpret_cast<T*>(&(nodes_[idx].item))->~T();
+            nodes_[idx].item.~T();
 
         nodes_[idx].next = head_;
         nodes_used_[idx] = false;
@@ -170,7 +170,7 @@ public:
 
     T& at(const size_type idx)
     {
-        if (!nodes_used_[idx])
+        if (!nodes_used_.at(idx))
             throw new std::out_of_range("Element not used: " + std::to_string(idx));
 
         return nodes_.at(idx).item;
@@ -178,7 +178,7 @@ public:
 
     const T& at(const size_type idx) const
     {
-        if (!nodes_used_[idx])
+        if (!nodes_used_.at(idx))
             throw new std::out_of_range("Element not used: " + std::to_string(idx));
 
         return nodes_.at(idx).item;
@@ -190,7 +190,7 @@ public:
 
         for (; i < nodes_.size() && !nodes_used_[i]; ++i);
 
-        return (iterator(this, i));
+        return iterator(this, i);
     }
 
     iterator end()
@@ -199,25 +199,27 @@ public:
 
         for (; i != size_max() && !nodes_used_[i]; --i);
 
-        return (iterator(this, i + 1));
+        return iterator(this, i + 1);
     }
 
     const_iterator cbegin() const
     {
-        size_type i = 0;
-
-        for (; i < nodes_.size() && !nodes_used_[i]; ++i);
-
-        return const_iterator(this, i);
+        return static_cast<const_iterator>(begin());
     }
 
     const_iterator cend() const
     {
-        size_type i = nodes_.size() - 1;
+        return static_cast<const_iterator>(end());
+    }
 
-        for (; i != size_max() && !nodes_used_[i]; --i);
+    const_iterator begin() const
+    {
+        return cbegin();
+    }
 
-        return const_iterator(this, i + 1);
+    const_iterator end() const
+    {
+        return cend();
     }
 };
 
@@ -254,7 +256,7 @@ public:
     {
         ++pos_;
 
-        while(!container_->nodes_used_[pos_] && pos_ < container_->nodes_.size())
+        while(pos_ < container_->nodes_.size() && !container_->nodes_used_[pos_])
             ++pos_;
 
         return *this;
@@ -262,7 +264,10 @@ public:
 
     iterator& operator--()
     {
-        for (--pos_; pos_ != size_max() && !container_->nodes_used_[pos_]; --pos_);
+        --pos_;
+
+        while (pos_ != size_max() && !container_->nodes_used_[pos_])
+            --pos_;
 
         return *this;
     }
@@ -274,7 +279,7 @@ public:
 
     friend bool operator!=(const iterator& lhs, const iterator& rhs)
     {
-        return !(lhs == rhs);
+        return !lhs.equal(rhs);
     }
 
     bool equal(iterator const& rhs) const
