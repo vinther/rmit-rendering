@@ -1,0 +1,10 @@
+#ifndef CRY_TERRA_FILE_HASHSE_HPP_
+#define CRY_TERRA_FILE_HASHSE_HPP_
+
+{% for entry in results %}
+
+{{ entry.hash }} /* {{ entry.path }} */
+
+{% endfor %}
+
+#endif /* CRY_TERRA_FILE_HASHSE_HPP_ */

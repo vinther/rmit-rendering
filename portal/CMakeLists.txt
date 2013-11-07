@@ -51,7 +51,7 @@ MACRO (TODAY RESULT)
         MESSAGE(SEND_ERROR "date not implemented")
         SET(${RESULT} 000000)
     ENDIF (WIN32)
-ENDMACRO (TODAY) 
+ENDMACRO (TODAY)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 configure_file(${PROJECT_SOURCE_DIR}/include/Config.cmake.hpp ${PROJECT_SOURCE_DIR}/include/Config.hpp)
@@ -73,7 +73,6 @@ target_link_libraries(
 	${Boost_LIBRARIES}
 	)
 	
-	
 file(GLOB_RECURSE PORTAL_SOURCES src/Portal.cpp)	
 
 add_executable (portal src/Portal.cpp)
@@ -82,3 +81,7 @@ target_link_libraries(portal client)
 
 add_subdirectory(profiling)
 add_subdirectory(test)
+
+add_custom_target(assets
+    COMMAND python ${PROJECT_SOURCE_DIR}/scripts/data_packer/pack_directory.py ${PROJECT_SOURCE_DIR}/assets -o ${PROJECT_SOURCE_DIR}/data/assets -v
+)

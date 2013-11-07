@@ -9,13 +9,14 @@
 #define CRY_TERRA_INDATA_FREE_LIST_HPP_
 
 #include <vector>
+#include <type_traits>
 
 #include <cry_terra/utilities/ignore.hpp>
 
 namespace cry_terra
 {
 
-template <typename T>
+template <typename T, class E = typename std::enable_if<std::is_move_assignable<T>::value>::type>
 class indata_free_list
 {
 
@@ -55,7 +56,7 @@ private:
 
         item_node_& operator=(item_node_&& other)
         {
-            item = other.item;
+            item = std::move(other.item);
 
             return *this;
         }
@@ -224,8 +225,8 @@ public:
 };
 
 
-template <typename T>
-class indata_free_list<T>::iterator : std::iterator<std::bidirectional_iterator_tag, T>
+template <typename T, typename E>
+class indata_free_list<T, E>::iterator : std::iterator<std::bidirectional_iterator_tag, T>
 {
     friend class indata_free_list<T>;
 
@@ -293,8 +294,8 @@ private:
     {
     }
 
-    indata_free_list<T>* container_;
-    indata_free_list<T>::size_type pos_;
+    indata_free_list<T, E>* container_;
+    indata_free_list<T, E>::size_type pos_;
 };
 
 

@@ -6,6 +6,7 @@ import os
 import lzo
 from threading import Thread
 import sys
+import hashlib
 
 print = lambda x: sys.stdout.write("%s\n" % x)
 
@@ -59,6 +60,7 @@ def compressor_worker():
 
         compressed_data_chunks.append({
             'path': rel_path,
+            'path_hash': hashlib.md5(rel_path).hexdigest(),
             'crc32': lzo.crc32(raw_filestring),
             'adler32': lzo.adler32(raw_filestring),
             'size': len_final,
@@ -109,7 +111,7 @@ if __name__ == "__main__":
     for c in sorted(compressed_data_chunks, key=lambda x: x['path']):
         descriptor = {'begin': num_compressed_bytes}
 
-        for item in ('path', 'crc32', 'adler32', 'compression', 'extension', 'original_size', 'size'):
+        for item in ('path', 'path_hash', 'crc32', 'adler32', 'compression', 'extension', 'original_size', 'size'):
             descriptor[item] = c[item]
 
         file_descriptors.append(descriptor)
