@@ -1,4 +1,3 @@
-*.o
-
-.cproject
-.project
+/.settings
+/.project
+/.cproject

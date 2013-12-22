@@ -1,0 +1,33 @@
+This document explains the usage of the "portal" engine demo by Søren V. Poulsen.
+
+From the project root directory (the directory this file resides in) execute the program from the shell (e.g. "bin/portal").
+
+Move around the scene using WASD+mouse controls. Use the space bar for upward movement, CTRL for downward. Holding down shift doubles the movement speed. Exit the application by pressing ESC.
+
+Keybindings:
+WASD = Movement keys
+Space = Up
+CTRL = Down
+Shift (hold) = Double movement speed
+ESC = Exit application
+
+N = Toggle lighting
+B = Toggle bump/normal-mapping
+V = Toggle ambient occlusion
+
+<Display modes>
+1 = Full shading
+2 = Depth display
+3 = Normals display
+4 = Albedo/texture color
+5 = Ambient occlusion
+6 = Positions (mostly for debugging)
+
+<Debugging features>
+Mouse1 = Shoot ray
+Shift+1 = Toggle BVH display
+Shift+2 = Toggle debug lines/rays
+Shift+3 = Toggle crosshairs
+
+
+
